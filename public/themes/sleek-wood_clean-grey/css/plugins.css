@@ -1,0 +1,33 @@
+
+.wc-header, .wc-cal-event .wc-time{
+	background-image:url('../images/inner_header.png');
+}
+
+.wc-cal-event {
+	background-color:#BB8F50;
+}
+
+.wc-cal-event .wc-title{
+	color:#FFF;
+	font-weight:bold;
+}
+
+
+.tooltip {
+	color:#111;
+	background-image:url('../../../images/tooltip/white_arrow.png');
+}
+
+.cluetip-default h3#cluetip-title {
+	background-image:url('../images/inner_header.png');
+	
+}
+
+.cluetip-default #cluetip-outer{
+	background-color:#ECECEC;
+	color:#111;
+}
+
+div#nyroModalFull div#nyroModalWrapper{
+	border-color:#ECECEC;
+}

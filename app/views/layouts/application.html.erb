@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Interface d'administration</title>
+   
+    <!-- Current Theme styles. These are changed via theme switcher -->	<!--<link rel="stylesheet" id="active-theme-globals" type="text/css" href="themes/sleek-wood/css/globals.css" />-->
+  <%= stylesheet_link_tag 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
+  <%= javascript_include_tag 'jquery.js', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js' %>
+	<!-- END Current Theme styles -->
+</head>
+
+<body>	
+	<!-- Container -->
+	<div id="container">
+    	<!-- Header -->
+        <div id="header">
+    		<div id="header-top">
+            	<div id="top-block-left">
+                	<p><%#= current_user.full_name %></p>
+                </div>
+                <ul id="top-toolbox">
+                	<!--<li><a href="#" id="settings-link">Settings</a></li>-->
+                  <li><%= link_to "Editer profil", '#', :id => "profile-link" %></li>
+                  <li><%= link_to "Se déconnecter", destroy_user_session_path, :method => :delete, :id => "logout-link" %></li>
+                </ul>
+                <div class="clear"></div>
+            </div>
+            <div id="header-middle">
+           		<a href="dashboard.html" id="logo">TUNI</a>
+            </div>
+            <!-- Top Menu -->
+            <div id="menu">
+            	<ul class="topnav">
+                    <li><%= link_to "Dashboard", dashboard_path, :id => "menu-dashboard" %></li>
+                    <!--<li><a href="page.html" id="menu-page">Sample Page</a></li>
+                    <li><a href="assets.html" id="menu-asset">Assets</a></li>
+                    <li id="active-item"><a href="events.html" id="menu-event">Events</a></li>
+                    <li><%= link_to "Rapports", '#', :id => "menu-report" %>
+                    	<ul class="subnav">
+                        <li><%= link_to "First" %></li>
+                      </ul>
+                    </li>
+                    <!--<li><a href="tasks.html" id="menu-task">Tasks</a></li>
+                    <li class="right"><a href="themes.html" id="menu-theme">Themes</a></li>
+                    <li class="right" id="last"><a href="#" id="menu-layout">Layouts</a>
+                        <!-- Dropdown Part 
+                        <ul class="subnav">
+                            <li><a href="#" id="fixed-layout">Fixed Layout</a></li>
+                            <li><a href="#" id="liquid-layout">Liquid Layout</a></li>
+                        </ul>
+                        <!-- End Dropdown Part -->
+                    </li>
+                </ul>
+		  	</div>
+            <!-- END Menu -->
+        </div>
+        <!-- END Header -->
+        <div class="clear"></div> 
+        <!-- Content -->
+ 		<div id="content">
+        	<!-- Information Block -->	
+
+          <%= content_tag :p, notice, :class => 'status info' if notice.present? %>
+					<%= content_tag :p, alert, :class => 'status info' if alert.present? %>
+					
+        	<%= yield %>
+    </div>
+      <!-- END Content -->
+	</div>
+    <!-- END Container -->    
+    
+    <!-- Footer Container -->
+    <div id="footer-container">
+        <div id="footer">
+            <div id="footer-logo">
+    			<p id="copyright">Copyright &copy; 2012</p>
+            </div>
+            <!-- Footer Menu 
+            <ul class="menu">
+             	<li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="page.html">Sample Page</a></li>
+    			<li><a href="assets.html">Assets</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="reports.html">Reports</a></li>
+                <li><a href="tasks.html">Tasks</a></li>
+                <li><a href="themes.html">Themes</a></li>
+            </ul>
+            <!-- END Footer Menu -->
+           <div class="clear"></div>
+        </div>
+    </div>
+    <!-- END Footer Container -->
+    
+  	<!--[if lte IE 6]><script src="js/ie6/warning.js"></script><script>window.onload=function(){e("js/ie6/")}</script><![endif]-->
+</body>
+</html>
+
+

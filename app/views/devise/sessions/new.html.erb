@@ -1,0 +1,52 @@
+<%#= render :partial => "devise/shared/links" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>TUNI - Login</title>
+    
+    <%= stylesheet_link_tag 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
+  <%= javascript_include_tag 'jquery.js', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js' %>
+</head>
+
+<body id="login-body">	
+
+	<div id="login-title">
+        <h1>TUNI</h1>
+        <p>Logiciel de gestion du personnel temporaire d'Unilever CI.</p>
+    </div>
+    
+		<%= content_tag :p, notice, :class => 'status info' if notice.present? %>
+		<%= content_tag :p, alert, :class => 'status info' if alert.present? %>
+		
+		<%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
+			<div id="user_connexion">
+			<div id="login-inner">
+	      <div id="wrapper">
+	        <p>Formulaire de connexion</p>
+	      </div>
+	      <div class="field-separator">
+					<%= f.label :email %><br />
+					<%= f.email_field :email, :class => 'txt', :id => 'login' %>
+				</div>
+
+				<div class="field-separator">
+					<%= f.label :password %><br />
+					<%= f.password_field :password, :class => 'txt' %>
+				</div>
+
+				<div id="login-bottom">
+					<div id="remember-me">
+             <%- if devise_mapping.recoverable? && controller_name != 'passwords' %>
+  <%= link_to "Mot de passe oublié?", new_password_path(resource_name) %><br />
+<% end -%>
+          </div>
+					<%= f.submit "Connexion", :id => 'login-button', :class => 'submit large round' %>
+					<div style="clear: both"></div>
+				</div>
+			</div>
+			</div>
+		<% end %>	
+		
+</body>
+</html>

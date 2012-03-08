@@ -1,0 +1,52 @@
+body, html{
+	background:#FEFEFE url('../images/bg.png') repeat-x;
+}
+
+.ui-widget-header { background: #f6a828 url('../images/inner_header.png') 50% 50% repeat-x; color: #ffffff; font-weight: bold; }
+
+#top-block-left p{
+	color:#fff9d7;
+}
+
+#top-toolbox a, ul.topnav li a, #footer ul.menu li a, #footer p#copyright{
+	color:#fff9d8;
+}
+
+h1, h2, h3, .top-title{
+	color:#371c04
+}
+
+ul.topnav li:hover, ul.topnav li#active-item{
+	background: url('../images/menu_active.png') repeat-x;
+}
+
+ul.topnav li ul.subnav {
+	background: #240d04;
+	border-color: #180802;
+}
+
+ul.topnav li ul.subnav li{
+	border-bottom: 1px solid #6f4838;
+}
+
+a#logo{
+	background-image:url('../images/logo.png');
+}
+
+button.submit, input.submit, a.button.submit {
+	background: #6f2b10;
+}
+
+#footer-container{
+	background:url('../images/footer.png') repeat-x;
+}
+#footer-logo{
+	background-image:url('../images/footer_logo.png');
+}
+
+#heading-title{
+	background:url('../images/inner_header.png') repeat-x;
+	
+}
+
+

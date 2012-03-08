@@ -1,0 +1,62 @@
+body, html{
+	background:#FEFEFE url('../images/bg.png') repeat-x;
+}
+
+/************ LOGIN PAGE *************/
+
+#login-body{
+	background:#FEFEFE url('../images/login_bg.png') repeat-x;
+}
+
+#login-form #wrapper{
+	background-image: url('../images/inner_header.png');
+}
+
+#login-title h1{
+	background-image:url('../images/logo.png');
+}
+
+#footer-container{
+	background:url('../images/footer.png') repeat-x;
+}
+
+.ui-widget-header { background: #f6a828 url('../images/inner_header.png') 50% 50% repeat-x; color: #ffffff; font-weight: bold; }
+
+#top-block-left p{
+	color:#efefef;
+}
+
+#top-toolbox a, ul.topnav li a, #footer ul.menu li a, #footer p#copyright{
+	color:#efefef;
+}
+
+ul.topnav li:hover, ul.topnav li#active-item{
+	background: url('../images/menu_active.png') repeat-x;
+}
+
+ul.topnav li ul.subnav {
+	background: #151515;
+	border-color: #000;
+}
+
+ul.topnav li ul.subnav li{
+	border-bottom: 1px solid #3c3c3c;
+}
+
+
+
+a#logo{
+	background-image:url('../images/logo.png');
+}
+
+button.submit, input.submit, a.button.submit {
+	background: #333;
+}
+
+#footer-logo{
+	background-image:url('../images/footer_logo.png');
+}
+
+
+
+

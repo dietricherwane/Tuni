@@ -28,7 +28,7 @@
 			<% else %>
 				<td class = "ui-widget-content"><span class="button submit medium grey-back fixed-width-100 ui-corner-all">En attente</span></td>
 			<% end %>
-			<td class = "ui-widget-content"><%= r.full_name(r) %></td>
+			<td class = "ui-widget-content"><%= r.status(r) %></td>
 			<td class = "ui-widget-content"><a href="#" class="edit-record">Editer</a></td>
 			<% if r.account_enabled?(r) %>
 				<td class = "ui-widget-content"></td>

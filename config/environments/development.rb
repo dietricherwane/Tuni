@@ -20,12 +20,14 @@ Tuni::Application.configure do
   config.action_mailer.raise_delivery_errors = true
   
   ActionMailer::Base.smtp_settings = {
+  	:openssl_verify_mode => 'none',
 		:address => "smtp.gmail.com",
 		:enable_starttls_auto => true,
 		:port => 587,
 		:authentication => :plain,
 		:user_name => "dietricherwane@gmail.com",
 		:password => '20dianapopoulos11'
+		
 	}
 
   # Print deprecation notices to the Rails logger

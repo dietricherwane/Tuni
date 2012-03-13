@@ -1,12 +1,18 @@
-<h2>Forgot your password?</h2>
-
+<% if user_signed_in? %>
+	<% if current_user.sign_in_count.eql?(1) %>
+		<h2 class="top-title">Pour plus de sécurité, veuillez changer votre mot de passe en entrant votre email ci-dessous.</h2>
+	<% end %>
+<% else %>
+	<h2 class="top-title">Mot de passe oublié?</h2>
+<% end %>
+<br />
 <%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :post }) do |f| %>
   <%= devise_error_messages! %>
 
   <div><%= f.label :email %><br />
   <%= f.email_field :email %></div>
-
-  <div><%= f.submit "Send me reset password instructions" %></div>
+	<br />
+  <div><%= f.submit "Changer le mot de passe", :class => 'submit button large ui-corner-all' %></div>
 <% end %>
 
-<%= render :partial => "devise/shared/links" %>
+<%= render :partial => "devise/shared/password_forgotten" %>

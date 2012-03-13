@@ -1,19 +1,19 @@
 # -*- encoding : utf-8 -*-
 class Devise::RegistrationsController < ApplicationController
-#class Devise::RegistrationsController < ApplicationController
   #prepend_before_filter :require_no_authentication, :only => [ :new, :create, :cancel ]
   #prepend_before_filter :authenticate_scope!, :only => [:edit, :update, :destroy]
+  #before_filter :change_password
   include Devise::Controllers::InternalHelpers
   
   # GET /resource/sign_up
   def new
-  	if user_signed_in?
+  	#if user_signed_in?
 		  resource = build_resource({})
-		 	@statuses = Status.all
+		 	@statuses = Status.all 
 		  respond_with_navigational(resource){ render_with_scope :new }
-    else
-    	redirect_to new_user_session_path, :alert => "Vous ne pouvez accéder à cette ressource."
-    end
+    #else
+    	#redirect_to new_user_session_path, :alert => "Veuillez d'abord vous connecter."
+    #end
   end
 
   # POST /resource
@@ -23,7 +23,9 @@ class Devise::RegistrationsController < ApplicationController
 		@params_direction = params[:direction_name].eql?("-Veuillez choisir une direction-")
 		@params_workshop = params[:workshop_name].eql?("-Veuillez choisir un atelier-")
 		@params_team = params[:team_name].eql?("-Veuillez choisir une équipe-")
-		
+		@firstname = capitalization(params[:user][:firstname])
+		@lastname = capitalization(params[:user][:lastname])
+	
 		if (@status.eql?(nil) || (@status.status_name.eql?("Chef de direction") && @params_direction) || (@status.status_name.eql?("Chef d'atelier") && (@params_direction || @params_workshop)) || (@status.status_name.eql?("Chef d'équipe") && (@params_direction || @params_workshop || @params_team)))
 			clean_up_passwords(resource)
 		  @statuses = Status.all
@@ -38,12 +40,13 @@ class Devise::RegistrationsController < ApplicationController
 		    else
 		      set_flash_message :notice, :inactive_signed_up, :reason => inactive_reason(resource) if is_navigational_format?	      
 		      if (@status.status_name.eql?("Chef de direction") || @status.status_name.eql?("Chef d'atelier") || @status.status_name.eql?("Chef d'équipe"))
-		      	resource.update_attributes(:status_id => @status.id, :status_number => translate_status(@status.id, params[:direction_name], params[:workshop_name], params[:team_name]))
+		      	resource.update_attributes(:firstname => @firstname, :lastname => @lastname, :status_id => @status.id, :status_number => translate_status(@status.id, params[:direction_name], params[:workshop_name], params[:team_name]))
 		      else
-		      	resource.update_attributes(:status_id => @status.id)
+		      	resource.update_attributes(:firstname => @firstname, :lastname => @lastname, :status_id => @status.id)
 		      end
 		      expire_session_data_after_sign_in!
-		      respond_with resource, :location => after_inactive_sign_up_path_for(resource)
+		      redirect_to new_user_registration_path
+		      #respond_with resource, :location => after_inactive_sign_up_path_for(resource)
 		    end
 		  else
 		    clean_up_passwords(resource)
@@ -133,6 +136,14 @@ class Devise::RegistrationsController < ApplicationController
   	end
   	@status_number
   end
+  
+  def capitalization(raw_name)
+  	@name_capitalized = ''
+  	raw_name.split.each do |name|
+  		@name_capitalized << "#{name.capitalize} "
+  	end
+  	@name_capitalized.strip
+  end
 
   protected
 
@@ -145,7 +156,7 @@ class Devise::RegistrationsController < ApplicationController
 
     # The path used after sign up. You need to overwrite this method
     # in your own RegistrationsController.
-    def after_sign_up_path_for(resource)
+    def after_sign_up_path_for(resource)    	
       after_sign_in_path_for(resource)
     end
 

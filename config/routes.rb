@@ -1,18 +1,22 @@
 # -*- encoding : utf-8 -*-
 Tuni::Application.routes.draw do
 	#match 'users/get_workshop' => 'devise/registrations#get_workshop'
-	devise_for :users, :controllers => {:registrations => "devise/registrations", :sessions => "devise/sessions"}
+	
+	devise_for :users, :controllers => {:registrations => "devise/registrations", :sessions => "devise/sessions", :passwords => "devise/passwords"}
 	root :to => "fake#index"
 	devise_scope :user do
+		match 'users/search_ajax' => 'devise/users#search_ajax'
 		match 'users/sign_up' => 'devise/registrations#new', :as => :dashboard
 		#root :to => "devise/registrations#new"
 		match '/users/sign_in' => 'devise/sessions#new'
 		match 'users/sign_out' => 'devise/sessions#destroy'
 		match 'users/sign_up' => 'devise/registrations#new', :as => :dashboard
+		match 'users/sign_up' => 'devise/registrations#new', :as => :dashboard_administrator
     match 'users/get_directions' => 'devise/registrations#get_directions'
     match 'users/get_workshops' => 'devise/registrations#get_workshops'
     match 'users/get_teams' => 'devise/registrations#get_teams'
   end
+  
 
   #devise_for :users
 

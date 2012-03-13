@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120304003950) do
+ActiveRecord::Schema.define(:version => 20120312165218) do
 
   create_table "directions", :force => true do |t|
     t.string   "direction_name"
@@ -44,8 +44,8 @@ ActiveRecord::Schema.define(:version => 20120304003950) do
     t.string   "last_sign_in_ip"
     t.string   "firstname"
     t.string   "lastname"
-    t.integer  "phone_number"
-    t.integer  "mobile_number"
+    t.string   "phone_number"
+    t.string   "mobile_number"
     t.integer  "status_number"
     t.integer  "status_id"
     t.string   "confirmation_token"

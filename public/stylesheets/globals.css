@@ -151,6 +151,7 @@ body{
 	}
 	
 	a#logo{
+		margin-left:30%;
 		display:block;
 		width:348px;
 		height:41px;

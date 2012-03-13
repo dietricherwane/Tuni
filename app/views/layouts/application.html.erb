@@ -2,11 +2,8 @@
 <html>
 <head>
 	<title>Interface d'administration</title>
-   
-    <!-- Current Theme styles. These are changed via theme switcher -->	<!--<link rel="stylesheet" id="active-theme-globals" type="text/css" href="themes/sleek-wood/css/globals.css" />-->
-  <%= stylesheet_link_tag 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
+  <%= stylesheet_link_tag 'reset-min', 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
   <%= javascript_include_tag 'jquery.js', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js' %>
-	<!-- END Current Theme styles -->
 </head>
 
 <body>	
@@ -16,21 +13,27 @@
         <div id="header">
     		<div id="header-top">
             	<div id="top-block-left">
-                	<p><%#= current_user.full_name %></p>
-                </div>
-                <ul id="top-toolbox">
-                	<!--<li><a href="#" id="settings-link">Settings</a></li>-->
-                  <li><%= link_to "Editer profil", '#', :id => "profile-link" %></li>
-                  <li><%= link_to "Se déconnecter", destroy_user_session_path, :method => :delete, :id => "logout-link" %></li>
-                </ul>
-                <div class="clear"></div>
+            		<% if user_signed_in? %>
+                	<p><%= current_user.full_name(current_user) %></p>
+                <% end %>
+              </div>
+              <ul id="top-toolbox">
+              	<% if user_signed_in? %>
+              	<!--<li><a href="#" id="settings-link">Settings</a></li>-->
+                <li><%= link_to "Editer profil", edit_user_password_path, :id => "profile-link" %></li>
+                <li><%= link_to "Se déconnecter", destroy_user_session_path, :method => :delete, :id => "logout-link" %></li>
+                <% end %>
+              </ul>
+              <div class="clear"></div>
+                
             </div>
             <div id="header-middle">
-           		<a href="dashboard.html" id="logo">TUNI</a>
+           		<a id="logo">TUNI</a>
             </div>
             <!-- Top Menu -->
             <div id="menu">
             	<ul class="topnav">
+            		<% if user_signed_in? %>
                     <li><%= link_to "Dashboard", dashboard_path, :id => "menu-dashboard" %></li>
                     <!--<li><a href="page.html" id="menu-page">Sample Page</a></li>
                     <li><a href="assets.html" id="menu-asset">Assets</a></li>
@@ -50,7 +53,8 @@
                         </ul>
                         <!-- End Dropdown Part -->
                     </li>
-                </ul>
+                <% end %>
+              </ul>
 		  	</div>
             <!-- END Menu -->
         </div>

@@ -4,7 +4,9 @@ $(document).ready(function() {
 		//write a better function for hideAll
   	$(function(){
   		hideAll();
+  		search_ajax_on_load();
 		});
+		
     $("#post_status_id").change(function() {
     	selected_status = this.options[this.selectedIndex].text;
     	switch(selected_status){
@@ -49,16 +51,44 @@ $(document).ready(function() {
     });
     
     $("#workshop_name").change(function() {
-    	selected_workshop = this.options[this.selectedIndex].text; 
+    	selected_workshop = this.options[this.selectedIndex].text;
+    	selected_status = $(this).getSelectValue('post_status_id'); 
     	if (selected_workshop == "-Veuillez choisir un atelier-"){
     		$("#team").hide("slow");
     	}
-    	else{
+    	if ((selected_workshop != "-Veuillez choisir un atelier-") && (selected_status == "Chef d'équipe")){
 		  	$(this).getComboBoxValues(selected_workshop, "#team_name", "<%= url_for :action => 'get_teams', :controller => 'registrations' %>");
 		  	$("#team").show("slow");
 		  }
     });
+    	
+		$(".radio_button").change(function() {
+      $(this).search_ajax();
+    });
     
+    $("#search").keyup(function() { 
+      $(this).search_ajax();    
+    });
+    
+    $.fn.search_ajax = function() { 
+      //$("#loader").show(); 
+      var v_search = $('#search').val();  
+      var v_status = $("input[name='status']:checked").val()            
+      $.ajax({   
+        url: "<%= url_for :action => 'search_ajax', :controller => 'users' %>",
+	      type: "GET",
+        data: {query: v_search, status: v_status},
+        error: function(){ 
+        	alert("error");
+          //$("#loader").hide();
+        },
+        success: function(response, response_status, xhr) {
+          $("#result").html(response);
+          //$("#loader").hide();         
+        }
+      });  
+    }
+        
     $.fn.getComboBoxValues = function(selected_value, target_tag, url) {
       $.ajax({      
         url: url,
@@ -109,11 +139,35 @@ $(document).ready(function() {
     	$("#workshop").show(slow);
     	$("#direction").show(slow);
 		}
+		
+		function search_ajax_on_load() { 
+      //$("#loader").show(); 
+      var v_search = $('#search').val();  
+      var v_status = $("input[name='status']:checked").val()            
+      $.ajax({   
+        url: "<%= url_for :action => 'search_ajax', :controller => 'users' %>",
+	      type: "GET",
+        data: {query: v_search, status: v_status},
+        error: function(){ 
+        	alert("error");
+          //$("#loader").hide();
+        },
+        success: function(response, response_status, xhr) {
+          $("#result").html(response);
+          //$("#loader").hide();         
+        }
+      });  
+    }
+		
 });
 </script>
 
-<h2 class="top-title">Création d'utilisateur</h2>
-
+<h2 class="top-title">Utilisateurs</h2>
+<br />
+<div class="column">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Création</div>
+    	<div class="portlet-content">
 <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
   <%#= devise_error_messages! %>
   
@@ -162,5 +216,38 @@ $(document).ready(function() {
 	<br />
   <div><%= f.submit "Enregistrer", :class => 'submit button large ui-corner-all' %></div>
 <% end %>
+		</div>
+	</div>
+</div>
 
+<div class="column_large">
+ 	<div class="portlet" id="widget-2">
+		<div class="portlet-header">Gestion</div>
+		<div class="portlet-content">
+  		<div id="filter-panel" class="ui-corner-all ui-widget-content">
+  			<div class="radio_button">
+		      <label>Tous</label>&nbsp;&nbsp;<%= radio_button_tag 'status', 'all', { :checked => true } %> 
+		  		<label>Activés</label>&nbsp;&nbsp;<%= radio_button_tag 'status', 'enabled' %> 
+		  		<label>En attente</label>&nbsp;&nbsp;<%= radio_button_tag 'status', 'disabled' %> 
+		  		<label>Recherche: </label><%= text_field_tag("search", '', :autocomplete => 'off') %>
+    		</div>
+      </div>
+		</div>
+		<br /><br /><br />
+		<div id="result"></div>
+      <table class="list-table">
+      	<thead>
+        	<tr>
+          	<th width="30%">Nom</th>
+            <th>Statut</th>
+            <th>Compte</th>
+            <th colspan="2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        	
+      	</tbody>
+      </table>
+	</div>
+</div>
 <%#= render :partial => "devise/shared/links" %>

@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
          :token_authenticatable, :lockable, :timeoutable, :confirmable
 
   # Setup accessible (or protected) attributes for your model
-  #attr_accessible :email, :password, :password_confirmation, :remember_me, :firstname, :lastname, :phone_number, :mobile_number, :status, :status_id
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :firstname, :lastname, :phone_number, :mobile_number, :status_number, :status_id
 
 	def full_name(current_user)
 		@status_name = status(current_user)

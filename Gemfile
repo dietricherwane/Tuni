@@ -12,6 +12,7 @@ gem 'will_paginate', '~> 3.0'
 gem 'meta_search'
 gem 'devise'
 gem 'heroku'
+gem 'taps'
 gem 'jquery-rails', '>= 1.0.12'
 # Use unicorn as the web server
 # gem 'unicorn'

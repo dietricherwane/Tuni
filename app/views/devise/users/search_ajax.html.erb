@@ -1,0 +1,50 @@
+<table class="list-table">
+	<thead class = "ui-widget-header ui-corner-all">
+		<tr>
+			<th width="25%">Nom</th>
+		  <th>Statut</th>
+		  <th>Compte</th>
+		  <th colspan="2">Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+<% if @users.nil? or @users.empty? %>
+	<tr>
+  	<td class = "ui-widget-content">Pas de résultat</td>
+		<td class = "ui-widget-content"></td>
+		<td class = "ui-widget-content"></td>
+		<td class = "ui-widget-content"></td>
+  </tr>
+<% else %>
+	<% @users.each do |r| %>
+		<% if @tr_color %>
+			<tr class = "odd">
+		<% else %>
+			<tr>
+		<% end %>
+			<td class = "ui-widget-content"><%= r.firstname+" "+r.lastname %></td>
+			<% if r.account_enabled?(r) %>
+				<td class = "ui-widget-content"><span class="button submit medium green-back fixed-width-100 ui-corner-all">Activé</span></td>
+			<% else %>
+				<td class = "ui-widget-content"><span class="button submit medium grey-back fixed-width-100 ui-corner-all">En attente</span></td>
+			<% end %>
+			<td class = "ui-widget-content"><%= r.status(r) %></td>
+			<td class = "ui-widget-content"><a href="#" class="edit-record">Editer</a></td>
+			<% if r.account_enabled?(r) %>
+				<td class = "ui-widget-content"></td>
+			<% else %>
+      	<td class = "ui-widget-content"><a href="#" class="delete-record">Effacer</a></td>
+      <% end %>
+		</tr>
+		<% @tab_color = !@tab_color %>			
+	<% end %>
+  
+
+<% end %>
+	</tbody>
+</table>
+
+	<div id="pagination">
+		<%= will_paginate @users %>
+	</div>
+

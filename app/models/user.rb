@@ -26,9 +26,10 @@ class User < ActiveRecord::Base
 	def status(current_user)
 		@status_name = Status.find_by_id(current_user.status_id).status_name
 		if (@status_name != "Administrateur")
-			@status_name << " | #{translate_status(@status_name, current_user)}"
+			@status_name += " | #{translate_status(@status_name, current_user)}"
 		end
-		"#{@status_name}"
+		@status_name
+		#translate_status(@status_name, current_user)
   end
 	
 	def translate_status(status_name, current_user)
@@ -41,11 +42,12 @@ class User < ActiveRecord::Base
   		@chief_of = Workshop.find_by_id(@status_number).workshop_name
   	when "Chef d'équipe"
   		@chief_of = Team.find_by_id(@status_number).team_name
+  	else
+  		@chief_of = "zort"
   	end
   	@chief_of
   end
-  
-  
+   
   def account_enabled?(current_user)
   	if current_user.confirmation_token.eql?(nil)
   		true
@@ -53,4 +55,13 @@ class User < ActiveRecord::Base
   		false
   	end
   end
+  
+  def user_enabled?(user)
+  	if user.enabled.eql?(false)
+  		false
+  	else
+  		true
+  	end
+  end
+   
 end

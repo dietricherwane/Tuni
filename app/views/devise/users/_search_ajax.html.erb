@@ -49,6 +49,7 @@ $(document).ready(function(){
 				<%= div_for r do %>
 					<%= r.firstname+" "+r.lastname %>
 				<% end %>
+				<br /> <%= r.mobile_number %> | <%= r.phone_number %>
 			</td>
 			<% if r.account_enabled?(r) %>
 				<td class = "ui-widget-content"><span class="button submit medium green-back fixed-width-100 ui-corner-all">Activé</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>

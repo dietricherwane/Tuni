@@ -51,11 +51,17 @@ $(document).ready(function(){
 				<% end %>
 				<br /> <%= r.mobile_number %> | <%= r.phone_number %>
 			</td>
-			<% if r.account_enabled?(r) %>
-				<td class = "ui-widget-content"><span class="button submit medium green-back fixed-width-100 ui-corner-all">Activé</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>
+			
+			<% unless r.user_enabled?(r) %>
+				<td class = "ui-widget-content"><span class="button submit medium orange-back fixed-width-100 ui-corner-all">Désactivé</span></td>
 			<% else %>
-				<td class = "ui-widget-content"><span class="button submit medium grey-back fixed-width-100 ui-corner-all">En attente</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>
+				<% if r.account_enabled?(r) %>
+					<td class = "ui-widget-content"><span class="button submit medium green-back fixed-width-100 ui-corner-all">Activé</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>
+				<% else %>
+					<td class = "ui-widget-content"><span class="button submit medium grey-back fixed-width-100 ui-corner-all">En attente</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>
+				<% end %>
 			<% end %>
+			
 			<td class = "ui-widget-content"><%= r.status(r) %></td>
 			<td class = "ui-widget-content"><%= link_to "Editer", edit_user_registration_path(r.id), :class => "edit-record" %></td>
 			<% if r.account_enabled?(r) %>

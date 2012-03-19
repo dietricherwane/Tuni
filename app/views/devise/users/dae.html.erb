@@ -1,0 +1,292 @@
+<script type="text/javascript" language="JavaScript">
+$(document).ready(function() {
+		//write a better function for hideAll
+  	$(function(){
+  		hideAll();
+		});
+		
+    $("#dae_name").change(function() {
+    	selected_dae = this.options[this.selectedIndex].text;
+    	switch(selected_dae){
+    		case "-Veuillez choisir un élément-":
+    			hideAll("slow");
+  				break;
+				case "Direction":
+					showDirectionValueField("slow");
+  				break;
+				case "Atelier":					
+  				$(this).populateDirection(selected_dae);
+  				showDirection("slow");
+  				break;
+  			case "Section":
+  				$(this).populateDirection(selected_dae);
+  				showDirection("slow");
+  				break;
+  			case "Ligne":
+  				$(this).populateDirection(selected_dae);
+  				showDirection("slow");
+  				break;
+  			case "Equipe":
+    			$(this).populateDirection(selected_dae);
+  				showDirection("slow");
+  				break;
+				default:
+  				alert("none");
+			}    	
+    });
+    
+    $("#direction_name").change(function() {
+    	selected_dae = $(this).getSelectValue('dae_name');    	
+    	selected_direction = this.options[this.selectedIndex].text; 
+	  	switch(selected_dae){
+	  		case "-Veuillez choisir une direction-":
+    			pleaseSelectDirection(selected_direction);
+  				break;
+				case "Atelier":
+					showValueField("slow");
+					if (selected_direction == "-Veuillez choisir une direction-"){
+						$("#valeur").hide("slow"); 
+						$("#team").hide("slow");
+						$("#line").hide("slow");
+						$("#section").hide("slow");
+						$("#workshop").hide("slow");
+					}
+					break;
+				case "Section":
+					pleaseSelectDirection(selected_direction);
+					break;
+				case "Ligne":
+					pleaseSelectDirection(selected_direction);
+					break;
+				case "Equipe":
+					pleaseSelectDirection(selected_direction);
+					break;
+				default:
+					alert("none");
+			}
+    });
+    
+    $("#workshop_name").change(function() {
+    	selected_workshop = this.options[this.selectedIndex].text;
+    	selected_dae = $(this).getSelectValue('dae_name');
+    	switch(selected_dae){
+    		case "-Veuillez choisir un atelier-":
+    			pleaseSelectWorkshop(selected_workshop);
+  				break;
+				case "Atelier":
+					break;
+				case "Section":
+					pleaseSelectWorkshop(selected_workshop);
+					break;
+				case "Ligne":
+					pleaseSelectSection(selected_workshop);
+					break;
+				case "Equipe":
+					pleaseSelectWorkshop(selected_workshop);
+					break;
+				default:
+					alert("none");
+			}
+    	if (selected_workshop == "-Veuillez choisir un atelier-"){
+    		pleaseSelectWorkshop(selected_workshop);
+    	}
+    });
+    
+    $("#section_name").change(function() {
+    	selected_workshop = this.options[this.selectedIndex].text;
+    	selected_dae = $(this).getSelectValue('dae_name');
+    	switch(selected_dae){
+    		case "-Veuillez choisir une section-":
+    			pleaseSelectWorkshop(selected_workshop);
+  				break;
+				case "Atelier":
+					break;
+				case "Section":
+					pleaseSelectWorkshop(selected_workshop);
+					break;
+				case "Ligne":
+					pleaseSelectLine(selected_workshop);
+					break;
+				case "Equipe":
+					pleaseSelectWorkshop(selected_workshop);
+					break;
+				default:
+					alert("none");
+			}
+		});
+    	        
+    $.fn.getComboBoxValues = function(selected_value, target_tag, url) {
+      $.ajax({      
+        url: url,
+        data: selected_value,
+        dataType: "text",
+        error: function(){ alert("error"); },
+        success: function(response, response_status, xhr) {
+          $(target_tag).children().remove();
+          $(response).appendTo(target_tag);        
+        }
+      });
+    } 
+     
+    $.fn.getSelectValue = function(selectId) {
+     	var selectElmt = document.getElementById(selectId);
+			return selectElmt.options[selectElmt.selectedIndex].text;
+    }
+    
+    $.fn.populateDirection = function(selected_status) {
+			$(this).getComboBoxValues(selected_status, "#direction_name", "<%= url_for :action => 'get_directions', :controller => 'registrations' %>");
+    }
+    
+    function pleaseSelectDirection(selected_direction){
+    	if (selected_direction == "-Veuillez choisir une direction-"){
+    		$("#valeur").hide("slow"); 
+    		$("#team").hide("slow");
+    		$("#line").hide("slow");
+				$("#section").hide("slow");
+				$("#workshop").hide("slow");
+			}
+			else {
+				$(this).getComboBoxValues(selected_direction, "#workshop_name", "<%= url_for :action => 'get_workshops', :controller => 'registrations' %>");
+				showWorkshop("slow");
+			}
+    }
+    
+    function pleaseSelectWorkshop(selected_workshop){
+    	if (selected_workshop == "-Veuillez choisir un atelier-"){
+    		$("#valeur").hide("slow");
+				$("#team").hide("slow");
+				$("#line").hide("slow");
+				$("#section").hide("slow");
+			}
+			else {
+				showValueField("slow");
+			}
+    }
+    
+    function pleaseSelectSection(selected_section){
+    	if (selected_section == "-Veuillez choisir une section-" || selected_section == "-Veuillez choisir un atelier-"){
+    		$("#valeur").hide("slow");
+				$("#team").hide("slow");
+			}
+			else {
+				$(this).getComboBoxValues(selected_section, "#section_name", "<%= url_for :action => 'get_sections', :controller => 'registrations' %>");
+				showSection("slow");
+			}
+    }
+    
+    function pleaseSelectLine(selected_line){
+    	if (selected_line == "-Veuillez choisir une section-" || selected_line == "-Veuillez choisir un atelier-"){
+    		$("#valeur").hide("slow");
+				$("#team").hide("slow");
+			}
+			else {
+				showValueField("slow");
+			}
+    }
+        
+    function hideAll(slow){
+    	$("#valeur").hide(slow); 
+  		$("#team").hide(slow);
+  		$("#line").hide(slow);
+  		$("#section").hide(slow);
+    	$("#workshop").hide(slow);
+    	$("#direction").hide(slow);
+		} 
+		
+		function showDirectionValueField(slow){ 
+  		$("#valeur").show(slow);
+  		$("#team").hide(slow);
+  		$("#line").hide(slow);
+  		$("#section").hide(slow);
+    	$("#workshop").hide(slow);
+    	$("#direction").hide(slow);
+		}
+		
+		function showDirection(slow){
+			$("#valeur").hide(slow); 
+  		$("#team").hide(slow);
+  		$("#line").hide(slow);
+  		$("#section").hide(slow);
+    	$("#workshop").hide(slow);
+    	$("#direction").show(slow);
+		}
+		
+		function showSection(slow){
+			$("#valeur").hide(slow); 
+  		$("#team").hide(slow);
+  		$("#line").hide(slow);
+  		$("#section").show(slow);
+		}
+		
+		function showValueField(slow){ 
+  		$("#valeur").show(slow);
+		}
+		
+		function showWorkshop(slow){
+			$("#valeur").hide(slow);  
+  		$("#team").hide(slow);
+  		$("#line").hide(slow);
+			$("#section").hide(slow);
+    	$("#workshop").show(slow);
+    	$("#direction").show(slow);  		
+		}
+		
+});
+</script>
+
+<h2 class="top-title">Directions, ateliers, sections, lignes, équipes</h2><br />	
+<div class="column">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Création</div>
+    	<div class="portlet-content">    	
+    		<%= form_tag create_dae_path do %> 
+    		   	
+		  		<%= label_tag "Choix de l'élément à créer" %><br />
+					<%= select_tag "dae_name", options_for_select(["-Veuillez choisir un élément-", "Direction", "Atelier", "Section", "Ligne", "Equipe"], "-Veuillez choisir un élément-") %>
+					
+					<p>
+						<div id= "direction">
+						<%= label_tag 'Direction' %><br />
+						<%= select_tag "direction_name", options_for_select(["-Veuillez choisir une direction-"], "-Veuillez choisir une direction-") %>
+						</div>
+					</p>
+					
+					<p>
+						<div id= "workshop">
+						<%= label_tag 'Atelier' %><br />
+						<%= select_tag "workshop_name", options_for_select(["-Veuillez choisir un atelier-"], "-Veuillez choisir un atelier-") %>
+						</div>
+					</p>
+					
+					<p>
+						<div id= "section">
+						<%= label_tag 'Section' %><br />
+						<%= select_tag "section_name", options_for_select(["-Veuillez choisir une section-"], "-Veuillez choisir une section-") %>
+						</div>
+					</p>
+					
+					<p>
+						<div id= "line">
+						<%= label_tag 'Ligne' %><br />
+						<%= select_tag "line_name", options_for_select(["-Veuillez choisir une ligne-"], "-Veuillez choisir une ligne-") %>
+						</div>
+					</p>
+					
+					<p>
+						<div id= "team">
+						<%= label_tag 'Equipe' %><br />
+						<%= select_tag "team_name", options_for_select([ "-Veuillez choisir une équipe-"], "-Veuillez choisir une équipe-") %>
+						</div>
+					</p>
+									 
+					<div id = "valeur"><div id = "space"><%= label_tag "Veuillez entrer la valeur" %><br />
+					<%= text_field_tag 'valeur', '' %></div></div>
+					
+					<br />
+  				<%= submit_tag "Enregistrer", :class => 'submit button large ui-corner-all' %>
+					
+				<% end %>				
+			</div>
+		</div>
+	</div>
+</div>

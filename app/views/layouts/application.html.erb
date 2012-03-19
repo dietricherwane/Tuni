@@ -3,7 +3,7 @@
 <head>
 	<title>Interface d'administration</title>
   <%= stylesheet_link_tag 'reset-min', 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'jquery.bubblepopup.v2.3.1', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
-  <%= javascript_include_tag 'rails', 'jquery.js', 'jquery.bubblepopup.v2.3.1.min', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js' %>
+  <%= javascript_include_tag 'jquery.js', 'jquery.bubblepopup.v2.3.1.min', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js' %>
 </head>
 
 <body>	
@@ -35,7 +35,7 @@
             	<ul class="topnav">
             		<% if user_signed_in? %>
                     <li><%= link_to "Dashboard", dashboard_path, :id => "menu-dashboard" %></li>
-                    <!--<li><a href="page.html" id="menu-page">Sample Page</a></li>
+                    <li><%= link_to "Création DAE", dae_path, :id => "menu-page" %></li><!--
                     <li><a href="assets.html" id="menu-asset">Assets</a></li>
                     <li id="active-item"><a href="events.html" id="menu-event">Events</a></li>
                     <li><%= link_to "Rapports", '#', :id => "menu-report" %>

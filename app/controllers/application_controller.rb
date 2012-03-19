@@ -13,4 +13,37 @@ class ApplicationController < ActionController::Base
 		end
   end
   
+  def translate_status(original_status, direction_name, workshop_name, team_name)
+  	@status_number = 0
+  	@status_name = Status.find_by_id(original_status).status_name
+  	case @status_name
+  	when "Chef de direction"
+  		@status_number = Direction.find_by_direction_name(direction_name).id
+  	when "Chef d'atelier"
+  		@status_number = Workshop.find_by_workshop_name(workshop_name).id
+  	when "Chef d'équipe"
+  		@status_number = Team.find_by_team_name(team_name).id
+  	end
+  	@status_number
+  end
+  
+  def user_enabled?
+  
+  end
+  
+  def logout_disabled_user
+   unless current_user.user_enabled?(current_user)
+   	 sign_out(current_user)
+   	 redirect_to sign_in_path, :notice => "Votre compte a été désactivé, veuillez contacter l'administrateur."
+   end
+  end  
+  
+  def capitalization(raw_name)
+  	@name_capitalized = ''
+  	raw_name.split.each do |name|
+  		@name_capitalized << "#{name.capitalize} "
+  	end
+  	@name_capitalized.strip
+  end
+  
 end

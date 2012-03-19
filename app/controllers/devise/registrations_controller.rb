@@ -2,8 +2,8 @@
 class Devise::RegistrationsController < ApplicationController
   #prepend_before_filter :require_no_authentication, :only => [ :new, :create, :cancel ]
   #prepend_before_filter :authenticate_scope!, :only => [:edit, :update, :destroy]
-  #before_filter :change_password
   include Devise::Controllers::InternalHelpers
+  before_filter :logout_disabled_user
   
   # GET /resource/sign_up
   def new
@@ -15,7 +15,7 @@ class Devise::RegistrationsController < ApplicationController
     	#redirect_to new_user_session_path, :alert => "Veuillez d'abord vous connecter."
     #end
   end
-
+  
   # POST /resource
   def create
     build_resource
@@ -60,7 +60,7 @@ class Devise::RegistrationsController < ApplicationController
   def edit
     render_with_scope :edit
   end
-
+  
   # PUT /resource
   # We need to use a copy of the resource because we don't want to change
   # the current user in place.
@@ -113,6 +113,16 @@ class Devise::RegistrationsController < ApplicationController
   	render :text => @workshops_options
   end
   
+  def get_sections
+  	@selected_workshop = params.first.first
+  	@sections_options = "<option>-Veuillez choisir une section-</option>"
+		@sections = Workshop.find_by_workshop_name(@selected_workshop).sections
+		@sections.each do |section|
+			@sections_options << "<option>#{section.section_name}</option>"
+		end
+  	render :text => @sections_options
+  end
+  
   def get_teams
   	@selected_workshop = params.first.first
   	@teams_options = "<option>-Veuillez choisir une équipe-</option>"
@@ -123,27 +133,7 @@ class Devise::RegistrationsController < ApplicationController
   	render :text => @teams_options
   end
   
-  def translate_status(original_status, direction_name, workshop_name, team_name)
-  	@status_number = 0
-  	@status_name = Status.find_by_id(original_status).status_name
-  	case @status_name
-  	when "Chef de direction"
-  		@status_number = Direction.find_by_direction_name(direction_name).id
-  	when "Chef d'atelier"
-  		@status_number = Workshop.find_by_workshop_name(workshop_name).id
-  	when "Chef d'équipe"
-  		@status_number = Team.find_by_team_name(team_name).id
-  	end
-  	@status_number
-  end
   
-  def capitalization(raw_name)
-  	@name_capitalized = ''
-  	raw_name.split.each do |name|
-  		@name_capitalized << "#{name.capitalize} "
-  	end
-  	@name_capitalized.strip
-  end
 
   protected
 

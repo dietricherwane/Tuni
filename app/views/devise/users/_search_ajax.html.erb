@@ -53,7 +53,7 @@ $(document).ready(function(){
 			</td>
 			
 			<% unless r.user_enabled?(r) %>
-				<td class = "ui-widget-content"><span class="button submit medium orange-back fixed-width-100 ui-corner-all">Désactivé</span></td>
+				<td class = "ui-widget-content"><span class="button submit medium orange-back fixed-width-100 ui-corner-all">Inactif</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>
 			<% else %>
 				<% if r.account_enabled?(r) %>
 					<td class = "ui-widget-content"><span class="button submit medium green-back fixed-width-100 ui-corner-all">Activé</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>
@@ -63,12 +63,16 @@ $(document).ready(function(){
 			<% end %>
 			
 			<td class = "ui-widget-content"><%= r.status(r) %></td>
-			<td class = "ui-widget-content"><%= link_to "Editer", edit_user_registration_path(r.id), :class => "edit-record" %></td>
+			<td class = "ui-widget-content"><%= link_to "Editer", edit_user_path(r.id), :class => "edit-record" %></td>
 			<% if r.account_enabled?(r) %>
-				<% if r.user_enabled?(r) %>
-					<td class = "ui-widget-content"><%= link_to "Désactiver", disable_user_path(r.id), :class => "delete-record" %></td>
+				<% if r.id == current_user.id %>
+					<td class = "ui-widget-content"></td>
 				<% else %>
-					<td class = "ui-widget-content"><%= link_to "Activer", enable_user_path(r.id), :class => "preview-record" %></td>
+					<% if r.user_enabled?(r) %>
+						<td class = "ui-widget-content"><%= link_to "Désactiver", disable_user_path(r.id), :class => "delete-record" %></td>
+					<% else %>
+						<td class = "ui-widget-content"><%= link_to "Activer", enable_user_path(r.id), :class => "preview-record" %></td>
+					<% end %>
 				<% end %>
 			<% else %>
       	<td class = "ui-widget-content"><%= link_to "Effacer", delete_user_path(r.id), :confirm => "Are you sure?", :class => "delete-record" %></td>
@@ -82,7 +86,7 @@ $(document).ready(function(){
 	</tbody>
 </table>
 
-	<div id="pagination">
+	<!--<div id="pagination">
 		<%= will_paginate @users %>
-	</div>
+	</div>-->
 

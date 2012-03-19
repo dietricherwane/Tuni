@@ -1,0 +1,242 @@
+<%#= devise_error_messages! %>
+<script type="text/javascript" language="JavaScript">
+$(document).ready(function() {
+		//write a better function for hideAll
+  	$(function(){
+  		hideAll();
+  		search_ajax_on_load();
+		});
+		
+    $("#post_status_id").change(function() {
+    	selected_status = this.options[this.selectedIndex].text;
+    	switch(selected_status){
+    		case "-Veuillez choisir un statut-":
+    			hideAll("slow");
+  				break;
+				case "Administrateur":
+					hideAll("slow");
+  				break;
+				case "Chef de direction":					
+  				$(this).populateDirection(selected_status);
+  				showDirection("slow");
+  				break;
+  			case "Chef d'atelier":
+  				$(this).populateDirection(selected_status);
+  				showDirection("slow");
+  				break;
+  			case "Chef d'équipe":
+  				$(this).populateDirection(selected_status);
+  				showDirection("slow");
+  				break;
+				default:
+  				alert("none");
+			}    	
+    });
+    
+    $("#direction_name").change(function() {
+    	selected_status = $(this).getSelectValue('post_status_id');
+    	selected_direction = this.options[this.selectedIndex].text; 
+	  	switch(selected_status){
+				case "Chef de direction":
+					break;
+				case "Chef d'atelier":
+					pleaseSelectDirection(selected_direction);
+					break;
+				case "Chef d'équipe":
+					pleaseSelectDirection(selected_direction);
+					break;
+				default:
+					alert("none");
+			}
+    });
+    
+    $("#workshop_name").change(function() {
+    	selected_workshop = this.options[this.selectedIndex].text;
+    	selected_status = $(this).getSelectValue('post_status_id'); 
+    	if (selected_workshop == "-Veuillez choisir un atelier-"){
+    		$("#team").hide("slow");
+    	}
+    	if ((selected_workshop != "-Veuillez choisir un atelier-") && (selected_status == "Chef d'équipe")){
+		  	$(this).getComboBoxValues(selected_workshop, "#team_name", "<%= url_for :action => 'get_teams', :controller => 'registrations' %>");
+		  	$("#team").show("slow");
+		  }
+    });
+    	
+		$(".radio_button").change(function() {
+      $(this).search_ajax();
+    });
+    
+    $("#search").keyup(function() { 
+      $(this).search_ajax();    
+    });
+    
+    $.fn.search_ajax = function() { 
+      //$("#loader").show(); 
+      var v_search = $('#search').val();  
+      var v_status = $("input[name='status']:checked").val()            
+      $.ajax({   
+        url: "<%= url_for :action => 'search_ajax', :controller => 'users' %>",
+	      type: "GET",
+        data: {query: v_search, status: v_status},
+        error: function(){ 
+        	alert("error");
+          //$("#loader").hide();
+        },
+        success: function(response, response_status, xhr) {
+          $("#result").html(response);
+          //$("#loader").hide();         
+        }
+      });  
+    }
+        
+    $.fn.getComboBoxValues = function(selected_value, target_tag, url) {
+      $.ajax({      
+        url: url,
+        data: selected_value,
+        dataType: "text",
+        error: function(){ alert("error"); },
+        success: function(response, response_status, xhr) {
+          $(target_tag).children().remove();
+          $(response).appendTo(target_tag);        
+        }
+      });
+    } 
+     
+    $.fn.getSelectValue = function(selectId) {
+     	var selectElmt = document.getElementById(selectId);
+			return selectElmt.options[selectElmt.selectedIndex].text;
+    }
+    
+    $.fn.populateDirection = function(selected_status) {
+			$(this).getComboBoxValues(selected_status, "#direction_name", "<%= url_for :action => 'get_directions', :controller => 'registrations' %>");
+    }
+    
+    function pleaseSelectDirection(selected_direction){
+    	if (selected_direction == "-Veuillez choisir une direction-"){
+    		$("#team").hide("slow");
+				$("#workshop").hide("slow");
+			}
+			else {
+				$(this).getComboBoxValues(selected_direction, "#workshop_name", "<%= url_for :action => 'get_workshops', :controller => 'registrations' %>");
+				showWorkshop("slow");
+			}
+    }
+        
+    function hideAll(slow){ 
+  		$("#team").hide(slow);
+    	$("#workshop").hide(slow);
+    	$("#direction").hide(slow);
+		} 
+		
+		function showDirection(slow){ 
+  		$("#team").hide(slow);
+    	$("#workshop").hide(slow);
+    	$("#direction").show(slow);
+		}
+		
+		function showWorkshop(slow){ 
+  		$("#team").hide(slow);
+    	$("#workshop").show(slow);
+    	$("#direction").show(slow);
+		}
+		
+		function search_ajax_on_load() { 
+      //$("#loader").show(); 
+      var v_search = $('#search').val();  
+      var v_status = $("input[name='status']:checked").val()            
+      $.ajax({   
+        url: "<%= url_for :action => 'search_ajax', :controller => 'users' %>",
+	      type: "GET",
+        data: {query: v_search, status: v_status},
+        error: function(){ 
+        	alert("error");
+          //$("#loader").hide();
+        },
+        success: function(response, response_status, xhr) {
+          $("#result").html(response);
+          //$("#loader").hide();         
+        }
+      });  
+    }
+		
+});
+</script>
+
+<h2 class="top-title">Utilisateurs</h2>
+<br />
+<div class="column">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Création</div>
+    	<div class="portlet-content">
+<%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => @method }) do |f| %>
+  <%#= devise_error_messages! %>
+  
+  <div id= "space"><%= f.label 'Nom' %><br />
+  <%= f.text_field :firstname %></div>
+  
+  <div id= "space"><%= f.label 'Prénoms' %><br />
+  <%= f.text_field :lastname %></div>
+  
+  <p> 
+  	<%= f.label 'Statut' %><br />   
+    <%= collection_select(:post, :status_id, @statuses, :id, :status_name, options ={:prompt => "-Veuillez choisir un statut-"}) %>
+  </p>
+  <p>
+  	<div id= "direction">
+  	<%= f.label 'Direction' %><br />
+  	<%= select_tag "direction_name", options_for_select(["-Veuillez choisir une direction-"], "-Veuillez choisir une direction-") %>
+  	</div>
+  </p>
+  <p>
+  	<div id= "workshop">
+  	<%= f.label 'Atelier' %><br />
+  	<%= select_tag "workshop_name", options_for_select(["-Veuillez choisir un atelier-"], "-Veuillez choisir un atelier-") %>
+  	</div>
+  </p>
+  <p>
+  	<div id= "team">
+  	<%= f.label 'Equipe' %><br />
+  	<%= select_tag "team_name", options_for_select([ "-Veuillez choisir une équipe-"], "-Veuillez choisir une équipe-") %>
+  	</div>
+  </p>
+  <div id= "space"><%= f.label 'Numéro fixe' %><br />
+  <%= f.text_field :phone_number %></div>
+  
+  <div id= "space"><%= f.label 'Numéro mobile' %><br />
+  <%= f.text_field :mobile_number %></div>
+
+  <div id= "space"><%= f.label 'Email' %><br />
+  <%= f.email_field :email %></div>
+
+  <div id= "space"><%= f.label 'Mot de passe' %><br />
+  <%= f.password_field :password %></div>
+
+  <div id= "space"><%= f.label 'Confirmation du mot de passe' %><br />
+  <%= f.password_field :password_confirmation %></div>
+	<br />
+  <div><%= f.submit "Enregistrer", :class => 'submit button large ui-corner-all' %></div>
+<% end %>
+		</div>
+	</div>
+</div>
+
+<div class="column_large">
+ 	<div class="portlet" id="widget-2">
+		<div class="portlet-header">Gestion</div>
+		<div class="portlet-content">
+  		<div id="filter-panel" class="ui-corner-all ui-widget-content">
+  			<div class="radio_button">
+		      <label>Tous</label>&nbsp;&nbsp;<%= radio_button_tag 'status', 'all', { :checked => true } %> 
+		  		<label>Activés</label>&nbsp;&nbsp;<%= radio_button_tag 'status', 'enabled' %> 
+		  		<label>En attente</label>&nbsp;&nbsp;<%= radio_button_tag 'status', 'disabled' %> 
+		  		<label>Recherche: </label><%= text_field_tag("search", '', :autocomplete => 'off') %>
+    		</div>
+      </div>
+      <br /><br /><br />
+			<div id="result">
+		
+			</div>
+		</div>		
+	</div>
+</div>
+<%#= render :partial => "devise/shared/links" %>

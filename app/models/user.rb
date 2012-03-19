@@ -20,7 +20,7 @@ class User < ActiveRecord::Base
 
 	def full_name(current_user)
 		@status_name = status(current_user)
-		"#{lastname} #{firstname} [#{@status_name}]"
+		"#{firstname} #{lastname} [#{@status_name}]"
 	end
 	
 	def status(current_user)

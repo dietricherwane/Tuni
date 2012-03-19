@@ -69,7 +69,7 @@ $(document).ready(function() {
     $("#search").keyup(function() { 
       $(this).search_ajax();    
     });
-    
+        
     $.fn.search_ajax = function() { 
       //$("#loader").show(); 
       var v_search = $('#search').val();  
@@ -84,6 +84,25 @@ $(document).ready(function() {
         },
         success: function(response, response_status, xhr) {
           $("#result").html(response);
+          //$("#loader").hide();         
+        }
+      });  
+    }
+    
+    $.fn.search_user = function(destination_url) { 
+      //$("#loader").show(); 
+      var v_search = $('#search').val();  
+      var v_status = $("input[name='status']:checked").val()            
+      $.ajax({   
+        url: destination_url,
+	      type: "GET",
+        data: {query: v_search, status: v_status},
+        error: function(){ 
+        	alert("error");
+          //$("#loader").hide();
+        },
+        success: function(response, response_status, xhr) {
+          //$("#result").html(response);
           //$("#loader").hide();         
         }
       });  
@@ -171,10 +190,10 @@ $(document).ready(function() {
 <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
   <%#= devise_error_messages! %>
   
-  <div><%= f.label 'Nom' %><br />
+  <div id= "space"><%= f.label 'Nom' %><br />
   <%= f.text_field :firstname %></div>
   
-  <div><%= f.label 'Prénoms' %><br />
+  <div id= "space"><%= f.label 'Prénoms' %><br />
   <%= f.text_field :lastname %></div>
   
   <p> 
@@ -199,19 +218,19 @@ $(document).ready(function() {
   	<%= select_tag "team_name", options_for_select([ "-Veuillez choisir une équipe-"], "-Veuillez choisir une équipe-") %>
   	</div>
   </p>
-  <div><%= f.label 'Numéro fixe' %><br />
+  <div id= "space"><%= f.label 'Numéro fixe' %><br />
   <%= f.text_field :phone_number %></div>
   
-  <div><%= f.label 'Numéro mobile' %><br />
+  <div id= "space"><%= f.label 'Numéro mobile' %><br />
   <%= f.text_field :mobile_number %></div>
 
-  <div><%= f.label :email %><br />
+  <div id= "space"><%= f.label 'Email' %><br />
   <%= f.email_field :email %></div>
 
-  <div><%= f.label 'Mot de passe' %><br />
+  <div id= "space"><%= f.label 'Mot de passe' %><br />
   <%= f.password_field :password %></div>
 
-  <div><%= f.label 'Confirmation du mot de passe' %><br />
+  <div id= "space"><%= f.label 'Confirmation du mot de passe' %><br />
   <%= f.password_field :password_confirmation %></div>
 	<br />
   <div><%= f.submit "Enregistrer", :class => 'submit button large ui-corner-all' %></div>

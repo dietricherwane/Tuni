@@ -1,0 +1,88 @@
+<script type="text/javascript">
+$(document).ready(function(){
+		$('.link').CreateBubblePopup({
+									position : 'top',
+									align	 : 'center',									
+									innerHtml: 'Take a look to the HTML source of this page <br /> \
+												to learn how the plugin works!',
+
+									innerHtmlStyle: {
+														color:'#FFFFFF', 
+														'text-align':'center'
+													},
+																		
+									themeName: 	'all-grey',
+									themePath: 	'images/jquerybubblepopup-theme'								 
+								});
+});
+</script>
+
+<table class="list-table">
+	<thead class = "ui-widget-header ui-corner-all">
+		<tr>
+			<th width="25%">Nom</th>
+		  <th>Statut</th>
+		  <th>Compte</th>
+		  <th colspan="2">Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+<% if @users.nil? or @users.empty? %>
+
+	<tr>
+  	<td class = "ui-widget-content">Pas de résultat</td>
+		<td class = "ui-widget-content"></td>
+		<td class = "ui-widget-content"></td>
+		<td class = "ui-widget-content"></td>
+  </tr>
+<% else %>
+	<% @users.each do |r| %>
+		<script type="text/javascript">
+			$('#mybutton').CreateBubblePopup({ innerHtml: 'this is a text!' });
+		</script>
+		<% if @tr_color %>
+			<tr class = "odd">
+		<% else %>
+			<tr>
+		<% end %>
+			<td class = "ui-widget-content">
+				<%= div_for r do %>
+					<%= r.firstname+" "+r.lastname %>
+				<% end %>
+				<br /> <%= r.mobile_number %> | <%= r.phone_number %>
+			</td>
+			
+			<% unless r.user_enabled?(r) %>
+				<td class = "ui-widget-content"><span class="button submit medium orange-back fixed-width-100 ui-corner-all">Inactif</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>
+			<% else %>
+				<% if r.account_enabled?(r) %>
+					<td class = "ui-widget-content"><span class="button submit medium green-back fixed-width-100 ui-corner-all">Activé</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>
+				<% else %>
+					<td class = "ui-widget-content"><span class="button submit medium grey-back fixed-width-100 ui-corner-all">En attente</span><br /> <%= r.created_at.strftime("%d-%m-%Y %H:%M") %></td>
+				<% end %>
+			<% end %>
+			
+			<td class = "ui-widget-content"><%= r.status(r) %></td>
+			<td class = "ui-widget-content"><%= link_to "Editer", edit_user_path(r.id), :class => "edit-record" %></td>
+			<% if r.account_enabled?(r) %>
+				<% if r.user_enabled?(r) %>
+					<td class = "ui-widget-content"><%= link_to "Désactiver", disable_user_path(r.id), :class => "delete-record" %></td>
+				<% else %>
+					<td class = "ui-widget-content"><%= link_to "Activer", enable_user_path(r.id), :class => "preview-record" %></td>
+				<% end %>
+			<% else %>
+      	<td class = "ui-widget-content"><%= link_to "Effacer", delete_user_path(r.id), :confirm => "Are you sure?", :class => "delete-record" %></td>
+      <% end %>
+		</tr>
+		<% @tab_color = !@tab_color %>			
+	<% end %>
+  
+
+<% end %>
+	</tbody>
+</table>
+
+	<div id="pagination">
+		<%= will_paginate @users %>
+	</div>
+

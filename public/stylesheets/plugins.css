@@ -64,7 +64,7 @@ textarea.uniform, input[type=text], input[type=email], input[type=password] {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: normal;
   /*padding: 3px;*/
-  margin-bottom:10px;
+  /*margin-bottom:30px;*/
   color: #111;
   background: url('../images/structure/bg-input-focus.png') repeat-x 0px 0px;
   background: url('../images/structure/bg-input.png') repeat-x 0px 0px;
@@ -76,6 +76,10 @@ textarea.uniform, input[type=text], input[type=email], input[type=password] {
   -moz-border-radius: 3px;
   border-radius: 3px;
   outline: 0;
+}
+
+#space{
+	margin-bottom:10px;
 }
 
 #search {

@@ -6,19 +6,27 @@ Tuni::Application.routes.draw do
 	root :to => "fake#index"
 	devise_scope :user do
 		match 'users/search_ajax' => 'devise/users#search_ajax'
+		match 'users/search' => 'devise/users#search'
+		match 'users/dae' => 'devise/users#dae', :as => :dae
+		match 'users/create_dae' => 'devise/users#create_dae', :as => :create_dae
 		match 'users/sign_up' => 'devise/registrations#new', :as => :dashboard
 		#root :to => "devise/registrations#new"
-		match '/users/sign_in' => 'devise/sessions#new'
+		match '/users/sign_in' => 'devise/sessions#new', :as => :sign_in
 		match 'users/sign_out' => 'devise/sessions#destroy'
 		match 'users/sign_up' => 'devise/registrations#new', :as => :dashboard
 		match 'users/sign_up' => 'devise/registrations#new', :as => :dashboard_administrator
     match 'users/get_directions' => 'devise/registrations#get_directions'
     match 'users/get_workshops' => 'devise/registrations#get_workshops'
+    match 'users/get_sections' => 'devise/registrations#get_sections'
     match 'users/get_teams' => 'devise/registrations#get_teams'
     match '/users/enable_user' => 'devise/users#enable_user', :as => :enable_user
     match '/users/disable_user' => 'devise/users#disable_user', :as => :disable_user
-    match '/users/delete_user' => 'devise/users#delete_user', :as => :delete_user
+    match '/users/delete_user' => 'devise/users#delete_user', :as => :delete_user   
+    match 'user/edit' => 'devise/users#edit', :as => :edit_user
+  	match 'user/update' => 'devise/users#update', :as => :update_user
   end
+  
+  
   
 
   #devise_for :users

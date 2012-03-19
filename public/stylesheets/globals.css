@@ -794,3 +794,12 @@ hr{
 }
 /*******************************************/
 
+.field_with_errors {
+  border-bottom: 3px #de7a7b solid;
+  border-top: 3px #de7a7b solid;
+  display: table;
+}
+
+
+
+

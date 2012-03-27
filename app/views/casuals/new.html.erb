@@ -100,7 +100,8 @@ $(document).ready(function() {
   		<table class="list-table">
 				<thead class = "ui-widget-header ui-corner-all">
 					<tr>
-						<th width="14%">Matricule</th>
+						<!--<th width="14%">Matricule</th>-->
+						<th width="14%">Atelier</th>
 						<th width="14%">Nom</th>
 						<th width="14%">Prénoms</th>
 						<th>Compagnie</th>
@@ -122,7 +123,8 @@ $(document).ready(function() {
 								<tr>
 							<% end %>
 								<td class = "ui-widget-content">
-										<%= casual.identifier %>
+										<%= Workshop.find_by_id(casual.workshop_id).workshop_name %>
+										<%#= casual.identifier %>
 								</td>
 								<td class = "ui-widget-content">
 									<%= casual.firstname %>

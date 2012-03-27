@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  firstname: MyString
+  lastname: MyString
+  birthdate: 2012-03-25
+  identifier: MyString
+  months_done: 1
+  expired: false
+  retired_from_ticking: false
+
+two:
+  firstname: MyString
+  lastname: MyString
+  birthdate: 2012-03-25
+  identifier: MyString
+  months_done: 1
+  expired: false
+  retired_from_ticking: false

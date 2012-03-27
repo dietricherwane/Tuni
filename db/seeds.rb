@@ -8,6 +8,12 @@
 #   Mayor.create(:name => 'Daley', :city => cities.first)
 	Status.create([{ :status_name => 'Administrateur' }, { :status_name => 'Chef de direction' }, { :status_name => "Chef d'atelier" }, {:status_name => "Chef d'équipe"}])
 	
+	Company.create([{:company_name => "RMO"}, {:company_name => "ECO-CI"}])
+	
+	City.create([{:city_name => "Yopougon", :short_name => "YOP"}, {:city_name => "Zikisso", :short_name => "ZIK"}])
+	
+	CasualType.create([{:type_name => "Cariste", :prime => 633, :hourly_rate => 570, :months_number => 6, :max_months_number => 24, :delay_before_return => 6}, {:type_name => "Normal", :prime => 633, :hourly_rate => 473, :months_number => 3, :max_months_number => 24, :delay_before_return => 3}])
+	
 	Direction.create([{ :direction_name => 'Food' }, { :direction_name => 'HPC' }, { :direction_name => 'Planning' }, { :direction_name => 'Qualité' }, {:direction_name => "SAPROCSY"}])
 	
 #testing purpose only

@@ -11,6 +11,18 @@
 label{
 	font-weight:bold;
 }
+
+#casual_birthdate_1i{
+	width:70px;
+}
+
+#casual_birthdate_2i{
+	width:50px;
+}
+
+#casual_birthdate_3i{
+	width:50px;
+}
  /*****Custom*****/
 
 /********* GLOBAL SETTINGS **********/
@@ -114,9 +126,16 @@ body{
 #top-toolbox{
 	float:right;
 	height:30px; 
-	margin:2px 10px 0px 0px;
+	margin:-7px 10px 0px 0px;
 	
 }
+
+/*#top-toolbox{
+	float:right;
+	height:30px; 
+	margin:2px 10px 0px 0px;
+	
+}*/
 
 #top-toolbox li {
 	float:left;
@@ -215,6 +234,10 @@ ul.topnav li a#menu-dashboard{
 ul.topnav li a#menu-page{
 	background-image:url('../images/icons/menu/page.png');
 }
+
+ul.topnav li a#menu-settings{
+		background-image:url('../images/icons/settings.png');
+	}
 
 ul.topnav li a#menu-asset{
 	background-image:url('../images/icons/menu/asset.png');
@@ -538,12 +561,21 @@ button.submit.round, input.submit.round, .button.submit.round {
 }
 .list-table th, .mini-.list-table th {
 	color:#DDD;
-	padding:8px; 
+	padding:3px;
 	text-align:left; 
 	font-weight:bold;
 	color:#FFF;
 	border-right:solid 1px #e1e1e1;
 }
+
+/*.list-table th, .mini-.list-table th {
+	color:#DDD;
+	padding:8px;
+	text-align:left; 
+	font-weight:bold;
+	color:#FFF;
+	border-right:solid 1px #e1e1e1;
+}*/
 
 .list-table td {
 	padding:10px; 
@@ -740,6 +772,36 @@ a.file-link.list-file{
 }
 /*******************************************/
 
+/****** IMAGES FOR VARIOUS FILE TYPES ******/
+.direction{
+	background-repeat:no-repeat;
+	background-position:left;
+	padding-left:20px;
+	color:#111;
+	font-size:0.9em;
+	text-decoration:none;
+}
+
+.direction.dir{
+	background-image:url('../images/icons/directions/direction.png');
+}
+
+.direction.workshop{
+	background-image:url('../images/icons/directions/workshop.png');
+}
+
+.direction.team{
+	background-image:url('../images/icons/directions/team.png');
+}
+
+.direction.section{
+	background-image:url('../images/icons/directions/section.png');
+}
+
+.direction.line{
+	background-image:url('../images/icons/directions/line.png');
+}
+/*******************************************/
 
 /******************* MISC. ******************/
 .black{

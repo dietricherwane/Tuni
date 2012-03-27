@@ -1,3 +1,4 @@
+<%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
 <script type="text/javascript" language="JavaScript">
 $(document).ready(function() {
 		//write a better function for hideAll
@@ -231,6 +232,14 @@ $(document).ready(function() {
     	$("#direction").show(slow);  		
 		}
 		
+		$(function(){				
+			$('#collapser').jqcollapse({
+			   slide: true,
+			   speed: 1000,
+			   easing: 'easeOutCubic'
+			});				
+		});
+		
 });
 </script>
 
@@ -287,6 +296,64 @@ $(document).ready(function() {
 					
 				<% end %>				
 			</div>
-		</div>
 	</div>
 </div>
+
+<div class="column_right">
+	<div class="portlet" id="widget-2">
+    <div class="portlet-header">Visualisation</div>
+    	<div class="portlet-content">    				
+				<ul id="collapser">
+					<% @directions.each do |direction| %>
+						<li><div class = "direction dir" style = "font-weight: bold;"><%= direction.direction_name %></div>
+							<% unless direction.workshops.eql?(nil) %>
+								<ul>
+									<% direction.workshops.each do |workshop| %>
+										<li>
+											<div class = "direction workshop" style = "font-weight: bold;"><%= workshop.workshop_name %></div>
+												<ul>
+													<li>Equipes
+														<ul>
+															<% unless workshop.teams.eql?(nil) %>												
+																<% workshop.teams.each do |team| %>
+																	<li>
+																		<div class = "direction team" style = "font-weight: bold;"><%= team.team_name %></div>
+																	</li>
+																<% end %>												
+															<% end %>															
+														</ul>
+													</li>
+													<li>Sections
+														<ul>
+															<% unless workshop.sections.eql?(nil) %>												
+																<% workshop.sections.each do |section| %>
+																	<li><div class = "direction section" style = "font-weight: bold;"><%= section.section_name %></div>
+																		<ul>
+																			<% unless section.lines.eql?(nil) %>
+																				<% section.lines.each do |line| %>
+																					<li>
+																						<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %></div>
+																					</li>
+																				<% end %>
+																			<% end %>
+																		</ul>
+																	</li>
+																<% end %>												
+															<% end %>
+														</ul>
+													</li>
+												</ul>
+										</li>
+									<% end %>
+								</ul>
+							<% end %>
+						</li>
+					<% end %>
+				</ul>
+			</div>
+	</div>
+</div>
+
+
+
+

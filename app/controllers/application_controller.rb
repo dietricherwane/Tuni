@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
 				redirect_to new_user_password_path
 			end
 			if (current_user.sign_in_count.eql?(1) && (current_user.reset_password_token != nil))
-				redirect_to new_user_session_path, :alert => "Un email vient de vous être envoyé avec un lien pour changer votre mot de passe."
+				redirect_to new_user_session_path, :notice => "Un email vient de vous être envoyé avec un lien pour changer votre mot de passe."
 			end
 		end
   end
@@ -32,10 +32,15 @@ class ApplicationController < ActionController::Base
   end
   
   def logout_disabled_user
-   unless current_user.user_enabled?(current_user)
-   	 sign_out(current_user)
-   	 redirect_to sign_in_path, :notice => "Votre compte a été désactivé, veuillez contacter l'administrateur."
-   end
+    if current_user.eql?(nil)
+    	sign_out(current_user)
+   	  redirect_to sign_in_path, :notice => "Veuillez d'abord vous connecter."
+   	else
+		  unless current_user.user_enabled?(current_user)
+		 	  sign_out(current_user)
+		 	  redirect_to sign_in_path, :notice => "Votre compte a été désactivé, veuillez contacter l'administrateur."
+		  end
+		end
   end  
   
   def capitalization(raw_name)

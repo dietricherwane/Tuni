@@ -1,0 +1,153 @@
+<script type="text/javascript" language="JavaScript">
+$(document).ready(function() {
+		//write a better function for hideAll
+  	$(function(){
+  		hideAll();
+		});
+    
+    $("#post_direction_id").change(function() {
+    	selected_direction = this.options[this.selectedIndex].text; 
+			pleaseSelectDirection(selected_direction);
+    });
+     
+    $.fn.getComboBoxValues = function(selected_value, target_tag, url) {
+      $.ajax({      
+        url: url,
+        data: selected_value,
+        dataType: "text",
+        error: function(){ alert("error"); },
+        success: function(response, response_status, xhr) {
+          $(target_tag).children().remove();
+          $(response).appendTo(target_tag);        
+        }
+      });
+    } 
+       
+    function pleaseSelectDirection(selected_direction){
+    	if (selected_direction == "-Veuillez choisir une direction-"){
+				$("#workshop").hide("slow");
+			}
+			else {
+				$(this).getComboBoxValues(selected_direction, "#workshop_name", "<%= url_for :action => 'get_workshops', :controller => 'devise/registrations' %>");
+				showWorkshop("slow");
+			}
+    }
+        
+		function showWorkshop(slow){ 
+    	$("#workshop").show(slow);
+		}
+		
+		function hideAll(slow){ 
+    	$("#workshop").hide(slow);
+		} 
+		
+});
+</script>
+
+<h2 class="top-title">Temporaires</h2><br />
+
+<div class="column">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Création</div>
+    	<div class="portlet-content">
+				<%= form_for(@casual, :url => create_casual_path) do |f| %>
+
+					<div id= "space"><%= f.label 'Nom' %><br />
+					<%= f.text_field :firstname %></div>
+		
+					<div id= "space"><%= f.label 'Prénoms' %><br />
+					<%= f.text_field :lastname  %></div>
+		
+					<div id= "space"><%= f.label 'Date de naissance' %><br />
+					<%= f.date_select :birthdate, :start_year => (Time.now.year - 80), :use_month_numbers => true %></div>
+		
+					<div id= "space"><%= f.label "Numéro d'extrait de naissance" %><br />
+					<%= f.text_field :identifier  %></div>
+					
+					<div id= "space"><%= f.label "Ville de naissance" %><br />
+					<%= collection_select(:post, :city_id, @cities, :id, :city_name, options ={:prompt => "-Ville de naissance-"}) %></div>
+					
+					<div id= "space"><%= f.label "Compagnie" %><br />
+					<%= collection_select(:post, :company_id, @companies, :id, :company_name, options ={:prompt => "-Compagnie-"}) %></div>
+					
+					<div id= "space"><%= f.label "Type de temporaire" %><br />
+					<%= collection_select(:post, :casual_type_id, @casual_types, :id, :type_name, options ={:prompt => "-Type de temporaire-"}) %></div>
+					
+					<p>
+						<div id= "direction">
+						<%= f.label 'Direction' %><br />
+						<%= collection_select(:post, :direction_id, @directions, :id, :direction_name, options ={:prompt => "-Veuillez choisir une direction-"}) %>
+						</div>
+					</p>
+					<p>
+						<div id= "workshop">
+						<%= f.label 'Atelier' %><br />
+						<%= select_tag "workshop_name", options_for_select(["-Veuillez choisir un atelier-"], "-Veuillez choisir un atelier-") %>
+						</div>
+					</p>					
+					<br />
+  				<%= f.submit "Enregistrer", :class => 'submit button large ui-corner-all' %>
+
+				<% end %>
+			</div>
+		</div>
+	</div>
+
+<div class="column_large">
+ 	<div class="portlet" id="widget-2">
+		<div class="portlet-header">Visualisation</div>
+		<div class="portlet-content">
+  		<table class="list-table">
+				<thead class = "ui-widget-header ui-corner-all">
+					<tr>
+						<th width="14%">Matricule</th>
+						<th width="14%">Nom</th>
+						<th width="14%">Prénoms</th>
+						<th>Compagnie</th>
+						<th>Type</th>
+						<th>Date d'entrée</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% if @casuals.nil? or @casuals.empty? %>
+						<tr>
+							<td class = "ui-widget-content">Pas de résultat</td>
+							<td class = "ui-widget-content"></td>
+						</tr>
+					<% else %>
+						<% @casuals.each do |casual| %>
+							<% if @tr_color %>
+								<tr class = "odd">
+							<% else %>
+								<tr>
+							<% end %>
+								<td class = "ui-widget-content">
+										<%= casual.identifier %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= casual.firstname %>
+								</td>	
+								<td class = "ui-widget-content">
+										<%= casual.lastname %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= Company.find_by_id(casual.company_id).company_name %>
+								</td>	
+								<td class = "ui-widget-content">
+										<%= CasualType.find_by_id(casual.casual_type_id).type_name %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>
+								</td>			
+							</tr>
+							<% @tab_color = !@tab_color %>			
+						<% end %>
+					<% end %>
+				</tbody>
+			</table>
+			<div id="pagination">
+				<%= will_paginate @casuals %>
+			</div>
+		</div>		
+	</div>
+</div>

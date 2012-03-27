@@ -4,15 +4,14 @@ class Devise::UsersController < Devise::RegistrationsController
 	def search_ajax
 		@params = params[:query].strip.split
     @searched_fields = ["firstname","lastname", "phone_number", "mobile_number"]
-    @users_safe = []
     if params[:status] == "all"    	
     	@users = custom_ajax_search(@searched_fields, @params, User, params[:status]).paginate(:page => params[:page], :per_page => 10)    	
     end    
     if params[:status] == "enabled"
-    	@users = custom_ajax_search(@searched_fields, @params, User, params[:status]).delete(current_user.id).paginate(:page => params[:page], :per_page => 10)    	
+    	@users = custom_ajax_search(@searched_fields, @params, User, params[:status]).paginate(:page => params[:page], :per_page => 10)    	
     end    
     if params[:status] == "disabled"
-    	@users = custom_ajax_search(@searched_fields, @params, User, params[:status]).delete(current_user.id).paginate(:page => params[:page], :per_page => 10)   	
+    	@users = custom_ajax_search(@searched_fields, @params, User, params[:status]).paginate(:page => params[:page], :per_page => 10)   	
     end  
     @tr_color = true
     #render :layout => false
@@ -20,6 +19,7 @@ class Devise::UsersController < Devise::RegistrationsController
 	end
 	
 	def custom_ajax_search(searched_fields, parameters, concerned_model, range)
+    #@res = "("
     @res = "("
     @range_sql = " "
     @post_office_model = ["Direction", "Workshop", "Team"]
@@ -33,26 +33,30 @@ class Devise::UsersController < Devise::RegistrationsController
 			when "disabled"
 				@range_sql << "AND confirmation_token IS NOT NULL"
 			end    
-    parameters.each do |parameter|
-
-    	
+    parameters.each do |parameter| 
+    	@res += " ("
+    	   	
       searched_fields.each do |searched_field|
         @res += " "+searched_field+" ILIKE "+"'%"+parameter+"%'"+" OR"
       end  
+      @res = @res.sub(/OR$/, '')
       
+      #éléments de recherche pour les directions, ateliers, équipes
       @post_office_model.each do |post_office_model|
       	@por = post_office_model.constantize.where("#{post_office_model.downcase+"_name"} ILIKE "+"'%"+parameter+"%'")
       	if @por.empty?
       	else
       		@por.each do |por|
-      			@office_container += "(status_number = #{por.id} AND status_id = #{Status.find_by_status_name(post_office_reverse(post_office_model)).id}) OR"
+      			@office_container += "OR (status_number = #{por.id} AND status_id = #{Status.find_by_status_name(post_office_reverse(post_office_model)).id})"
       		end
       	end
+      	
       end
       @res += @office_container
 
-      #pour les statuts
+      #éléments de recherche pour les statuts
       @res += status_collector("status_name", "status_id", parameter, Status) 
+      @res += ") AND"
     end
     if params[:query].empty?
     	case range
@@ -64,12 +68,13 @@ class Devise::UsersController < Devise::RegistrationsController
 					User.where("confirmation_token IS NOT NULL")
 				end
     else
-    	concerned_model.where("#{@res.sub(/OR$/, '').sub(/OR $/, '') << ")" << @range_sql}")  
+    	#concerned_model.where("#{@res.sub(/OR$/, '').sub(/OR $/, '') << ")" << @range_sql}")
+    	concerned_model.where("#{@res.sub(/AND$/, '') << ")" << @range_sql}")  
     end
   end
   
   def status_collector(searched_field, searched_field_id, parameter, concerned_model)
-  	@result = ""
+  	@result = "OR"
   	@status = concerned_model.where("#{searched_field} ILIKE '%"+parameter+"%'")
   	unless @status.empty? 
   		@status.each do |stat|
@@ -110,20 +115,20 @@ class Devise::UsersController < Devise::RegistrationsController
   def enable_user 
   	@user = User.find_by_id(params[:format])
   	@user.update_attribute(:enabled, true)
-  	redirect_to dashboard_path, :alert => "Le compte de #{@user.lastname} #{@user.firstname} a été activé"
+  	redirect_to dashboard_path, :notice => "Le compte de #{@user.lastname} #{@user.firstname} a été activé"
   end
   
   def disable_user
   	@user = User.find_by_id(params[:format])
   	@user.update_attribute(:enabled, false)
-  	redirect_to dashboard_path, :alert => "Le compte de #{@user.lastname} #{@user.firstname} a été désactivé"
+  	redirect_to dashboard_path, :notice => "Le compte de #{@user.lastname} #{@user.firstname} a été désactivé"
   end
   
   def delete_user
   	@user = User.find_by_id(params[:format])
   	@user_infos = "#{@user.lastname} #{@user.firstname}"
   	User.delete(@user.id)
-  	redirect_to dashboard_path, :alert => "Le compte de #{@user_infos} a été supprimé"
+  	redirect_to dashboard_path, :notice => "Le compte de #{@user_infos} a été supprimé"
   end
   
   def edit
@@ -135,9 +140,9 @@ class Devise::UsersController < Devise::RegistrationsController
   def update
     @user = User.find_by_id(params[:user][:user_id])
     @status = Status.find_by_id(params[:post][:status_id])
-		@params_direction = params[:direction_name].eql?("-Veuillez choisir une direction-")
-		@params_workshop = params[:workshop_name].eql?("-Veuillez choisir un atelier-")
-		@params_team = params[:team_name].eql?("-Veuillez choisir une équipe-")
+		@params_direction = params[:direction_name] == "-Veuillez choisir une direction-"
+		@params_workshop = params[:workshop_name] == "-Veuillez choisir un atelier-"
+		@params_team = params[:team_name] == "-Veuillez choisir une équipe-"
 		@firstname = capitalization(params[:user][:firstname])
 		@lastname = capitalization(params[:user][:lastname])
 		@phone_number = params[:user][:phone_number]
@@ -164,7 +169,7 @@ class Devise::UsersController < Devise::RegistrationsController
   end
   
   def dae
-  	
+  	@directions = Direction.all
   end
   
   def create_dae
@@ -176,27 +181,54 @@ class Devise::UsersController < Devise::RegistrationsController
   	@element = ""
   	
   	if ((@dae.eql?("-Veuillez choisir un élément-")) || (@dae.eql?("Direction") && @value.empty?) || (@dae.eql?("Atelier") && (@direction.eql?("-Veuillez choisir une direction-") || @value.empty?)) || (@dae.eql?("Section") && (@direction.eql?("-Veuillez choisir une direction-") || @workshop.eql?("-Veuillez choisir un atelier-") || @value.empty?)) || (@dae.eql?("Ligne") && (@direction.eql?("-Veuillez choisir une direction-") || @workshop.eql?("-Veuillez choisir un atelier-") || @section.eql?("-Veuillez choisir une section-") || @value.empty?)) || (@dae.eql?("Equipe") && (@direction.eql?("-Veuillez choisir une direction-") || @workshop.eql?("-Veuillez choisir un atelier-") || @value.empty?)))
-  		redirect_to dae_path, :notice => "Veuillez correctement choisir l'élément à créer."
+  		redirect_to dae_path, :alert => "Veuillez correctement choisir l'élément à créer."
   	else
   		case @dae
 				when "Direction"
-					Direction.create(:direction_name => capitalization(@value))
-					@element = "La direction:"
+					if Direction.find_by_direction_name(capitalization(@value)).eql?(nil)
+						Direction.create(:direction_name => capitalization(@value))
+						dae_path_on_success("La direction:", capitalization(@value))
+					else
+						dae_path_on_failure("Une direction du même nom existe déjà.")
+					end
 				when "Atelier"
-					Direction.find_by_direction_name(@direction).workshops.create(:workshop_name => capitalization(@value))
-					@element = "L'atelier:"
+					if Workshop.where("direction_id = #{Direction.find_by_direction_name(@direction).id} AND workshop_name = '#{capitalization(@value)}'").empty?
+						Direction.find_by_direction_name(@direction).workshops.create(:workshop_name => capitalization(@value))
+						dae_path_on_success("L'atelier:", capitalization(@value))
+					else
+						dae_path_on_failure("Un atelier du même nom existe déjà dans cette direction.")
+					end
 				when "Section"
-					Workshop.find_by_workshop_name(@workshop).sections.create(:section_name => capitalization(@value))
-					@element = "La section:"
+					if Section.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id} AND section_name = '#{capitalization(@value)}'").empty?
+						Workshop.find_by_workshop_name(@workshop).sections.create(:section_name => capitalization(@value))
+						dae_path_on_success("La section:", capitalization(@value))
+					else
+						dae_path_on_failure("Une section du même nom existe déjà dans l'atelier.")
+					end
 				when "Ligne"
-					Section.find_by_section_name(@section).lines.create(:line_name => capitalization(@value))
-					@element = "La ligne:"
+					if Line.where("section_id = #{Section.find_by_section_name(@section).id} AND line_name = '#{capitalization(@value)}'").empty?
+						Section.find_by_section_name(@section).lines.create(:line_name => capitalization(@value))
+						dae_path_on_success("La ligne:", capitalization(@value))
+					else
+						dae_path_on_failure("Une ligne du même nom existe déjà dans la section.")
+					end
 				when "Equipe"
-					Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value))
-					@element = "L'équipe:"
-				end 
-			redirect_to dae_path, :notice => "#{@element} #{capitalization(@value)} a été(e) créé(e)." 		
+					if Team.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id} AND team_name = '#{capitalization(@value)}'")
+						Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value))
+						dae_path_on_success("L'équipe:", capitalization(@value))
+					else
+						dae_path_on_failure("Une équipe du même nom existe déjà dans l'atelier.")
+					end
+				end 	
   	end
+  end
+  
+  def dae_path_on_success(element, value)
+  	redirect_to dae_path, :notice => "#{element} #{value} a été(e) créé(e)."
+  end
+  
+  def dae_path_on_failure(message)
+  	redirect_to dae_path, :alert => message
   end
 	
 end

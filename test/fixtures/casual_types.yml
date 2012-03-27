@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  type_name: MyString
+  prime: 1
+  hourly_rate: 1
+  months_number: 1
+  max_months_number: 1
+
+two:
+  type_name: MyString
+  prime: 1
+  hourly_rate: 1
+  months_number: 1
+  max_months_number: 1

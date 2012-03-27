@@ -10,7 +10,49 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120319175539) do
+ActiveRecord::Schema.define(:version => 20120326103340) do
+
+  create_table "casual_types", :force => true do |t|
+    t.string   "type_name"
+    t.integer  "prime"
+    t.integer  "hourly_rate"
+    t.integer  "months_number"
+    t.integer  "max_months_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "delay_before_return"
+  end
+
+  create_table "casuals", :force => true do |t|
+    t.string   "firstname"
+    t.string   "lastname"
+    t.date     "birthdate"
+    t.string   "identifier"
+    t.integer  "months_done"
+    t.boolean  "expired"
+    t.boolean  "retired_from_ticking"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "company_id"
+    t.integer  "city_id"
+    t.integer  "casual_type_id"
+    t.integer  "migration_date_id"
+    t.integer  "workshop_id"
+    t.integer  "team_id"
+  end
+
+  create_table "cities", :force => true do |t|
+    t.string   "city_name"
+    t.string   "short_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "companies", :force => true do |t|
+    t.string   "company_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "directions", :force => true do |t|
     t.string   "direction_name"
@@ -23,6 +65,14 @@ ActiveRecord::Schema.define(:version => 20120319175539) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "section_id"
+  end
+
+  create_table "migration_dates", :force => true do |t|
+    t.date     "entrance_date"
+    t.date     "exit_date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "casual_id"
   end
 
   create_table "sections", :force => true do |t|

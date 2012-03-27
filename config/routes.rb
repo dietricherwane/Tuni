@@ -12,7 +12,7 @@ Tuni::Application.routes.draw do
 		match 'users/sign_up' => 'devise/registrations#new', :as => :dashboard
 		#root :to => "devise/registrations#new"
 		match '/users/sign_in' => 'devise/sessions#new', :as => :sign_in
-		match 'users/sign_out' => 'devise/sessions#destroy'
+		match '/users/sign_out' => 'devise/sessions#destroy'
 		match 'users/sign_up' => 'devise/registrations#new', :as => :dashboard
 		match 'users/sign_up' => 'devise/registrations#new', :as => :dashboard_administrator
     match 'users/get_directions' => 'devise/registrations#get_directions'
@@ -26,8 +26,13 @@ Tuni::Application.routes.draw do
   	match 'user/update' => 'devise/users#update', :as => :update_user
   end
   
-  
-  
+  match 'casuals/settings' => 'casuals#casuals_settings', :as => :casuals_settings
+  match 'create/company' => 'companies#create', :as => :create_company
+  match 'create/city' => 'cities#create', :as => :create_city
+  match 'create/casual_type' => 'casual_types#create', :as => :create_casual_type
+  match 'new/casual' => 'casuals#new', :as => :new_casual
+  match 'create/casual' => 'casuals#create', :as => :create_casual
+  match 'casual/get_workshops' => 'casuals#get_workshops'
 
   #devise_for :users
 

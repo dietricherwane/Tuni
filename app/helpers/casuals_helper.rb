@@ -1,0 +1,2 @@
+module CasualsHelper
+end

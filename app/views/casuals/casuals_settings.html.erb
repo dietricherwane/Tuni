@@ -1,0 +1,196 @@
+<h2 class="top-title">Paramétrages relatifs aux temporaires</h2><br />	
+
+<div class="column">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Ville</div>
+    	<div class="portlet-content">    	
+    		<%= form_tag create_city_path do %>     		   										 
+					<div id = "space"><%= label_tag "Nom de la ville" %><br />
+					<%= text_field_tag 'city_name', '' %></div>
+					
+					<div id = "space"><%= label_tag "Abbréviation" %><br />
+					<%= text_field_tag 'short_name', '' %></div>
+					
+					<br />
+  				<%= submit_tag "Enregistrer", :class => 'submit button large ui-corner-all' %>					
+				<% end %>				
+			</div>
+	</div>
+
+	<div class="portlet" id="widget-2">
+    <div class="portlet-header">Compagnie</div>
+    	<div class="portlet-content">    	
+    		<%= form_tag create_company_path do %>     		   										 
+					<div id = "space"><%= label_tag "Nom de la compagnie" %><br />
+					<%= text_field_tag 'company_name', '' %></div>
+					
+					<br />
+  				<%= submit_tag "Enregistrer", :class => 'submit button large ui-corner-all' %>					
+				<% end %>				
+			</div>
+	</div>
+	
+	<div class="portlet" id="widget-3">
+    <div class="portlet-header">Type de temporaire</div>
+    	<div class="portlet-content">    	
+    		<%= form_tag create_casual_type_path do %>     		   										 
+					<div id = "space"><%= label_tag "Nom du type de temporaire" %><br />
+					<%= text_field_tag 'type_name', '' %></div>
+					
+					<div id = "space"><%= label_tag "Montant de la prime" %><br />
+					<%= text_field_tag 'prime', '' %></div>
+					
+					<div id = "space"><%= label_tag "Taux horaire" %><br />
+					<%= text_field_tag 'hourly_rate', '' %></div>
+					
+					<div id = "space"><%= label_tag "Nombre de mois à effectuer" %><br />
+					<%= text_field_tag 'months_number', '' %></div>
+					
+					<div id = "space"><%= label_tag "Nombre maximal de mois à effectuer" %><br />
+					<%= text_field_tag 'max_months_number', '' %></div>
+					
+					<div id = "space"><%= label_tag "Délai avant retour (en mois)" %><br />
+					<%= text_field_tag 'delay_before_return', '' %></div>
+					
+					<br />
+  				<%= submit_tag "Enregistrer", :class => 'submit button large ui-corner-all' %>					
+				<% end %>				
+			</div>
+	</div>	
+</div>
+
+<div id="files-panel">
+	<!-- JQuery UI Tabs -->
+    <div id="tabs">
+        <ul>
+          <li><a href="#tabs-1">Villes</a></li>
+          <li><a href="#tabs-2">Compagnies</a></li>
+          <li><a href="#tabs-3">Types de temporaires</a></li>
+        </ul>
+        
+        <div id="tabs-1">
+          <table class="list-table">
+						<thead class = "ui-widget-header ui-corner-all">
+							<tr>
+								<th width="25%">Nom de la ville</th>
+								<th>Abbréviation</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if @cities.nil? or @cities.empty? %>
+								<tr>
+									<td class = "ui-widget-content">Pas de résultat</td>
+									<td class = "ui-widget-content"></td>
+								</tr>
+							<% else %>
+								<% @cities.each do |city| %>
+									<% if @tr_color %>
+										<tr class = "odd">
+									<% else %>
+										<tr>
+									<% end %>
+										<td class = "ui-widget-content">
+												<%= city.city_name %>
+										</td>
+										<td class = "ui-widget-content">
+											<%= city.short_name %>
+										</td>			
+									</tr>
+									<% @tab_color = !@tab_color %>			
+								<% end %>
+							<% end %>
+						</tbody>
+					</table>
+					<div id="pagination">
+						<%= will_paginate @cities %>
+					</div>
+				</div>
+				
+        <div id="tabs-2">
+        	<table class="list-table">
+						<thead class = "ui-widget-header ui-corner-all">
+							<tr>
+								<th>Nom de la compagnie</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if @companies.nil? or @companies.empty? %>
+								<tr>
+									<td class = "ui-widget-content">Pas de résultat</td>
+								</tr>
+							<% else %>
+								<% @companies.each do |company| %>
+									<% if @tr_color %>
+										<tr class = "odd">
+									<% else %>
+										<tr>
+									<% end %>
+										<td class = "ui-widget-content">
+												<%= company.company_name %>
+										</td>	
+									</tr>
+									<% @tab_color = !@tab_color %>			
+								<% end %>
+							<% end %>
+						</tbody>
+					</table>
+					<div id="pagination">
+						<%= will_paginate @companies %>
+					</div>
+        </div>
+        
+        <div id="tabs-3">
+        	<table class="list-table">
+						<thead class = "ui-widget-header ui-corner-all">
+							<tr>
+								<th width="14%">Nom</th>
+								<th width="14%">Prime</th>
+								<th width="14%">Taux horaire</th>
+								<th>Nombre de mois</th>
+								<th>Nombre maximum de mois</th>
+								<th>Délai avant retour</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if @casual_types.nil? or @casual_types.empty? %>
+								<tr>
+									<td class = "ui-widget-content">Pas de résultat</td>
+									<td class = "ui-widget-content"></td>
+								</tr>
+							<% else %>
+								<% @casual_types.each do |casual_type| %>
+									<% if @tr_color %>
+										<tr class = "odd">
+									<% else %>
+										<tr>
+									<% end %>
+										<td class = "ui-widget-content">
+												<%= casual_type.type_name %>
+										</td>
+										<td class = "ui-widget-content">
+											<%= casual_type.prime %>
+										</td>	
+										<td class = "ui-widget-content">
+												<%= casual_type.hourly_rate %>
+										</td>
+										<td class = "ui-widget-content">
+											<%= casual_type.months_number %>
+										</td>	
+										<td class = "ui-widget-content">
+												<%= casual_type.max_months_number %>
+										</td>
+										<td class = "ui-widget-content">
+											<%= casual_type.delay_before_return %>
+										</td>			
+									</tr>
+									<% @tab_color = !@tab_color %>			
+								<% end %>
+							<% end %>
+						</tbody>
+					</table>
+					<div id="pagination">
+						<%= will_paginate @casual_types %>
+					</div>
+        </div>
+	</div>
+</div>

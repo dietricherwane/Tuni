@@ -14,6 +14,12 @@
 	background:#FEFEFE url('../images/structure/wrapper.png') repeat-x;
 }
 
+/************Collapser**********************/
+ul { margin: 0; padding: 0; }
+ul li { margin: 10px 0 10px 25px; padding: 0; list-style: none; }			
+.jqcNode { font-weight: bold; color: green; }
+/************Collapser**********************/		
+
 #login-form {
 	margin:106px auto 0px auto;
 	width:560px;
@@ -297,6 +303,15 @@ h1#project-title{
 }
 
 /*--- Left and Right Panels ---*/
+/*#tree-panel{
+	float:left; 
+	width:28%;
+	background:#EDEDED;
+	border:solid 1px #DDD;
+	min-height:434px;
+	margin-left:2%;
+}*/
+
 #tree-panel{
 	float:left; 
 	width:28%;
@@ -306,10 +321,19 @@ h1#project-title{
 	margin-left:2%;
 }
 
-#files-panel{
+#settings-panel{
 	float:left; 
-	width:64%;
-	margin-left:4%;
+	width:28%;
+	background:#EDEDED;
+	border:solid 1px #DDD;
+	min-height:434px;
+	margin-left:2%;
+}
+
+#files-panel{
+	float:right; 
+	width:65%;
+	/*margin-left:4%;*/
 	min-height:440px;
 }
 
@@ -559,6 +583,13 @@ ul#participants-list li p{
 .column { 
 	width: 33%; 
 	float: left; 
+	padding-bottom: 100px; 
+	margin-left:3px;
+}
+
+.column_right { 
+	width: 33%; 
+	float: right; 
 	padding-bottom: 100px; 
 	margin-left:3px;
 }

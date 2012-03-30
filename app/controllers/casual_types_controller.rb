@@ -1,6 +1,8 @@
 # -*- encoding : utf-8 -*-
 class CasualTypesController < ApplicationController
-
+	before_filter :authenticate_user!
+	layout :layout_used
+	
 	def create
 		@type_name = params[:type_name]
 		@prime = params[:prime]

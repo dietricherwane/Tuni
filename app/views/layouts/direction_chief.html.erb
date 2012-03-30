@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Interface d'administration</title>
+  <%= stylesheet_link_tag 'reset-min', 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'jquery.bubblepopup.v2.3.1', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
+  <%= javascript_include_tag 'jquery.js', 'jquery.bubblepopup.v2.3.1.min', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js' %>
+</head>
+
+<body>	
+	<!-- Container -->
+	<div id="container">
+    	<!-- Header -->
+        <div id="header">
+    		<div id="header-top">
+            	<div id="top-block-left">
+            		<% if user_signed_in? %>
+                	<p><%= current_user.full_name(current_user) %></p>
+                <% end %>
+              </div>
+              <ul id="top-toolbox">
+              	<% if user_signed_in? %>
+              	<!--<li><a href="#" id="settings-link">Settings</a></li>
+                <li><%= link_to "Editer profil", edit_user_password_path, :id => "profile-link" %></li>-->
+                <li><%= link_to "Se déconnecter", destroy_user_session_path, :method => :delete, :id => "logout-link" %></li>
+                <% end %>
+              </ul>
+              <div class="clear"></div>
+                
+            </div>
+            <div id="header-middle">
+           		<a id="logo">TUNI</a>
+            </div>
+            <!-- Top Menu -->
+            <div id="menu">
+            	<ul class="topnav">
+            		<% if user_signed_in? %>
+                    <li><%= link_to "Dashboard", dashboard_path, :id => "menu-dashboard" %></li>
+                    <li><%= link_to "DAE", dae_path, :id => "menu-page" %></li>                   
+                    <li><%= link_to "Temporaires", new_casual_path, :id => "menu-page" %>
+                    	<ul class="subnav">
+                        <li><%= link_to "Création", new_casual_path %></li>
+                        <li><%= link_to "Paramètres", casuals_settings_path %></li>
+                      </ul>
+                    </li>
+                    <!--<li><a href="assets.html" id="menu-asset">Assets</a></li>
+                    <li id="active-item"><a href="events.html" id="menu-event">Events</a></li>
+                    <li><%= link_to "Rapports", '#', :id => "menu-report" %>
+                    	<ul class="subnav">
+                        <li><%= link_to "First" %></li>
+                      </ul>
+                    </li>
+                    <!--<li><a href="tasks.html" id="menu-task">Tasks</a></li>
+                    <li class="right"><a href="themes.html" id="menu-theme">Themes</a></li>
+                    <li class="right" id="last"><a href="#" id="menu-layout">Layouts</a>
+                        <!-- Dropdown Part 
+                        <ul class="subnav">
+                            <li><a href="#" id="fixed-layout">Fixed Layout</a></li>
+                            <li><a href="#" id="liquid-layout">Liquid Layout</a></li>
+                        </ul>
+                        <!-- End Dropdown Part 
+                    </li>-->
+                <% end %>
+              </ul>
+		  	</div>
+            <!-- END Menu -->
+        </div>
+        <!-- END Header -->
+        <div class="clear"></div> 
+        <!-- Content -->
+ 		<div id="content">
+        	<!-- Information Block -->	
+          <%= content_tag :p, notice, :class => 'status info' if notice.present? %>
+					<%= content_tag :p, alert, :class => 'status error' if alert.present? %>
+					
+        	<%= yield %>
+    </div>
+      <!-- END Content -->
+	</div>
+    <!-- END Container -->    
+    
+    <!-- Footer Container -->
+    <div id="footer-container">
+        <div id="footer">
+            <div id="footer-logo">
+    			<p id="copyright">Copyright &copy; 2012</p>
+            </div>
+            <!-- Footer Menu 
+            <ul class="menu">
+             	<li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="page.html">Sample Page</a></li>
+    			<li><a href="assets.html">Assets</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="reports.html">Reports</a></li>
+                <li><a href="tasks.html">Tasks</a></li>
+                <li><a href="themes.html">Themes</a></li>
+            </ul>
+            <!-- END Footer Menu -->
+           <div class="clear"></div>
+        </div>
+    </div>
+    <!-- END Footer Container -->
+    
+  	<!--[if lte IE 6]><script src="js/ie6/warning.js"></script><script>window.onload=function(){e("js/ie6/")}</script><![endif]-->
+</body>
+</html>
+
+

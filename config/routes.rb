@@ -1,5 +1,9 @@
 # -*- encoding : utf-8 -*-
 Tuni::Application.routes.draw do
+  get "teams/number_of_casuals"
+
+  get "workshops/number_of_casuals"
+
 	#match 'users/get_workshop' => 'devise/registrations#get_workshop'
 	
 	devise_for :users, :controllers => {:registrations => "devise/registrations", :sessions => "devise/sessions", :passwords => "devise/passwords"}
@@ -29,10 +33,19 @@ Tuni::Application.routes.draw do
   match 'casuals/settings' => 'casuals#casuals_settings', :as => :casuals_settings
   match 'create/company' => 'companies#create', :as => :create_company
   match 'create/city' => 'cities#create', :as => :create_city
+  match 'cities/new' => 'cities#new', :as => :new_city
   match 'create/casual_type' => 'casual_types#create', :as => :create_casual_type
-  match 'new/casual' => 'casuals#new', :as => :new_casual
+  match 'casuals/new' => 'casuals#new', :as => :new_casual
   match 'create/casual' => 'casuals#create', :as => :create_casual
   match 'casual/get_workshops' => 'casuals#get_workshops'
+  match 'casuals/search' => 'casuals#search_ajax'
+  match 'casual/allot_to_team' => 'workshops#allot_to_team', :as => :allot_casual_to_team
+  match 'allocation' => 'workshops#casual_allocation', :as => :casual_allocation
+  
+  #resources :companies
+  #resources :cities
+  #resources :casual_types
+  #resources :casuals
 
   #devise_for :users
 

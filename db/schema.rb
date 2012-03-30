@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120326103340) do
+ActiveRecord::Schema.define(:version => 20120329175622) do
 
   create_table "casual_types", :force => true do |t|
     t.string   "type_name"
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(:version => 20120326103340) do
     t.integer  "migration_date_id"
     t.integer  "workshop_id"
     t.integer  "team_id"
+    t.string   "phone_number"
   end
 
   create_table "cities", :force => true do |t|
@@ -93,6 +94,7 @@ ActiveRecord::Schema.define(:version => 20120326103340) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "workshop_id"
+    t.integer  "max_number_of_casuals"
   end
 
   create_table "users", :force => true do |t|
@@ -132,6 +134,7 @@ ActiveRecord::Schema.define(:version => 20120326103340) do
     t.integer  "direction_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "max_number_of_casuals"
   end
 
 end

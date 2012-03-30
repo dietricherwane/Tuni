@@ -14,6 +14,7 @@ gem 'devise'
 gem 'heroku'
 gem 'taps'
 gem 'jquery-rails', '>= 1.0.12'
+gem 'dynamic_form'
 # Use unicorn as the web server
 # gem 'unicorn'
 

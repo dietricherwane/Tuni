@@ -36,6 +36,7 @@ GEM
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.0.3)
       warden (~> 1.1)
+    dynamic_form (1.1.4)
     erubis (2.6.6)
       abstract (>= 1.0.0)
     heroku (2.14.0)
@@ -118,6 +119,7 @@ PLATFORMS
 
 DEPENDENCIES
   devise
+  dynamic_form
   heroku
   jquery-rails (>= 1.0.12)
   magic_encoding

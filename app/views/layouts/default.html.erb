@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Interface d'administration</title>
+  <%= stylesheet_link_tag 'reset-min', 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'jquery.bubblepopup.v2.3.1', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
+  <%= javascript_include_tag 'jquery.js', 'jquery.bubblepopup.v2.3.1.min', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js' %>
+</head>
+
+<body>	
+	<!-- Container -->
+	<div id="container">
+    	<!-- Header -->
+        <div id="header">
+    		<div id="header-top">
+            	<div id="top-block-left">
+            		
+              </div>
+              <ul id="top-toolbox">
+              	
+              </ul>
+              <div class="clear"></div>
+                
+            </div>
+            <div id="header-middle">
+           		<a id="logo">TUNI</a>
+            </div>
+            <!-- Top Menu -->
+            <div id="menu">
+            	<ul class="topnav">
+            		
+              </ul>
+		  	</div>
+            <!-- END Menu -->
+        </div>
+        <!-- END Header -->
+        <div class="clear"></div> 
+        <!-- Content -->
+ 		<div id="content">
+        	<!-- Information Block -->						
+        	<%= yield %>
+    </div>
+      <!-- END Content -->
+	</div>
+    <!-- END Container -->    
+    
+    <!-- Footer Container -->
+    <div id="footer-container">
+        <div id="footer">
+            <div id="footer-logo">
+    			<p id="copyright">Copyright &copy; 2012</p>
+            </div>
+            <!-- Footer Menu 
+            <ul class="menu">
+             	<li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="page.html">Sample Page</a></li>
+    			<li><a href="assets.html">Assets</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="reports.html">Reports</a></li>
+                <li><a href="tasks.html">Tasks</a></li>
+                <li><a href="themes.html">Themes</a></li>
+            </ul>
+            <!-- END Footer Menu -->
+           <div class="clear"></div>
+        </div>
+    </div>
+    <!-- END Footer Container -->
+    
+  	<!--[if lte IE 6]><script src="js/ie6/warning.js"></script><script>window.onload=function(){e("js/ie6/")}</script><![endif]-->
+</body>
+</html>
+
+

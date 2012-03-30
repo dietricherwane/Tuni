@@ -3,6 +3,8 @@ class Devise::PasswordsController < ApplicationController
 	#before_filter :change_password, :exept => :new
   #prepend_before_filter :require_no_authentication
   include Devise::Controllers::InternalHelpers
+  before_filter :authenticate_user!
+  layout :layout_used
 
   # GET /resource/password/new
   def new

@@ -1,0 +1,125 @@
+<%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
+<script type="text/javascript">		
+$(function(){	
+	$('#collapser').jqcollapse({
+	   slide: true,
+	   speed: 1000,
+	   easing: 'easeOutCubic'
+	});	
+});			
+</script>
+
+<h2 class="top-title">Affectation des temporaires aux équipes</h2><br />
+<div class="column_large_left">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Temporaires à affecter</div>
+    	<div class="portlet-content"> 
+    		<%= form_tag casual_allocation_path do %>   	
+    			<div id= "space"><%= label_tag "Equipe" %><br />
+					<%= collection_select(:post, :team_id, @teams, :id, :team_name, options ={:prompt => "-Veuillez choisir une équipe-"}) %></div>							
+					<table class="list-table">
+						<thead class = "ui-widget-header ui-corner-all">
+							<tr>
+								<!--<th width="14%">Matricule</th>-->							
+								<th width="14%">Nom</th>
+								<th width="14%">Prénoms</th>
+								<th>Compagnie</th>
+								<th>Type</th>
+								<th>Date d'entrée</th>
+								<th width="14%">Affecter</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if @casuals.nil? or @casuals.empty? %>
+								<tr>
+									<td class = "ui-widget-content">Pas de résultat</td>
+									<td class = "ui-widget-content"></td>
+									<td class = "ui-widget-content"></td>
+									<td class = "ui-widget-content"></td>
+									<td class = "ui-widget-content"></td>
+									<td class = "ui-widget-content"></td>
+								</tr>
+							<% else %>
+								<% @casuals.each do |casual| %>
+									<% if @tr_color %>
+										<tr class = "odd">
+									<% else %>
+										<tr>
+									<% end %>									
+										<td class = "ui-widget-content">
+											<%= casual.firstname %>
+										</td>	
+										<td class = "ui-widget-content">
+												<%= casual.lastname %>
+										</td>
+										<td class = "ui-widget-content">
+											<%= Company.find_by_id(casual.company_id).company_name %>
+										</td>	
+										<td class = "ui-widget-content">
+												<%= CasualType.find_by_id(casual.casual_type_id).type_name %>
+										</td>
+										<td class = "ui-widget-content">
+											<%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>
+										</td>	
+										<td class = "ui-widget-content">
+												<%= check_box("post", "#{casual.id}") %>
+										</td>		
+									</tr>
+									<% @tab_color = !@tab_color %>			
+								<% end %>
+							<% end %>
+						</tbody>
+					</table>
+					<div id="pagination">
+						<%= will_paginate @casuals %>
+					</div>
+					<br />
+  				<%= submit_tag "Enregistrer", :class => 'submit button large ui-corner-all' %>
+				<% end %>								
+			</div>
+	</div>
+</div>
+
+<div class="column_right">
+	<div class="portlet" id="widget-2">
+    <div class="portlet-header">Visualisation</div>
+    	<div class="portlet-content">    								
+				<ul id="collapser">
+					<li>Equipes
+						<ul>
+							<% unless @workshop.eql?(nil) %>
+							<% unless @workshop.teams.eql?(nil) %>												
+								<% @workshop.teams.each do |team| %>
+									<li>
+										<div class = "direction team" style = "font-weight: bold;"><%= team.team_name + " (#{Casual.where("team_id = #{team.id}").count})"  %> <%=  %></div>
+									</li>
+								<% end %>												
+							<% end %>		
+							<% end %>													
+						</ul>
+					</li>
+					<li>Sections
+						<ul>
+							<% unless @workshop.eql?(nil) %>
+							<% unless @workshop.sections.eql?(nil) %>												
+								<% @workshop.sections.each do |section| %>
+									<li><div class = "direction section" style = "font-weight: bold;"><%= section.section_name %></div>
+										<ul>
+											<% unless section.lines.eql?(nil) %>
+												<% section.lines.each do |line| %>
+													<li>
+														<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %></div>
+													</li>
+												<% end %>
+											<% end %>
+										</ul>
+									</li>
+								<% end %>												
+							<% end %>
+							<% end %>
+						</ul>
+					</li>
+				</ul>										
+			</div>
+	</div>
+</div>

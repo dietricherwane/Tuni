@@ -1,0 +1,58 @@
+<table class="list-table">
+	<thead class = "ui-widget-header ui-corner-all">
+		<tr>
+			<!--<th width="14%">Matricule</th>-->
+			<th width="14%">Atelier</th>
+			<th width="14%">Nom</th>
+			<th width="14%">Prénoms</th>
+			<th>Compagnie</th>
+			<th>Type</th>
+			<th>Date d'entrée</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% if @casuals.nil? or @casuals.empty? %>
+			<tr>
+				<td class = "ui-widget-content">Pas de résultat</td>
+				<td class = "ui-widget-content"></td>
+				<td class = "ui-widget-content"></td>
+				<td class = "ui-widget-content"></td>
+				<td class = "ui-widget-content"></td>
+				<td class = "ui-widget-content"></td>
+			</tr>
+		<% else %>
+			<% @casuals.each do |casual| %>
+				<% if @tr_color %>
+					<tr class = "odd">
+				<% else %>
+					<tr>
+				<% end %>
+					<td class = "ui-widget-content">
+							<%= Workshop.find_by_id(casual.workshop_id).workshop_name %>
+							<%#= casual.identifier %>
+					</td>
+					<td class = "ui-widget-content">
+						<%= casual.firstname %>
+					</td>	
+					<td class = "ui-widget-content">
+							<%= casual.lastname %>
+					</td>
+					<td class = "ui-widget-content">
+						<%= Company.find_by_id(casual.company_id).company_name %>
+					</td>	
+					<td class = "ui-widget-content">
+							<%= CasualType.find_by_id(casual.casual_type_id).type_name %>
+					</td>
+					<td class = "ui-widget-content">
+						<%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>
+					</td>			
+				</tr>
+				<% @tab_color = !@tab_color %>			
+			<% end %>
+		<% end %>
+	</tbody>
+</table>
+
+<!--<div id="pagination">
+		<%= will_paginate @users %>
+	</div>-->

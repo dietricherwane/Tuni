@@ -1,0 +1,20 @@
+
+<% unless @city.errors.empty? %>
+	<% @msg = @city.errors.full_messages.map { |msg| content_tag(:p, msg) }.join %>
+  <%= html = <<-HTML
+    <div class="status error">
+      #{@msg}
+    </div>
+    HTML
+    html.html_safe %>
+<% end %>
+<%= form_for @city, :action=>'create' do |f| %>     		   										 
+	<div id = "space"><%= label_tag "Nom de la ville" %><br />
+	<%= f.text_field :city_name %></div>
+	
+	<div id = "space"><%= label_tag "Abbréviation" %><br />
+	<%= f.text_field :short_name %></div>
+	
+	<br />
+	<%= submit_tag "Enregistrer", :class => 'submit button large ui-corner-all' %>					
+<% end %>	

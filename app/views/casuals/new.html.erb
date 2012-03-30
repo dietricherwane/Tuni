@@ -1,14 +1,54 @@
 <script type="text/javascript" language="JavaScript">
 $(document).ready(function() {
-		//write a better function for hideAll
   	$(function(){
   		hideAll();
+  		search_ajax_on_load();
 		});
     
     $("#post_direction_id").change(function() {
     	selected_direction = this.options[this.selectedIndex].text; 
 			pleaseSelectDirection(selected_direction);
     });
+    
+    $(".radio_button").change(function() {
+      $(this).search_ajax();
+    });
+    
+    $("#search").keyup(function() { 
+      $(this).search_ajax();    
+    });
+    
+    $.fn.search_ajax = function() { 
+      var v_search = $('#search').val();  
+      var v_status = $("input[name='status']:checked").val()            
+      $.ajax({   
+        url: "<%= url_for :action => 'search_ajax', :controller => 'casuals' %>",
+	      type: "GET",
+        data: {query: v_search, status: v_status},
+        error: function(){ 
+        	alert("error");
+        },
+        success: function(response, response_status, xhr) {
+          $("#result").html(response);       
+        }
+      });  
+    }
+    
+    function search_ajax_on_load() {  
+      var v_search = $('#search').val();  
+      var v_status = $("input[name='status']:checked").val()            
+      $.ajax({   
+        url: "<%= url_for :action => 'search_ajax', :controller => 'casuals' %>",
+	      type: "GET",
+        data: {query: v_search, status: v_status},
+        error: function(){ 
+        	alert("error");
+        },
+        success: function(response, response_status, xhr) {
+          $("#result").html(response);        
+        }
+      });  
+    }
      
     $.fn.getComboBoxValues = function(selected_value, target_tag, url) {
       $.ajax({      
@@ -57,9 +97,12 @@ $(document).ready(function() {
 		
 					<div id= "space"><%= f.label 'Prénoms' %><br />
 					<%= f.text_field :lastname  %></div>
+					
+					<div id= "space"><%= f.label 'Numéro de téléphone' %><br />
+					<%= f.text_field :phone_number  %></div>
 		
 					<div id= "space"><%= f.label 'Date de naissance' %><br />
-					<%= f.date_select :birthdate, :start_year => (Time.now.year - 80), :use_month_numbers => true %></div>
+					<%= f.date_select :birthdate, :start_year => (Time.now.year - 80), :end_year => (Time.now.year - 15), :use_month_numbers => true %></div>
 		
 					<div id= "space"><%= f.label "Numéro d'extrait de naissance" %><br />
 					<%= f.text_field :identifier  %></div>
@@ -97,58 +140,16 @@ $(document).ready(function() {
  	<div class="portlet" id="widget-2">
 		<div class="portlet-header">Visualisation</div>
 		<div class="portlet-content">
-  		<table class="list-table">
-				<thead class = "ui-widget-header ui-corner-all">
-					<tr>
-						<!--<th width="14%">Matricule</th>-->
-						<th width="14%">Atelier</th>
-						<th width="14%">Nom</th>
-						<th width="14%">Prénoms</th>
-						<th>Compagnie</th>
-						<th>Type</th>
-						<th>Date d'entrée</th>
-					</tr>
-				</thead>
-				<tbody>
-					<% if @casuals.nil? or @casuals.empty? %>
-						<tr>
-							<td class = "ui-widget-content">Pas de résultat</td>
-							<td class = "ui-widget-content"></td>
-						</tr>
-					<% else %>
-						<% @casuals.each do |casual| %>
-							<% if @tr_color %>
-								<tr class = "odd">
-							<% else %>
-								<tr>
-							<% end %>
-								<td class = "ui-widget-content">
-										<%= Workshop.find_by_id(casual.workshop_id).workshop_name %>
-										<%#= casual.identifier %>
-								</td>
-								<td class = "ui-widget-content">
-									<%= casual.firstname %>
-								</td>	
-								<td class = "ui-widget-content">
-										<%= casual.lastname %>
-								</td>
-								<td class = "ui-widget-content">
-									<%= Company.find_by_id(casual.company_id).company_name %>
-								</td>	
-								<td class = "ui-widget-content">
-										<%= CasualType.find_by_id(casual.casual_type_id).type_name %>
-								</td>
-								<td class = "ui-widget-content">
-									<%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>
-								</td>			
-							</tr>
-							<% @tab_color = !@tab_color %>			
-						<% end %>
-					<% end %>
-				</tbody>
-			</table>
-			<div id="pagination">
-				<%= will_paginate @casuals %>
+			<div class="radio_button">
+		    <label>Tous</label>&nbsp;&nbsp;<%= radio_button_tag 'status', 'all', { :checked => true } %> 
+				<label>Expirés</label>&nbsp;&nbsp;<%= radio_button_tag 'status', 'expired' %> 
+				<label>Retirés du pointage</label>&nbsp;&nbsp;<%= radio_button_tag 'status', 'retired' %> 
+				<label>Recherche: </label><%= text_field_tag("search", '', :autocomplete => 'off') %>
+			</div>
+			<br />  		
+			
+			<div id="result">
+		
 			</div>
 		</div>		
 	</div>

@@ -601,6 +601,13 @@ ul#participants-list li p{
 	margin-left:3px;
 }
 
+.column_large_left { 
+	width: 66%; 
+	float: left; 
+	padding-bottom: 100px; 
+	margin-right:3px;
+}
+
 .portlet {
 	margin: 0 1em 1em 0;
 }

@@ -1,39 +1,30 @@
 # -*- encoding : utf-8 -*-
 class Devise::UsersController < Devise::RegistrationsController
+	before_filter :authenticate_user!
+	layout :layout_used
 
 	def search_ajax
 		@params = params[:query].strip.split
-    @searched_fields = ["firstname","lastname", "phone_number", "mobile_number"]
-    if params[:status] == "all"    	
-    	@users = custom_ajax_search(@searched_fields, @params, User, params[:status]).paginate(:page => params[:page], :per_page => 10)    	
-    end    
-    if params[:status] == "enabled"
-    	@users = custom_ajax_search(@searched_fields, @params, User, params[:status]).paginate(:page => params[:page], :per_page => 10)    	
-    end    
-    if params[:status] == "disabled"
-    	@users = custom_ajax_search(@searched_fields, @params, User, params[:status]).paginate(:page => params[:page], :per_page => 10)   	
-    end  
+    @searched_fields = ["firstname","lastname", "phone_number", "mobile_number"]   	
+    @users = custom_ajax_search(@searched_fields, @params, User, params[:status]).paginate(:page => params[:page], :per_page => 10)    	
     @tr_color = true
-    #render :layout => false
     render :partial => "search_ajax" 
 	end
 	
 	def custom_ajax_search(searched_fields, parameters, concerned_model, range)
-    #@res = "("
     @res = "("
     @range_sql = " "
     @post_office_model = ["Direction", "Workshop", "Team"]
-    @post_office = ""
-    @office_container = ""
+        
     case range
-			when "all"
-			
 			when "enabled"
 				@range_sql << "AND confirmation_token IS NULL"
 			when "disabled"
 				@range_sql << "AND confirmation_token IS NOT NULL"
-			end    
+			end  
+			  
     parameters.each do |parameter| 
+    	@office_container = ""
     	@res += " ("
     	   	
       searched_fields.each do |searched_field|

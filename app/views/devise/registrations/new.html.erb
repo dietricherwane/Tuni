@@ -88,25 +88,6 @@ $(document).ready(function() {
         }
       });  
     }
-    
-    $.fn.search_user = function(destination_url) { 
-      //$("#loader").show(); 
-      var v_search = $('#search').val();  
-      var v_status = $("input[name='status']:checked").val()            
-      $.ajax({   
-        url: destination_url,
-	      type: "GET",
-        data: {query: v_search, status: v_status},
-        error: function(){ 
-        	alert("error");
-          //$("#loader").hide();
-        },
-        success: function(response, response_status, xhr) {
-          //$("#result").html(response);
-          //$("#loader").hide();         
-        }
-      });  
-    }
         
     $.fn.getComboBoxValues = function(selected_value, target_tag, url) {
       $.ajax({      

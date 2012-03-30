@@ -41,6 +41,32 @@ class ApplicationController < ActionController::Base
 		 	  redirect_to sign_in_path, :notice => "Votre compte a été désactivé, veuillez contacter l'administrateur."
 		  end
 		end
+  end 
+  
+  def layout_used
+  	@user_status = current_user_status
+  	case @user_status
+			when 'Administrateur'
+				"application"
+			when 'Chef de direction'
+				"direction_chief"
+			when "Chef d'atelier"
+				"workshop_chief"
+			when "Chef d'équipe"
+				"team_chief"
+			else
+				"default"
+			end
+  end 
+  
+  def current_user_status
+  	@user_status = ""
+    if current_user.eql?(nil)
+    	#sign_out(current_user)
+   	  #redirect_to sign_in_path, :notice => "Veuillez d'abord vous connecter."
+   	else
+		  @user_status = Status.find_by_id(current_user.status_id).status_name
+		end
   end  
   
   def capitalization(raw_name)

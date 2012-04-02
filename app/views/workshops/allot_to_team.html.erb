@@ -1,12 +1,12 @@
 <%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
-<script type="text/javascript">		
+<script type="text/javascript">	
 $(function(){	
 	$('#collapser').jqcollapse({
-	   slide: true,
-	   speed: 1000,
-	   easing: 'easeOutCubic'
+		 slide: true,
+		 speed: 1000,
+		 easing: 'easeOutCubic'
 	});	
-});			
+});	
 </script>
 
 <h2 class="top-title">Affectation des temporaires aux équipes</h2><br />
@@ -74,7 +74,7 @@ $(function(){
 						<%= will_paginate @casuals %>
 					</div>
 					<br />
-  				<%= submit_tag "Enregistrer", :class => 'submit button large ui-corner-all' %>
+  				<%= submit_tag "Affecter", :class => 'submit button large ui-corner-all' %>
 				<% end %>								
 			</div>
 	</div>
@@ -91,7 +91,38 @@ $(function(){
 							<% unless @workshop.teams.eql?(nil) %>												
 								<% @workshop.teams.each do |team| %>
 									<li>
-										<div class = "direction team" style = "font-weight: bold;"><%= team.team_name + " (#{Casual.where("team_id = #{team.id}").count})"  %> <%=  %></div>
+										<div class = "direction team" style = "font-weight: bold;"><%= team.team_name %> (<%= Casual.where("team_id = #{team.id}").count %>)
+										</div>
+										<% unless Casual.where("team_id = #{team.id}").count.eql?(0) %>
+											<ul>
+												<% Casual.where("team_id = #{team.id}").each do |casual| %>		
+												<script type="text/javascript">
+												$(document).ready(function(){
+													$("#casual_<%= casual.id %>").CreateBubblePopup({
+														position : 'top',
+														align	 : 'center',
+														tail : {hidden: true
+														},									
+														innerHtml: "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %><br>Compagnie: <%= Company.find_by_id(casual.company_id).company_name %><br>Type: <%= CasualType.find_by_id(casual.casual_type_id).type_name %>",
+														innerHtmlStyle: {
+															color:'#FFFFFF', 
+															'text-align':'left',
+															padding:'2px',
+															'font-size':'13px'
+														},																		
+														themeName: 	'all-black',
+														themePath: 	'../../images/jquerybubblepopup-theme'								 
+													});
+												});
+												</script>										
+														<li>
+															<% div_for (casual) do %>
+																<%= casual.firstname+ " " +casual.lastname %>
+															<% end %>
+														</li>													
+												<% end %>
+											</ul>
+										<% end %>
 									</li>
 								<% end %>												
 							<% end %>		

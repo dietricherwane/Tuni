@@ -1,10 +1,24 @@
+<script type="text/javascript">		
+	options =	{ 
+		position : 'top',
+		align	 : 'center',									
+		innerHtmlStyle: {
+							color:'#FFFFFF', 
+							'text-align':'left',
+							padding:'2px',
+							'font-size':'13px'
+						},																
+		themeName: 	'all-black',
+		themePath: 	'../../images/jquerybubblepopup-theme'
+	};	
+</script>		
+
 <table class="list-table">
 	<thead class = "ui-widget-header ui-corner-all">
 		<tr>
-			<!--<th width="14%">Matricule</th>-->
-			<th width="14%">Atelier</th>
-			<th width="14%">Nom</th>
-			<th width="14%">Prénoms</th>
+			<th width="18%">Nom</th>
+			<th width="14%">Atelier</th>			
+			<th width="14%">Statut</th>
 			<th>Compagnie</th>
 			<th>Type</th>
 			<th>Date d'entrée</th>
@@ -20,23 +34,37 @@
 				<td class = "ui-widget-content"></td>
 				<td class = "ui-widget-content"></td>
 			</tr>
-		<% else %>
-			<% @casuals.each do |casual| %>
+		<% else %>	
+			<% @casuals.each do |casual| %>			
+				<script type="text/javascript">		
+					options['innerHtml'] = "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %>";								
+					$("#casual_<%= casual.id %>").CreateBubblePopup( options );
+				</script>		
 				<% if @tr_color %>
 					<tr class = "odd">
 				<% else %>
 					<tr>
 				<% end %>
 					<td class = "ui-widget-content">
+						<% div_for (casual) do %>
+							<%= casual.firstname+" "+casual.lastname %>
+						<% end %>
+					</td>
+					<td class = "ui-widget-content">
 							<%= Workshop.find_by_id(casual.workshop_id).workshop_name %>
-							<%#= casual.identifier %>
-					</td>
-					<td class = "ui-widget-content">
-						<%= casual.firstname %>
-					</td>	
-					<td class = "ui-widget-content">
-							<%= casual.lastname %>
-					</td>
+					</td>			
+					<td class = "ui-widget-content">		
+					<% case casual.casual_status(casual) %>
+						<% when "affected" %>	
+							<span class="button submit medium green-back fixed-width-100 ui-corner-all">Affecté</span><br /><div align = "center"><%= casual.casual_team(casual) %></div>
+						<% when "unaffected" %>
+							<span class="button submit medium grey-back fixed-width-100 ui-corner-all">Non Affecté</span>
+						<% when "retired" %>
+							<span class="button submit medium orange-back fixed-width-100 ui-corner-all">Retiré</span>
+						<% when "expired" %>
+							><span class="button submit medium red-back fixed-width-100 ui-corner-all">Expiré</span>						
+						<% end %>	
+					</td>													
 					<td class = "ui-widget-content">
 						<%= Company.find_by_id(casual.company_id).company_name %>
 					</td>	

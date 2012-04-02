@@ -64,8 +64,7 @@ class CasualsController < ApplicationController
     @res = "("
     @range_sql = " "
     @post_office_model = ["Direction", "Workshop", "Team"]
-    
-    
+        
     case range
 			when "expired"
 				@range_sql << "AND expired = true"

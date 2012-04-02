@@ -7,7 +7,7 @@ class WorkshopsController < ApplicationController
   def allot_to_team
   	@workshop = Workshop.find_by_id(current_user.status_number)
   	@teams = @workshop.teams
-  	@casuals = Casual.where("workshop_id = #{@workshop.id} AND team_id IS NULL").paginate(:page => params[:page], :per_page => 10)
+  	@casuals = Casual.where("workshop_id = #{@workshop.id} AND team_id IS NULL AND expired IS NOT TRUE").paginate(:page => params[:page], :per_page => 10)
   	@casual = Casual.new
   end
   

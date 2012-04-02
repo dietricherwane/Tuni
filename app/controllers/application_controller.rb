@@ -27,10 +27,6 @@ class ApplicationController < ActionController::Base
   	@status_number
   end
   
-  def user_enabled?
-  
-  end
-  
   def logout_disabled_user
     if current_user.eql?(nil)
     	sign_out(current_user)

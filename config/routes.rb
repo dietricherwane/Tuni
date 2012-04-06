@@ -41,6 +41,8 @@ Tuni::Application.routes.draw do
   match 'casuals/search' => 'casuals#search_ajax'
   match 'casual/allot_to_team' => 'workshops#allot_to_team', :as => :allot_casual_to_team
   match 'allocation' => 'workshops#casual_allocation', :as => :casual_allocation
+  match 'workshop/parameters' => 'workshops#parameters', :as => :workshop_parameters
+  match 'workshop/set_parameters' => 'workshops#set_parameters', :as => :set_workshop_parameters
   
   #resources :companies
   #resources :cities

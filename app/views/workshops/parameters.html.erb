@@ -1,0 +1,27 @@
+<h2 class="top-title">Paramètres</h2><br />
+<div class="column">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Nombre de temporaires par équipe</div>
+    	<div class="portlet-content"> 
+    		<%= form_tag set_workshop_parameters_path do %>   	
+    			<div id= "space"><%= label_tag "Equipe" %><br />
+					<%= collection_select(:post, :team_id, @teams, :id, :team_name, options ={:prompt => "-Veuillez choisir une équipe-"}) %></div>							
+					<div id = "space"><%= label_tag "Nombre maximal de temporaires" %><br />
+					<%= text_field_tag 'casual_number', '' %></div>
+					<br />
+  				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all' %>
+				<% end %>					
+			</div>
+	</div>
+</div>
+
+<div class="column_right">
+	<div class="portlet" id="widget-2">
+    <div class="portlet-header">Liste des équipes</div>
+    	<div class="portlet-content"> 
+    		<% @teams.each do |team| %>
+    			<%= team.team_name %> (<%= Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count %>/<%= team.max_number_of_casuals %>)<br /><br />
+    		<% end %>				
+			</div>
+	</div>
+</div>

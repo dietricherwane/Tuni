@@ -73,4 +73,8 @@ class ApplicationController < ActionController::Base
   	@name_capitalized.strip
   end
   
+  def is_not_a_number?(s)
+  	s.to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil ? true : false 
+	end
+  
 end

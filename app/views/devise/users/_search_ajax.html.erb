@@ -1,16 +1,18 @@
 <script type="text/javascript">		
-	options =	{ 
-		position : 'top',
-		align	 : 'center',						
-		innerHtmlStyle: {
-							color:'#FFFFFF', 
-							'text-align':'left',
-							padding:'2px',
-							'font-size':'13px'
-						},																
-		themeName: 	'all-black',
-		themePath: 	'../../../images/jquerybubblepopup-theme'
-	};	
+	$(document).ready(function() {
+		options =	{ 
+			position : 'top',
+			align	 : 'center',						
+			innerHtmlStyle: {
+								color:'#FFFFFF', 
+								'text-align':'left',
+								padding:'2px',
+								'font-size':'13px'
+							},																
+			themeName: 	'all-black',
+			themePath: 	'../../../images/jquerybubblepopup-theme'
+		};	
+	});
 </script>
 <table class="list-table">
 	<thead class = "ui-widget-header ui-corner-all">
@@ -31,9 +33,11 @@
   </tr>
 <% else %>
 	<% @users.each do |r| %>
-		<script type="text/javascript">		
+		<script type="text/javascript">	
+		$(document).ready(function() {	
 			options['innerHtml'] = "Numéro de poste: <%= r.phone_number %><br>Numéro de mobile: <%= r.mobile_number %><br>E-mail: <%= r.email %>";								
 			$("#user_<%= r.id %>").CreateBubblePopup( options );
+		});
 		</script>	
 		<% if @tr_color %>
 			<tr class = "odd">

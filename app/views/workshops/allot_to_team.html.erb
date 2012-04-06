@@ -91,11 +91,11 @@ $(function(){
 							<% unless @workshop.teams.eql?(nil) %>												
 								<% @workshop.teams.each do |team| %>
 									<li>
-										<div class = "direction team" style = "font-weight: bold;"><%= team.team_name %> (<%= Casual.where("team_id = #{team.id}").count %>)
+										<div class = "direction team" style = "font-weight: bold;"><%= team.team_name %> (<%= Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count %> / <%= team.max_number_of_casuals %>)
 										</div>
-										<% unless Casual.where("team_id = #{team.id}").count.eql?(0) %>
+										<% unless Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count.eql?(0) %>
 											<ul>
-												<% Casual.where("team_id = #{team.id}").each do |casual| %>		
+												<% Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").each do |casual| %>		
 												<script type="text/javascript">
 												$(document).ready(function(){
 													$("#casual_<%= casual.id %>").CreateBubblePopup({

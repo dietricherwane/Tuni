@@ -30,22 +30,24 @@ class CasualsController < ApplicationController
 		@direction_id = params[:post][:direction_id]
 		@workshop = params[:workshop_name]
 		
-		if (@firstname.eql?(nil) || @lastname.eql?(nil) || @identifier.empty? || @city_id.eql?(nil) || @company_id.eql?(nil) || @casual_type_id.eql?(nil) || @direction_id.eql?(nil) || @workshop.eql?("-Veuillez choisir un atelier-") || @workshop.eql?(nil))
-			redirect_to new_casual_path, :alert => "Veuillez correctement remplir les champs."
+		if (@firstname.eql?(nil) || @lastname.eql?(nil) || is_not_a_number?(@identifier) || @city_id.eql?(nil) || @company_id.eql?(nil) || @casual_type_id.eql?(nil) || @direction_id.eql?(nil) || @workshop.eql?("-Veuillez choisir un atelier-") || @workshop.eql?(nil))
+			redirect_to :back, :alert => "Veuillez correctement remplir les champs."
 		else
-			if (@phone_number.empty? || (@phone_number.size.eql?(8) && @phone_number.to_i != 0))				
-				if Casual.find_by_identifier("#{@identifier+City.find_by_id(@city_id.to_i).short_name}").eql?(nil)
+			if (@phone_number.empty? || (@phone_number.size.eql?(8) && !is_not_a_number?(@phone_number)))				
+
+					if Casual.find_by_identifier("#{@identifier+City.find_by_id(@city_id.to_i).short_name}").eql?(nil)
 					if Workshop.find_by_workshop_name(@workshop).max_number_of_casuals <= Casual.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id}").count
 						redirect_to :back, :alert => "Vous avez atteint le nombre maximal de personnes pouvant être affectées dans l'atelier: #{@workshop}."
 					else
 						Casual.create(:firstname => capitalization(@firstname), :lastname => capitalization(@lastname), :phone_number => @phone_number, :birthdate => @birthdate, :identifier => "#{@identifier+City.find_by_id(@city_id.to_i).short_name}", :city_id => @city_id.to_i, :company_id => @company_id.to_i, :casual_type_id => @casual_type_id.to_i, :workshop_id => Workshop.find_by_workshop_name(@workshop).id)
 					# lié au defaultscope de Casual
 						Casual.first.migration_dates.create(:entrance_date => Date.today.beginning_of_week)
-						redirect_to new_casual_path, :notice => "Le temporaire #{capitalization(@firstname)} #{capitalization(@lastname)} a été créé."
+						redirect_to :back, :notice => "Le temporaire #{capitalization(@firstname)} #{capitalization(@lastname)} a été créé."
 					end
 				else
 					redirect_to :back, :alert => "Un temporaire portant ce matricule existe déjà."
 				end
+
 			else
 				redirect_to :back, :alert => "Le numéro de téléphone doit être un nombre de 8 chiffres."
 			end

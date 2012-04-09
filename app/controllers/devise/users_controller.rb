@@ -205,7 +205,7 @@ class Devise::UsersController < Devise::RegistrationsController
 					end
 				when "Equipe"
 					if Team.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id} AND team_name = '#{capitalization(@value)}'")
-						Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value))
+						Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value), :max_number_of_casuals => 10)
 						dae_path_on_success("L'équipe:", capitalization(@value))
 					else
 						dae_path_on_failure("Une équipe du même nom existe déjà dans l'atelier.")

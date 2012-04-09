@@ -104,7 +104,7 @@ $(document).ready(function() {
 					<div id= "space"><%= f.label 'Date de naissance' %><br />
 					<%= f.date_select :birthdate, :start_year => (Time.now.year - 80), :end_year => (Time.now.year - 15), :use_month_numbers => true %></div>
 		
-					<div id= "space"><%= f.label "Numéro d'extrait de naissance" %><br />
+					<div id= "space"><%= f.label "Matricule" %><br />
 					<%= f.text_field :identifier  %></div>
 					
 					<div id= "space"><%= f.label "Ville de naissance" %><br />

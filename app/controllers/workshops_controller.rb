@@ -11,6 +11,7 @@ class WorkshopsController < ApplicationController
   end
   
   def casual_allocation
+  	@team_id = params[:post][:team_id].to_i  
   	if params[:post][:team_id].empty?
   		redirect_to :back, :alert => "Veuillez choisir l'équipe dans laquelle affecter les temporaires."
   	else
@@ -23,13 +24,17 @@ class WorkshopsController < ApplicationController
 		 		end
 		  }
 			if @casual_checked
-				@team = Team.find_by_id(params[:post][:team_id].to_i)
-		 		@casuals.each_pair {|key, value|
-			 		if value.to_i.eql?(1)
-			 			Casual.find_by_id(key.to_i).update_attribute(:team_id, Team.find_by_id(@team).id)		 			
-			 		end
-				}		
-				redirect_to :back, :notice => "Les temporaires ont été affectés dans l'équipe #{@team.team_name}."
+				if Casual.where("team_id = #{@team_id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count == Team.find_by_id(@team_id).max_number_of_casuals
+					redirect_to :back, :alert => "Le nombre maximal de temporaires dans cette équipe a déjà été atteint."
+				else
+					@team = Team.find_by_id(@team_id)
+			 		@casuals.each_pair {|key, value|
+				 		if value.to_i.eql?(1)
+				 			Casual.find_by_id(key.to_i).update_attribute(:team_id, Team.find_by_id(@team).id)		 			
+				 		end
+					}		
+					redirect_to :back, :notice => "Les temporaires ont été affectés dans l'équipe #{@team.team_name}."
+				end
 			else
 				redirect_to :back, :alert => "Veuillez affecter au moins un temporaire."
 			end
@@ -41,14 +46,15 @@ class WorkshopsController < ApplicationController
   end
   
   def set_parameters
+  	@team_id = params[:post][:team_id].to_i
   	if params[:post][:team_id].empty?
   		redirect_to :back, :alert => "Veuillez choisir l'équipe dont vous voulez modifier le nombre maximal de temporaires."
   	else
   		if is_not_a_number?(params[:casual_number]) || params[:casual_number].to_i <= 0
   			redirect_to :back, :alert => "Le nombre maximal de temporaires ne doit pas être vide et doit être numérique."
   		else
-  			if params[:casual_number].to_i < Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count
-  				redirect_to :back, :alert => "Le nombre maximal de temporaires est inférieur au nombre de temporaires danss l'équipe."
+  			if params[:casual_number].to_i < Casual.where("team_id = #{@team_id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count
+  				redirect_to :back, :alert => "Le nombre maximal de temporaires est inférieur au nombre de temporaires dans l'équipe."
   			else
   				Team.find_by_id(params[:post][:team_id].to_i).update_attribute(:max_number_of_casuals, params[:casual_number].to_i)
   			redirect_to :back, :notice => "Le nombre maximal de temporaires de l'équipe: #{Team.find_by_id(params[:post][:team_id].to_i).team_name} a été fixé à: #{params[:casual_number].to_i}."

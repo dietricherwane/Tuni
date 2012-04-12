@@ -26,7 +26,7 @@ $(document).ready(function() {
 	      type: "GET",
         data: {query: v_search, status: v_status},
         error: function(){ 
-        	alert("error");
+        	alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
         },
         success: function(response, response_status, xhr) {
           $("#result").html(response);       
@@ -42,7 +42,7 @@ $(document).ready(function() {
 	      type: "GET",
         data: {query: v_search, status: v_status},
         error: function(){ 
-        	alert("error");
+        	alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
         },
         success: function(response, response_status, xhr) {
           $("#result").html(response);        
@@ -55,7 +55,7 @@ $(document).ready(function() {
         url: url,
         data: selected_value,
         dataType: "text",
-        error: function(){ alert("error"); },
+        error: function(){ alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter."); },
         success: function(response, response_status, xhr) {
           $(target_tag).children().remove();
           $(response).appendTo(target_tag);        

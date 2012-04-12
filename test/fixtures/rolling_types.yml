@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  rolling_type: MyString
+  meaning: MyString
+  number_of_hours: 1
+
+two:
+  rolling_type: MyString
+  meaning: MyString
+  number_of_hours: 1

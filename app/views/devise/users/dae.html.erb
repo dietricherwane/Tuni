@@ -121,7 +121,7 @@ $(document).ready(function() {
         url: url,
         data: selected_value,
         dataType: "text",
-        error: function(){ alert("error"); },
+        error: function(){ alert("Votre session a expié. Veuillez vous déconnecter et vous reconnecter."); },
         success: function(response, response_status, xhr) {
           $(target_tag).children().remove();
           $(response).appendTo(target_tag);        
@@ -288,7 +288,7 @@ $(document).ready(function() {
 						</div>
 					</p>
 									 
-					<div id = "valeur"><div id = "space"><%= label_tag "Veuillez entrer la valeur" %><br />
+					<div id = "valeur"><div id = "space"><%= label_tag "Veuillez entrer le nom de l'élément" %><br />
 					<%= text_field_tag 'valeur', '' %></div></div>
 					
 					<br />

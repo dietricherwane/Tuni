@@ -6,7 +6,7 @@ class WorkshopsController < ApplicationController
 	
   def allot_to_team
   	@workshop = Workshop.find_by_id(current_user.status_number)
-  	@teams = @workshop.teams.order("team_name ASC")
+  	@teams = @workshop.teams.where("disabled IS NOT TRUE").order("team_name ASC")
   	@casuals = Casual.where("workshop_id = #{@workshop.id} AND team_id IS NULL AND expired IS NOT TRUE").paginate(:page => params[:page], :per_page => 15)
   end
   
@@ -60,6 +60,41 @@ class WorkshopsController < ApplicationController
   			redirect_to :back, :notice => "Le nombre maximal de temporaires de l'équipe: #{Team.find_by_id(params[:post][:team_id].to_i).team_name} a été fixé à: #{params[:casual_number].to_i}."
   			end
   		end
+  	end
+  end
+  
+  def configuration_plan
+  	@workshop = Workshop.find_by_id(current_user.status_number)
+  	@teams = @workshop.teams.where("disabled IS NOT TRUE").order("team_name ASC")
+  	@rolling_types = RollingType.where("disabled IS NOT TRUE").order("type_name ASC")
+  end
+  
+  def save_configuration_plan
+  	@team = params[:post][:team_id]
+  	@lines = {}
+		@lines.merge!(params[:post])
+		@line_checked = false
+		@lines.each_pair {|key, value|
+	 		if value.to_i.eql?(1)
+	 			@line_checked =	true 			
+	 		end
+	  }
+  	@monday_plan = params[:monday][:rolling_type_id]
+  	@tuesday_plan = params[:tuesday][:rolling_type_id]
+  	@wednesday_plan = params[:wednesday][:rolling_type_id]
+  	@thursday_plan = params[:thursday][:rolling_type_id]
+  	@friday_plan = params[:friday][:rolling_type_id]
+  	@saturday_plan = params[:saturday][:rolling_type_id]
+  	@sunday_plan = params[:sunday][:rolling_type_id]
+  	@alert = <<-HTML
+		  Veuillez choisir l'équipe dont vous souhaitez faire la configuration et le plan de production. 
+		  <br />Cochez les lignes sur lesquelles doivent travailler cette équipe.
+		  <br />Choisissez le nombre d'heures à effectuer par jour.
+		  HTML
+  
+  	if (@team.empty? || @line_checked.eql?(false) || (@monday_plan.empty? && @tuesday_plan.empty? && @wednesday_plan.empty? && @thursday_plan.empty? && @friday_plan.empty? && @saturday_plan.empty? && @sunday_plan.empty?))
+  		redirect_to :back, :alert => @alert.html_safe
+  	else
   	end
   end
 

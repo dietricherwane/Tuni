@@ -568,6 +568,41 @@ button.submit.round, input.submit.round, .button.submit.round {
 	border-right:solid 1px #e1e1e1;
 }
 
+#monday_rolling_type_id{
+	width:100%;
+	font-size:10px;
+}
+
+#tuesday_rolling_type_id{
+	width:100%;
+	font-size:10px;
+}
+
+#wednesday_rolling_type_id{
+	width:100%;
+	font-size:10px;
+}
+
+#thursday_rolling_type_id{
+	width:100%;
+	font-size:10px;
+}
+
+#friday_rolling_type_id{
+	width:100%;
+	font-size:10px;
+}
+
+#saturday_rolling_type_id{
+	width:100%;
+	font-size:10px;
+}
+
+#sunday_rolling_type_id{
+	width:100%;
+	font-size:10px;
+}
+
 /*.list-table th, .mini-.list-table th {
 	color:#DDD;
 	padding:8px;

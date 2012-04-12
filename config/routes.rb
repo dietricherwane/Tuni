@@ -43,6 +43,8 @@ Tuni::Application.routes.draw do
   match 'allocation' => 'workshops#casual_allocation', :as => :casual_allocation
   match 'workshop/parameters' => 'workshops#parameters', :as => :workshop_parameters
   match 'workshop/set_parameters' => 'workshops#set_parameters', :as => :set_workshop_parameters
+  match 'workshop/configuration' => 'workshops#configuration_plan', :as => :configuration_plan
+  match 'workshop/save_configuration' => 'workshops#save_configuration_plan', :as => :save_configuration_plan
   
   #resources :companies
   #resources :cities

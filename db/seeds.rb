@@ -34,6 +34,8 @@
 	Workshop.find_by_workshop_name('SAP1').teams.create([{ :team_name => 'SAP1T1' }, { :team_name => 'SAP1T2' }])
 	Workshop.find_by_workshop_name('SAP2').teams.create([{ :team_name => 'SAP2T1' }, { :team_name => 'SAP2T2' }])
 	Workshop.find_by_workshop_name('SAP3').teams.create([{ :team_name => 'SAP3T1' }, { :team_name => 'SAP3T2' }])
+	
+	RollingType.create([{ :rolling_type => 'J', :meaning => "Journalier", :number_of_hours => 8 }, { :rolling_type => 'S', :meaning => "Demi-journée", :number_of_hours => 5 }, { :rolling_type => 'A', :meaning => "Après-midi", :number_of_hours => 7 }, { :rolling_type => 'N', :meaning => "Nuit", :number_of_hours => 9 }])
 	#User.create(:email => "dietricherwane@live.fr", :password => "dukenukem", :password_confirmation => "dukenukem", :firstname => "Diet", :lastname => "Damon", :status_id => 2)
 	
 #testing purpose only

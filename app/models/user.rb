@@ -2,6 +2,7 @@
 class User < ActiveRecord::Base
 	default_scope order('users.created_at DESC', 'users.status_id ASC', 'users.status_number ASC', 'users.firstname ASC', 'users.lastname ASC')
 	belongs_to :statuses
+	has_many :configurations
 	#validates :email, :uniqueness => true, :length => { :within => 5..50 }, :format => { :with => /^[^@][\w.-]+@[\w.-]+[.][a-z]{2,4}$/i }
 	validates :firstname, :length => { :in => 2..10 }, :presence => true
 	validates :lastname, :length => { :in => 2..20 }, :presence => true

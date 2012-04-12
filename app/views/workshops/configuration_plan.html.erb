@@ -1,0 +1,93 @@
+<%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
+<script type="text/javascript">	
+$(function(){	
+	$('#collapser').jqcollapse({
+		 slide: true,
+		 speed: 1000,
+		 easing: 'easeOutCubic'
+	});	
+});	
+</script>
+
+<h2 class="top-title">Configuration équipe-ligne || Plan de production</h2><br />
+<div class="column_large_left">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Choix des équipes et de leur nombre d'heures de travail</div>
+    	<div class="portlet-content"> 
+    		<%= form_tag save_configuration_plan_path do %>   	
+    			<div id= "space"><%= label_tag "Equipe" %><br />
+					<%= collection_select(:post, :team_id, @teams, :id, :team_name, options ={:prompt => "-Veuillez choisir une équipe-"}) %></div>							
+					
+					<ul id="collapser">
+						<% unless @workshop.eql?(nil) %>
+						<% unless @workshop.sections.eql?(nil) %>												
+							<% @workshop.sections.each do |section| %>
+								<li><div class = "direction section" style = "font-weight: bold;"><%= section.section_name %></div>
+									<ul>
+										<% unless section.lines.eql?(nil) %>
+											<% section.lines.each do |line| %>
+												<li>
+													<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %>&nbsp;&nbsp;<%= check_box("post", "#{line.id}") %></div>
+												</li>
+											<% end %>
+										<% end %>
+									</ul>
+								</li>
+							<% end %>												
+						<% end %>
+						<% end %>		
+					</ul>
+					<br />
+					<table class="list-table">
+						<thead class = "ui-widget-header ui-corner-all">
+							<tr>					
+								<th width="14%">Lundi</th>
+								<th width="14%">Mardi</th>
+								<th width="14%">Mercredi</th>
+								<th width="14%">Jeudi</th>
+								<th width="14%">Vendredi</th>
+								<th width="14%">Samedi</th>
+								<th width="14%">Dimanche</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class = "odd">
+								<td class = "ui-widget-content">
+									<%= collection_select(:monday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>	
+								<td class = "ui-widget-content">
+									<%= collection_select(:tuesday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:wednesday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:thursday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:friday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:saturday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:sunday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>	
+							</tr>
+						</tbody>
+					</table>
+					<br />
+  				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all' %>
+				<% end %>								
+			</div>
+	</div>
+</div>
+
+<div class="column_right">
+	<div class="portlet" id="widget-2">
+    <div class="portlet-header">Visualisation</div>
+    	<div class="portlet-content">    								
+														
+			</div>
+	</div>
+</div>

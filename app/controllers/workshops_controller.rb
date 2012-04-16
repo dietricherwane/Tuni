@@ -70,15 +70,17 @@ class WorkshopsController < ApplicationController
   end
   
   def save_configuration_plan
-  	@team = params[:post][:team_id]
+  	@team_id = params[:post][:team_id]  	
   	@lines = {}
 		@lines.merge!(params[:post])
 		@line_checked = false
+		@line_id_table = []
 		@lines.each_pair {|key, value|
 	 		if value.to_i.eql?(1)
-	 			@line_checked =	true 			
+	 			@line_checked =	true
+	 			@line_id_table << key.to_i 			 			
 	 		end
-	  }
+		}  	
   	@monday_plan = params[:monday][:rolling_type_id]
   	@tuesday_plan = params[:tuesday][:rolling_type_id]
   	@wednesday_plan = params[:wednesday][:rolling_type_id]
@@ -90,11 +92,27 @@ class WorkshopsController < ApplicationController
 		  Veuillez choisir l'équipe dont vous souhaitez faire la configuration et le plan de production. 
 		  <br />Cochez les lignes sur lesquelles doivent travailler cette équipe.
 		  <br />Choisissez le nombre d'heures à effectuer par jour.
-		  HTML
+		HTML
   
-  	if (@team.empty? || @line_checked.eql?(false) || (@monday_plan.empty? && @tuesday_plan.empty? && @wednesday_plan.empty? && @thursday_plan.empty? && @friday_plan.empty? && @saturday_plan.empty? && @sunday_plan.empty?))
+  	if (@team_id.empty? || @line_checked.eql?(false) || (@monday_plan.empty? && @tuesday_plan.empty? && @wednesday_plan.empty? && @thursday_plan.empty? && @friday_plan.empty? && @saturday_plan.empty? && @sunday_plan.empty?))
   		redirect_to :back, :alert => @alert.html_safe
-  	else
+  	else 		
+  		@week_number = Date.today.cweek + 2
+  		@team = Team.find_by_id(@team_id.to_i)
+  		@team.configurations.create(:user_id => current_user.id, :week_number => @week_number)
+  		@configuration = Configuration.where(:week_number => @week_number, :team_id => @team.id).last
+  		@line_id_table.each do |line_id|
+  			@configuration.lines << Line.find_by_id(line_id)
+  		end
+  		
+  		@configuration.create_rolling_monday(:time_amount => RollingType.find_by_id(@monday_plan.to_i).number_of_hours) unless @monday_plan.empty?
+  		@configuration.create_rolling_tuesday(:time_amount => RollingType.find_by_id(@tuesday_plan.to_i).number_of_hours) unless @tuesday_plan.empty?
+  		@configuration.create_rolling_wednesday(:time_amount => RollingType.find_by_id(@wednesday_plan.to_i).number_of_hours) unless @wednesday_plan.empty?
+  		@configuration.create_rolling_thursday(:time_amount => RollingType.find_by_id(@thursday_plan.to_i).number_of_hours) unless @thursday_plan.empty?
+  		@configuration.create_rolling_friday(:time_amount => RollingType.find_by_id(@friday_plan.to_i).number_of_hours) unless @friday_plan.empty?
+  		@configuration.create_rolling_saturday(:time_amount => RollingType.find_by_id(@saturday_plan.to_i).number_of_hours) unless @saturday_plan.empty?
+  		@configuration.create_rolling_sunday(:time_amount => RollingType.find_by_id(@sunday_plan.to_i).number_of_hours) unless @sunday_plan.empty?
+  		redirect_to :back, :notice => "#{Team.find_by_id(@team_id.to_i).team_name}: la configuration et le plan de production ont été faits."
   	end
   end
 

@@ -32,12 +32,8 @@ $(function(){
 						<tbody>
 							<% if @casuals.nil? or @casuals.empty? %>
 								<tr>
-									<td class = "ui-widget-content">Pas de résultat</td>
-									<td class = "ui-widget-content"></td>
-									<td class = "ui-widget-content"></td>
-									<td class = "ui-widget-content"></td>
-									<td class = "ui-widget-content"></td>
-									<td class = "ui-widget-content"></td>
+									<td colspan = 6 class = "ui-widget-content" >Aucun temporaire à affecter</td>
+									
 								</tr>
 							<% else %>
 								<% @casuals.each do |casual| %>

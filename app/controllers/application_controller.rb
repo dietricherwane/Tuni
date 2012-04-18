@@ -2,6 +2,8 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   
+  before_filter :set_cache_buster
+  
   def change_password
   	if user_signed_in?
 			if (current_user.sign_in_count.eql?(1) && current_user.reset_password_token.eql?(nil))
@@ -76,5 +78,11 @@ class ApplicationController < ActionController::Base
   def is_not_a_number?(s)
   	s.to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil ? true : false 
 	end
+	
+	def set_cache_buster
+    response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+  end
   
 end

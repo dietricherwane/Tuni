@@ -304,6 +304,7 @@ $(document).ready(function() {
     <div class="portlet-header">Visualisation</div>
     	<div class="portlet-content">    				
 				<ul id="collapser">
+					<% unless @directions.eql?(nil) %>
 					<% @directions.each do |direction| %>
 						<li><div class = "direction dir" style = "font-weight: bold;"><%= direction.direction_name %></div>
 							<% unless direction.workshops.eql?(nil) %>
@@ -348,6 +349,7 @@ $(document).ready(function() {
 								</ul>
 							<% end %>
 						</li>
+					<% end %>
 					<% end %>
 				</ul>
 			</div>

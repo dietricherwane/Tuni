@@ -67,6 +67,12 @@ class WorkshopsController < ApplicationController
   	@workshop = Workshop.find_by_id(current_user.status_number)
   	@teams = @workshop.teams.where("disabled IS NOT TRUE").order("team_name ASC")
   	@rolling_types = RollingType.where("disabled IS NOT TRUE").order("type_name ASC")
+  	@configured_teams_table = []
+  	@teams.each do |team|
+  		unless Configuration.where("week_number = #{Date.today.cweek + 1} AND team_id = #{team.id}").empty?
+  			@configured_teams_table << team
+  		end
+  	end 
   end
   
   def save_configuration_plan
@@ -93,11 +99,12 @@ class WorkshopsController < ApplicationController
 		  <br />Cochez les lignes sur lesquelles doivent travailler cette équipe.
 		  <br />Choisissez le nombre d'heures à effectuer par jour.
 		HTML
-  
+  	
+  	
   	if (@team_id.empty? || @line_checked.eql?(false) || (@monday_plan.empty? && @tuesday_plan.empty? && @wednesday_plan.empty? && @thursday_plan.empty? && @friday_plan.empty? && @saturday_plan.empty? && @sunday_plan.empty?))
   		redirect_to :back, :alert => @alert.html_safe
   	else 		
-  		@week_number = Date.today.cweek + 2
+  		@week_number = Date.today.cweek + 1
   		@team = Team.find_by_id(@team_id.to_i)
   		@team.configurations.create(:user_id => current_user.id, :week_number => @week_number)
   		@configuration = Configuration.where(:week_number => @week_number, :team_id => @team.id).last

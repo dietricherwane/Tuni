@@ -106,18 +106,18 @@ class Devise::UsersController < Devise::RegistrationsController
   def enable_user 
   	@user = User.find_by_id(params[:format])
   	@user.update_attribute(:enabled, true)
-  	redirect_to dashboard_path, :notice => "Le compte de #{@user.lastname} #{@user.firstname} a été activé"
+  	redirect_to dashboard_path, :notice => "Le compte de #{@user.firstname} #{@user.lastname} a été activé"
   end
   
   def disable_user
   	@user = User.find_by_id(params[:format])
   	@user.update_attribute(:enabled, false)
-  	redirect_to dashboard_path, :notice => "Le compte de #{@user.lastname} #{@user.firstname} a été désactivé"
+  	redirect_to dashboard_path, :notice => "Le compte de #{@user.firstname} #{@user.lastname} a été désactivé"
   end
   
   def delete_user
   	@user = User.find_by_id(params[:format])
-  	@user_infos = "#{@user.lastname} #{@user.firstname}"
+  	@user_infos = "#{@user.firstname} #{@user.lastname} "
   	User.delete(@user.id)
   	redirect_to dashboard_path, :notice => "Le compte de #{@user_infos} a été supprimé"
   end

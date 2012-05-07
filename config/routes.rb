@@ -43,8 +43,13 @@ Tuni::Application.routes.draw do
   match 'allocation' => 'workshops#casual_allocation', :as => :casual_allocation
   match 'workshop/parameters' => 'workshops#parameters', :as => :workshop_parameters
   match 'workshop/set_parameters' => 'workshops#set_parameters', :as => :set_workshop_parameters
-  match 'workshop/configuration' => 'workshops#configuration_plan', :as => :configuration_plan
-  match 'workshop/save_configuration' => 'workshops#save_configuration_plan', :as => :save_configuration_plan
+  match 'workshop/next_week_configuration' => 'workshops#next_week_configuration_plan', :as => :next_week_configuration_plan
+  match 'workshop/current_week_configuration' => 'workshops#current_week_configuration_plan', :as => :current_week_configuration_plan
+  match 'workshop/save_next_week_configuration' => 'workshops#save_next_week_configuration_plan', :as => :save_next_week_configuration_plan
+  match 'workshop/save_current_week_configuration' => 'workshops#save_current_week_configuration_plan', :as => :save_current_week_configuration_plan
+  match 'workshop/delete_configuration_plan' => 'workshops#delete_configuration_plan', :as => :delete_configuration_plan
+  match 'workshop/delete_line' => 'workshops#delete_line', :as => :delete_line
+  match 'workshop/delete_working_day' => 'workshops#delete_working_day', :as => :delete_working_day
   
   #resources :companies
   #resources :cities

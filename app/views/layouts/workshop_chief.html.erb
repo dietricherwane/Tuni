@@ -3,7 +3,7 @@
 <head>
 	<title>Interface d'administration</title>
   <%= stylesheet_link_tag 'reset-min', 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'jquery.bubblepopup.v2.3.1', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
-  <%= javascript_include_tag 'jquery.js', 'jquery.bubblepopup.v2.3.1.min', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js' %>
+  <%= javascript_include_tag 'jquery.js', 'rails.js', 'jquery.bubblepopup.v2.3.1.min', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js', 'application.js' %>
 </head>
 
 <body>	
@@ -37,7 +37,12 @@
                     <!--<li><%= link_to "Dashboard", dashboard_path, :id => "menu-dashboard" %></li>
                     <li><%= link_to "DAE", dae_path, :id => "menu-page" %></li>-->   
                     <li><%= link_to "Temporaires->Equipe", allot_casual_to_team_path, :id => "menu-page" %></li> 
-                    <li><%= link_to "Configuration", configuration_plan_path, :id => "menu-page" %></li>             
+                    <li><%= link_to "Configuration", next_week_configuration_plan_path, :id => "menu-page" %>
+		                  <ul class="subnav">
+		                    <li><%= link_to "Semaine en cours", current_week_configuration_plan_path %></li>
+		                    <li><%= link_to "Semaine prochaine", next_week_configuration_plan_path %></li>
+		                  </ul>
+                    </li>             
                     <!--<li><%= link_to "Temporaires", new_casual_path, :id => "menu-page" %>
                     	<ul class="subnav">
                         <li><%= link_to "Création", new_casual_path %></li>

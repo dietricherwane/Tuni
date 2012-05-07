@@ -23,6 +23,7 @@ label{
 #casual_birthdate_3i{
 	width:50px;
 }
+
  /*****Custom*****/
 
 /********* GLOBAL SETTINGS **********/
@@ -434,7 +435,9 @@ button.submit.orange-back, input.submit.orange-back, .button.submit.orange-back 
 	background-color: #ff5c00;
 }
 
-button.submit.yellow-back, input.submit.yellow-back, .button.submit.yellow-back {
+button.submit.yellow-back, input.submit.yellow-back, .button.submit.yellow-back {delete-record{
+	background-image:url("../images/icons/delete.png");
+} 
 	background-color: #ffb515;
 }
 
@@ -817,6 +820,14 @@ a.file-link.list-file{
 	text-decoration:none;
 }
 
+.day{
+	background-repeat:no-repeat;
+	background-position:left;
+	color:#111;
+	font-size:0.9em;
+	text-decoration:none;
+}
+
 .direction.dir{
 	background-image:url('../images/icons/directions/direction.png');
 }
@@ -835,6 +846,10 @@ a.file-link.list-file{
 
 .direction.line{
 	background-image:url('../images/icons/directions/line.png');
+}
+
+.direction.delete_button{
+	background-image:url("../images/icons/delete.png");
 }
 /*******************************************/
 

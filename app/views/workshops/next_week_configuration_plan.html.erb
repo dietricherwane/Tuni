@@ -1,0 +1,151 @@
+<%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
+<script type="text/javascript">	
+$(function(){	
+	$('#collapser').jqcollapse({
+		 slide: true,
+		 speed: 1000,
+		 easing: 'easeOutCubic'
+	});	
+});	
+</script>
+
+<h2 class="top-title">Configuration équipe-ligne || Plan de production du <%= @beginning_of_next_week.strftime("%d") %> au <%= @end_of_next_week.strftime("%d %B %Y") %></h2><br />
+<div class="column_large_left">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Choix des équipes et de leur nombre d'heures de travail</div>
+    	<div class="portlet-content"> 
+    		<%= form_tag save_next_week_configuration_plan_path do %>   	
+    			<div id= "space"><%= label_tag "Equipe" %><br />
+					<%= collection_select(:post, :team_id, @teams, :id, :team_name, options ={:prompt => "-Veuillez choisir une équipe-"}) %></div>							
+					
+					<ul id="collapser">
+						<% unless @workshop.eql?(nil) %>
+						<% unless @workshop.sections.eql?(nil) %>												
+							<% @workshop.sections.each do |section| %>
+								<li><div class = "direction section" style = "font-weight: bold;"><%= section.section_name %></div>
+									<ul>
+										<% unless section.lines.eql?(nil) %>
+											<% section.lines.each do |line| %>
+												<li>
+													<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %>&nbsp;&nbsp;<%= check_box("post", "#{line.id}") %></div>
+												</li>
+											<% end %>
+										<% end %>
+									</ul>
+								</li>
+							<% end %>												
+						<% end %>
+						<% end %>		
+					</ul>
+					<br />
+					<table class="list-table">
+						<thead class = "ui-widget-header ui-corner-all">
+							<tr>					
+								<th width="14%">Lundi</th>
+								<th width="14%">Mardi</th>
+								<th width="14%">Mercredi</th>
+								<th width="14%">Jeudi</th>
+								<th width="14%">Vendredi</th>
+								<th width="14%">Samedi</th>
+								<th width="14%">Dimanche</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class = "odd">
+								<td class = "ui-widget-content">
+									<%= collection_select(:monday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>	
+								<td class = "ui-widget-content">
+									<%= collection_select(:tuesday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:wednesday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:thursday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:friday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:saturday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>
+								<td class = "ui-widget-content">
+									<%= collection_select(:sunday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+								</td>	
+							</tr>
+						</tbody>
+					</table>
+					<br />
+  				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+				<% end %>								
+			</div>
+	</div>
+</div>
+
+<div class="column_right">
+	<div class="portlet" id="widget-2">
+    <div class="portlet-header">Visualisation</div>
+    	<div class="portlet-content">    								
+				<ul id="collapser">
+					<% unless @configured_teams_table.empty? %>
+						<% @configured_teams_table.each do |configured_team| %>
+							<li><div class = "direction team" style = "font-weight: bold;"><%= configured_team.team_name %></div>							
+								<ul>
+									<% Configuration.where("week_number = #{Date.today.cweek + 1} AND team_id = #{configured_team.id}").each do |configuration| %>
+										<% configuration.lines.each do |line| %>
+											<li>
+												<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %></div>
+											</li>
+										<% end %>
+											<li>Jours de travail
+												<ul>
+													<% unless configuration.rolling_monday.eql?(nil) %>
+													<li>
+														<div class = "day" style = "font-weight: bold;">Lundi: <%= configuration.rolling_monday.time_description %></div>
+													</li>
+													<% end %>
+													<% unless configuration.rolling_tuesday.eql?(nil) %>
+													<li>
+														<div class = "day" style = "font-weight: bold;">Mardi: <%= configuration.rolling_tuesday.time_description %></div>
+													</li>
+													<% end %>
+													<% unless configuration.rolling_wednesday.eql?(nil) %>
+													<li>
+														<div class = "day" style = "font-weight: bold;">Mercredi: <%= configuration.rolling_wednesday.time_description %></div>
+													</li>
+													<% end %>
+													<% unless configuration.rolling_thursday.eql?(nil) %>
+													<li>
+														<div class = "day" style = "font-weight: bold;">Jeudi: <%= configuration.rolling_thursday.time_description %></div>
+													</li>
+													<% end %>
+													<% unless configuration.rolling_friday.eql?(nil) %>
+													<li>
+														<div class = "day" style = "font-weight: bold;">Vendredi: <%= configuration.rolling_friday.time_description %></div>
+													</li>
+													<% end %>
+													<% unless configuration.rolling_saturday.eql?(nil) %>
+													<li>
+														<div class = "day" style = "font-weight: bold;">Samedi: <%= configuration.rolling_saturday.time_description %></div>
+													</li>
+													<% end %>
+													<% unless configuration.rolling_sunday.eql?(nil) %>
+													<li>
+														<div class = "day" style = "font-weight: bold;">Dimanche: <%= configuration.rolling_sunday.time_description %></div>
+													</li>
+													<% end %>
+												</ul>
+											</li>
+											<li>
+												<%= link_to "Supprimer", delete_configuration_plan_path(configuration), :confirm => "Êtes vous sûr de vouloir supprimer cette configuration?", :class => "direction delete_button", :style => "font-weight: bold;" %>
+											</li>
+									<% end %>									
+								</ul>							
+							</li>
+						<% end %>
+					<% end %>
+				</ul>										
+			</div>
+	</div>
+</div>

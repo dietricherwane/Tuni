@@ -66,13 +66,13 @@
 					<td class = "ui-widget-content"></td>
 				<% else %>
 					<% if r.user_enabled?(r) %>
-						<td class = "ui-widget-content"><%= link_to "Désactiver", disable_user_path(r.id), :class => "delete-record" %></td>
+						<td class = "ui-widget-content"><%= link_to "Désactiver", disable_user_path(r.id), :confirm => "Êtes vous sûr de vouloir désactiver cet utilisateur?", :class => "delete-record" %></td>
 					<% else %>
-						<td class = "ui-widget-content"><%= link_to "Activer", enable_user_path(r.id), :class => "preview-record" %></td>
+						<td class = "ui-widget-content"><%= link_to "Activer", enable_user_path(r.id), :confirm => "Êtes vous sûr de vouloir activer cet utilisateur?", :class => "preview-record" %></td>
 					<% end %>
 				<% end %>
 			<% else %>
-      	<td class = "ui-widget-content"><%= link_to "Effacer", delete_user_path(r.id), :confirm => "Are you sure?", :class => "delete-record" %></td>
+      	<td class = "ui-widget-content"><%= link_to "Effacer", delete_user_path(r.id), :confirm => "Êtes vous sûr de vouloir supprimer cet utilisateur?", :class => "delete-record" %></td>
       <% end %>
 		</tr>
 		<% @tab_color = !@tab_color %>			

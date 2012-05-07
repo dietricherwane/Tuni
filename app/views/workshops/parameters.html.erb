@@ -9,7 +9,7 @@
 					<div id = "space"><%= label_tag "Nombre maximal de temporaires" %><br />
 					<%= text_field_tag 'casual_number', '' %></div>
 					<br />
-  				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all' %>
+  				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
 				<% end %>					
 			</div>
 	</div>

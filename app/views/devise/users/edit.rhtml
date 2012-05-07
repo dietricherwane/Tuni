@@ -157,7 +157,7 @@ $(document).ready(function() {
   <div><%= f.label 'Numéro mobile' %><br />
   <%= f.text_field :mobile_number %></div><br />
 
-  <div><%= f.submit "Valider", :class => 'submit button large ui-corner-all' %></div>
+  <div><%= f.submit "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %></div>
 <% end %>
 <br />
 <%#= link_to "Retour", :back %>

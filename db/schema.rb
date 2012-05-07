@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120412113530) do
+ActiveRecord::Schema.define(:version => 20120426105901) do
 
   create_table "casual_types", :force => true do |t|
     t.string   "type_name"
@@ -92,44 +92,44 @@ ActiveRecord::Schema.define(:version => 20120412113530) do
 
   create_table "rolling_fridays", :force => true do |t|
     t.integer  "configuration_id"
-    t.integer  "time_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "time_description"
   end
 
   create_table "rolling_mondays", :force => true do |t|
     t.integer  "configuration_id"
-    t.integer  "time_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "time_description"
   end
 
   create_table "rolling_saturdays", :force => true do |t|
     t.integer  "configuration_id"
-    t.integer  "time_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "time_description"
   end
 
   create_table "rolling_sundays", :force => true do |t|
     t.integer  "configuration_id"
-    t.integer  "time_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "time_description"
   end
 
   create_table "rolling_thursdays", :force => true do |t|
     t.integer  "configuration_id"
-    t.integer  "time_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "time_description"
   end
 
   create_table "rolling_tuesdays", :force => true do |t|
     t.integer  "configuration_id"
-    t.integer  "time_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "time_description"
   end
 
   create_table "rolling_types", :force => true do |t|
@@ -143,9 +143,9 @@ ActiveRecord::Schema.define(:version => 20120412113530) do
 
   create_table "rolling_wednesdays", :force => true do |t|
     t.integer  "configuration_id"
-    t.integer  "time_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "time_description"
   end
 
   create_table "sections", :force => true do |t|

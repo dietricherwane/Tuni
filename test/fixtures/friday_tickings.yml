@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  time_description: MyString
+  number_of_hours: 1
+  line_id: 1
+  team_id: 1
+  casual_id: 1
+  week_number: 1
+
+two:
+  time_description: MyString
+  number_of_hours: 1
+  line_id: 1
+  team_id: 1
+  casual_id: 1
+  week_number: 1

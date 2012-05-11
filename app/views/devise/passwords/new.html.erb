@@ -12,7 +12,7 @@
   <div><%= f.label :email %><br />
   <%= f.email_field :email %></div>
 	<br />
-  <div><%= f.submit "Changer le mot de passe", :class => 'submit button large ui-corner-all' %></div>
+  <div><%= f.submit "Changer le mot de passe", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %></div>
 <% end %>
 
 <%= render :partial => "devise/shared/password_forgotten" %>

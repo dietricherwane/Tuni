@@ -851,6 +851,10 @@ a.file-link.list-file{
 .direction.delete_button{
 	background-image:url("../images/icons/delete.png");
 }
+
+.direction.edit_button{
+	background-image:url("../images/icons/edit.png");
+}
 /*******************************************/
 
 /******************* MISC. ******************/

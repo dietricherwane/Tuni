@@ -13,7 +13,7 @@ class FakeController < ApplicationController
 			when "Chef d'atelier"
 				redirect_to allot_casual_to_team_path
 			when "Chef d'équipe"
-				redirect_to dashboard_path
+				redirect_to allot_to_line_path
 			else
 				redirect_to new_user_session_path
 			end

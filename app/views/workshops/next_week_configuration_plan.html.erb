@@ -1,15 +1,42 @@
 <%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
-<script type="text/javascript">	
-$(function(){	
-	$('#collapser').jqcollapse({
-		 slide: true,
-		 speed: 1000,
-		 easing: 'easeOutCubic'
-	});	
-});	
+
+<script type="text/javascript" language="JavaScript">
+$(document).ready(function() {
+		//write a better function for hideAll	
+    $("#post_team_id").change(function() {
+    	selected_team = this.options[this.selectedIndex].text;
+  		hidde_lines_for_daily_teams(selected_team, "<%= url_for :action => 'daily_team', :controller => 'workshops' %>");	
+    });
+    
+    function hidde_lines_for_daily_teams(selected_team, url){
+    	$.ajax({      
+        url: url,
+        data: selected_team,
+        dataType: "text",
+        error: function(){  }, //alert("Votre session a expié. Veuillez vous déconnecter et vous reconnecter.");
+        success: function(response, response_status, xhr) {
+       		if (response == "true"){
+						$("#lines").hide("slow");						
+					}
+					else {
+						$("#lines").show("slow");
+					}
+		    }
+      });
+    }
+
+		$(function(){				
+			$('#collapser').jqcollapse({
+			   slide: true,
+			   speed: 1000,
+			   easing: 'easeOutCubic'
+			});				
+		});
+		
+});
 </script>
 
-<h2 class="top-title">Configuration équipe-ligne || Plan de production du <%= @beginning_of_next_week.strftime("%d") %> au <%= @end_of_next_week.strftime("%d %B %Y") %></h2><br />
+<h2 class="top-title">Configuration équipe-lignes || Plan de production du <%= @beginning_of_next_week.strftime("%d") %> au <%= @end_of_next_week.strftime("%d %B %Y") %></h2><br />
 <div class="column_large_left">
 	<div class="portlet" id="widget-1">
     <div class="portlet-header">Choix des équipes et de leur nombre d'heures de travail</div>
@@ -18,6 +45,7 @@ $(function(){
     			<div id= "space"><%= label_tag "Equipe" %><br />
 					<%= collection_select(:post, :team_id, @teams, :id, :team_name, options ={:prompt => "-Veuillez choisir une équipe-"}) %></div>							
 					
+					<div id = "lines">
 					<ul id="collapser">
 						<% unless @workshop.eql?(nil) %>
 						<% unless @workshop.sections.eql?(nil) %>												
@@ -38,6 +66,8 @@ $(function(){
 						<% end %>		
 					</ul>
 					<br />
+					</div>
+					
 					<table class="list-table">
 						<thead class = "ui-widget-header ui-corner-all">
 							<tr>					

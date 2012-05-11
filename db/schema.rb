@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120426105901) do
+ActiveRecord::Schema.define(:version => 20120510232302) do
 
   create_table "casual_types", :force => true do |t|
     t.string   "type_name"
@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.integer  "workshop_id"
     t.integer  "team_id"
     t.string   "phone_number"
+    t.integer  "line_id"
   end
 
   create_table "cities", :force => true do |t|
@@ -74,6 +75,17 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.datetime "updated_at"
   end
 
+  create_table "friday_tickings", :force => true do |t|
+    t.string   "time_description"
+    t.integer  "number_of_hours"
+    t.integer  "line_id"
+    t.integer  "team_id"
+    t.integer  "casual_id"
+    t.integer  "week_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "lines", :force => true do |t|
     t.string   "line_name"
     t.datetime "created_at"
@@ -90,11 +102,23 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.integer  "casual_id"
   end
 
+  create_table "monday_tickings", :force => true do |t|
+    t.string   "time_description"
+    t.integer  "number_of_hours"
+    t.integer  "line_id"
+    t.integer  "team_id"
+    t.integer  "casual_id"
+    t.integer  "week_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "rolling_fridays", :force => true do |t|
     t.integer  "configuration_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "time_description"
+    t.integer  "number_of_hours"
   end
 
   create_table "rolling_mondays", :force => true do |t|
@@ -102,6 +126,7 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "time_description"
+    t.integer  "number_of_hours"
   end
 
   create_table "rolling_saturdays", :force => true do |t|
@@ -109,6 +134,7 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "time_description"
+    t.integer  "number_of_hours"
   end
 
   create_table "rolling_sundays", :force => true do |t|
@@ -116,6 +142,7 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "time_description"
+    t.integer  "number_of_hours"
   end
 
   create_table "rolling_thursdays", :force => true do |t|
@@ -123,6 +150,7 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "time_description"
+    t.integer  "number_of_hours"
   end
 
   create_table "rolling_tuesdays", :force => true do |t|
@@ -130,6 +158,7 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "time_description"
+    t.integer  "number_of_hours"
   end
 
   create_table "rolling_types", :force => true do |t|
@@ -146,6 +175,18 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "time_description"
+    t.integer  "number_of_hours"
+  end
+
+  create_table "saturday_tickings", :force => true do |t|
+    t.string   "time_description"
+    t.integer  "number_of_hours"
+    t.integer  "line_id"
+    t.integer  "team_id"
+    t.integer  "casual_id"
+    t.integer  "week_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "sections", :force => true do |t|
@@ -161,6 +202,17 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.datetime "updated_at"
   end
 
+  create_table "sunday_tickings", :force => true do |t|
+    t.string   "time_description"
+    t.integer  "number_of_hours"
+    t.integer  "line_id"
+    t.integer  "team_id"
+    t.integer  "casual_id"
+    t.integer  "week_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "teams", :force => true do |t|
     t.string   "team_name"
     t.datetime "created_at"
@@ -168,6 +220,29 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
     t.integer  "workshop_id"
     t.integer  "max_number_of_casuals"
     t.boolean  "disabled"
+    t.boolean  "daily"
+  end
+
+  create_table "thursday_tickings", :force => true do |t|
+    t.string   "time_description"
+    t.integer  "number_of_hours"
+    t.integer  "line_id"
+    t.integer  "team_id"
+    t.integer  "casual_id"
+    t.integer  "week_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "tuesday_tickings", :force => true do |t|
+    t.string   "time_description"
+    t.integer  "number_of_hours"
+    t.integer  "line_id"
+    t.integer  "team_id"
+    t.integer  "casual_id"
+    t.integer  "week_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "users", :force => true do |t|
@@ -201,6 +276,17 @@ ActiveRecord::Schema.define(:version => 20120426105901) do
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+
+  create_table "wednesday_tickings", :force => true do |t|
+    t.string   "time_description"
+    t.integer  "number_of_hours"
+    t.integer  "line_id"
+    t.integer  "team_id"
+    t.integer  "casual_id"
+    t.integer  "week_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "workshops", :force => true do |t|
     t.string   "workshop_name"

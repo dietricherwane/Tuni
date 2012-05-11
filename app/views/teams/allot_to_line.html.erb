@@ -1,0 +1,146 @@
+<%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
+<script type="text/javascript">	
+$(function(){	
+	$('#collapser').jqcollapse({
+		 slide: true,
+		 speed: 1000,
+		 easing: 'easeOutCubic'
+	});	
+});	
+</script>
+
+<h2 class="top-title">Affectation des temporaires aux lignes</h2><br />
+<div class="column_large_left">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Temporaires à affecter</div>
+    	<div class="portlet-content"> 
+    		<%= form_tag casual_allocation_to_line_path do %> 
+    			<ul id="collapser">
+						<% unless @sections.empty? %>										
+							<% @sections.each do |section| %>
+								<li><div class = "direction section" style = "font-weight: bold;"><%= section.section_name %></div>
+									<ul>
+										<% unless section.lines.eql?(nil) %>
+											<% section.lines.each do |line| %>
+												<li>
+													<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %>&nbsp;&nbsp;<%= radio_button("post", "line", line.line_name) %></div>
+												</li>
+											<% end %>
+										<% end %>
+									</ul>
+								</li>
+							<% end %>												
+						<% end %>	
+					</ul>  	
+  						
+					<table class="list-table">
+						<thead class = "ui-widget-header ui-corner-all">
+							<tr>
+								<!--<th width="14%">Matricule</th>-->							
+								<th width="28%">Nom</th>
+								<th>Compagnie</th>
+								<th>Type</th>
+								<th>Date d'entrée</th>
+								<th width="14%">Affecter</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if @casuals.empty? %>
+								<tr>
+									<td colspan = 6 class = "ui-widget-content" >Aucun temporaire à affecter</td>
+									
+								</tr>
+							<% else %>
+								<% @casuals.each do |casual| %>
+									<% if @tr_color %>
+										<tr class = "odd">
+									<% else %>
+										<tr>
+									<% end %>									
+										<td class = "ui-widget-content">
+											<%= casual.firstname %> <%= casual.lastname %>
+										</td>	
+										<td class = "ui-widget-content">
+											<%= Company.find_by_id(casual.company_id).company_name %>
+										</td>	
+										<td class = "ui-widget-content">
+												<%= CasualType.find_by_id(casual.casual_type_id).type_name %>
+										</td>
+										<td class = "ui-widget-content">
+											<%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>
+										</td>	
+										<td class = "ui-widget-content">
+												<%= check_box("post", "#{casual.id}") %>
+										</td>		
+									</tr>
+									<% @tab_color = !@tab_color %>			
+								<% end %>
+							<% end %>
+						</tbody>
+					</table>
+					<div id="pagination">
+						<%= will_paginate @casuals %>
+					</div>
+					<br />
+  				<%= submit_tag "Affecter", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+				<% end %>				
+			</div>
+	</div>
+</div>
+
+<div class="column_right">
+	<div class="portlet" id="widget-2">
+    <div class="portlet-header">Visualisation</div>
+    	<div class="portlet-content">    								
+				<ul id="collapser">
+						<% unless @sections.empty? %>										
+							<% @sections.each do |section| %>
+								<li><div class = "direction section" style = "font-weight: bold;"><%= section.section_name %></div>
+									<ul>
+										<% unless section.lines.eql?(nil) %>
+											<% section.lines.each do |line| %>
+												<li>
+													<div class = "direction line" style = "font-weight: bold;">
+														<%= line.line_name %> &nbsp; (<%= Casual.where("team_id = #{@team.id} AND line_id = #{line.id}").count %>)
+														</div>
+														<% unless Casual.where("team_id = #{@team.id} AND line_id = #{line.id}").empty? %>
+															<ul>
+																<% Casual.where("team_id = #{@team.id} AND line_id = #{line.id}").each do |casual| %>
+																	<script type="text/javascript">
+																		$(document).ready(function(){
+																			$("#casual_<%= casual.id %>").CreateBubblePopup({
+																				position : 'top',
+																				align	 : 'center',
+																				tail : {hidden: true
+																				},									
+																				innerHtml: "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %><br>Compagnie: <%= Company.find_by_id(casual.company_id).company_name %><br>Type: <%= CasualType.find_by_id(casual.casual_type_id).type_name %>",
+																				innerHtmlStyle: {
+																					color:'#FFFFFF', 
+																					'text-align':'left',
+																					padding:'2px',
+																					'font-size':'13px'
+																				},																		
+																				themeName: 	'all-black',
+																				themePath: 	'../../images/jquerybubblepopup-theme'								 
+																			});
+																		});
+																		</script>										
+																		<li>
+																			<% div_for (casual) do %>
+																				<%= casual.firstname+ " " +casual.lastname %>
+																			<% end %>
+																		</li>
+																<% end %>
+															</ul>
+														<% end %>
+												</li>
+											<% end %>
+										<% end %>
+									</ul>
+								</li>
+							<% end %>												
+						<% end %>	
+					</ul> 									
+			</div>
+	</div>
+</div>

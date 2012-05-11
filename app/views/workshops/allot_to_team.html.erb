@@ -21,8 +21,7 @@ $(function(){
 						<thead class = "ui-widget-header ui-corner-all">
 							<tr>
 								<!--<th width="14%">Matricule</th>-->							
-								<th width="14%">Nom</th>
-								<th width="14%">Prénoms</th>
+								<th width="28%">Nom</th>
 								<th>Compagnie</th>
 								<th>Type</th>
 								<th>Date d'entrée</th>
@@ -43,11 +42,8 @@ $(function(){
 										<tr>
 									<% end %>									
 										<td class = "ui-widget-content">
-											<%= casual.firstname %>
+											<%= casual.firstname %> <%= casual.lastname %>
 										</td>	
-										<td class = "ui-widget-content">
-												<%= casual.lastname %>
-										</td>
 										<td class = "ui-widget-content">
 											<%= Company.find_by_id(casual.company_id).company_name %>
 										</td>	

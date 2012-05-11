@@ -5,8 +5,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>TUNI - Login</title>
     
-    <%= stylesheet_link_tag 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
-  <%= javascript_include_tag 'jquery.js', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js' %>
+    <%= stylesheet_link_tag 'reset-min', 'ui-lightness/jquery-ui-1.8.4.custom.css', 'globals.css', 'commons.css', 'plugins.css', 'jquery.bubblepopup.v2.3.1', 'css/globals.css',  'css/commons.css', 'css/plugins.css' %>
+  <%= javascript_include_tag 'jquery.js', 'rails.js', 'jquery.bubblepopup.v2.3.1.min', 'jquery-ui-1.8.4.custom.min.js', 'jquery.weekcalendar.js', 'custom.js', 'application.js' %>
 </head>
 
 <body id="login-body">	
@@ -41,7 +41,7 @@
 							<%= link_to "Mot de passe oublié?", new_password_path(resource_name) %><br />
 						<% end -%>
           </div>
-					<%= f.submit "Connexion", :id => 'login-button', :class => 'submit large round' %>
+					<%= f.submit "Connexion", :id => 'login-button', :class => 'submit large round', :disable_with => 'Patientez...' %>
 					<div style="clear: both"></div>
 				</div>
 			</div>

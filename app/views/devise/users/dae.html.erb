@@ -1,3 +1,4 @@
+
 <%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
 <script type="text/javascript" language="JavaScript">
 $(document).ready(function() {
@@ -46,6 +47,7 @@ $(document).ready(function() {
 				case "Atelier":
 					showValueField("slow");
 					if (selected_direction == "-Veuillez choisir une direction-"){
+						$("#daily").hide("slow");
 						$("#valeur").hide("slow"); 
 						$("#team").hide("slow");
 						$("#line").hide("slow");
@@ -84,6 +86,7 @@ $(document).ready(function() {
 					break;
 				case "Equipe":
 					pleaseSelectWorkshop(selected_workshop);
+					$("#daily").show("slow");
 					break;
 				default:
 					alert("none");
@@ -140,6 +143,7 @@ $(document).ready(function() {
     
     function pleaseSelectDirection(selected_direction){
     	if (selected_direction == "-Veuillez choisir une direction-"){
+    		$("#daily").hide("slow");
     		$("#valeur").hide("slow"); 
     		$("#team").hide("slow");
     		$("#line").hide("slow");
@@ -154,6 +158,7 @@ $(document).ready(function() {
     
     function pleaseSelectWorkshop(selected_workshop){
     	if (selected_workshop == "-Veuillez choisir un atelier-"){
+    		$("#daily").hide("slow");
     		$("#valeur").hide("slow");
 				$("#team").hide("slow");
 				$("#line").hide("slow");
@@ -166,6 +171,7 @@ $(document).ready(function() {
     
     function pleaseSelectSection(selected_section){
     	if (selected_section == "-Veuillez choisir une section-" || selected_section == "-Veuillez choisir un atelier-"){
+    		$("#daily").hide("slow");
     		$("#valeur").hide("slow");
 				$("#team").hide("slow");
 			}
@@ -177,6 +183,7 @@ $(document).ready(function() {
     
     function pleaseSelectLine(selected_line){
     	if (selected_line == "-Veuillez choisir une section-" || selected_line == "-Veuillez choisir un atelier-"){
+    		$("#daily").hide("slow");
     		$("#valeur").hide("slow");
 				$("#team").hide("slow");
 			}
@@ -186,6 +193,7 @@ $(document).ready(function() {
     }
         
     function hideAll(slow){
+    	$("#daily").hide(slow);
     	$("#valeur").hide(slow); 
   		$("#team").hide(slow);
   		$("#line").hide(slow);
@@ -195,6 +203,7 @@ $(document).ready(function() {
 		} 
 		
 		function showDirectionValueField(slow){ 
+			$("#daily").hide(slow);
   		$("#valeur").show(slow);
   		$("#team").hide(slow);
   		$("#line").hide(slow);
@@ -204,6 +213,7 @@ $(document).ready(function() {
 		}
 		
 		function showDirection(slow){
+			$("#daily").hide(slow);
 			$("#valeur").hide(slow); 
   		$("#team").hide(slow);
   		$("#line").hide(slow);
@@ -213,6 +223,7 @@ $(document).ready(function() {
 		}
 		
 		function showSection(slow){
+			$("#daily").hide(slow);
 			$("#valeur").hide(slow); 
   		$("#team").hide(slow);
   		$("#line").hide(slow);
@@ -221,9 +232,11 @@ $(document).ready(function() {
 		
 		function showValueField(slow){ 
   		$("#valeur").show(slow);
+  		//$("#daily").show(slow);
 		}
 		
 		function showWorkshop(slow){
+			$("#daily").hide(slow);
 			$("#valeur").hide(slow);  
   		$("#team").hide(slow);
   		$("#line").hide(slow);
@@ -241,6 +254,26 @@ $(document).ready(function() {
 		});
 		
 });
+</script>
+
+<script type="text/javascript">		
+	
+		options =	{ 
+			position : 'top',
+			align	 : 'center',						
+			innerHtmlStyle: {
+								color:'#FFFFFF', 
+								'text-align':'left',
+								padding:'2px',
+								'font-size':'13px'
+							},	
+			tail: {
+					hidden: true
+						},															
+			themeName: 	'all-black',
+			themePath: 	'../../../images/jquerybubblepopup-theme'
+		};	
+	
 </script>
 
 <h2 class="top-title">Directions, ateliers, sections, lignes, équipes</h2><br />	
@@ -287,9 +320,16 @@ $(document).ready(function() {
 						<%= select_tag "team_name", options_for_select([ "-Veuillez choisir une équipe-"], "-Veuillez choisir une équipe-") %>
 						</div>
 					</p>
+					
+					<div id = "daily">
+						<%= label_tag "Equipe de journaliers?" %><br />
+						<%= select( "daily", "answer", { "Non" => "no", "Oui" => "yes"}) %>
+					</div>
 									 
-					<div id = "valeur"><div id = "space"><%= label_tag "Veuillez entrer le nom de l'élément" %><br />
-					<%= text_field_tag 'valeur', '' %></div></div>
+					<div id = "valeur"><div id = "space">
+						<%= label_tag "Veuillez entrer le nom de l'élément" %><br />
+						<%= text_field_tag 'valeur', '' %></div>
+					</div>
 					
 					<br />
   				<%= submit_tag "Enregistrer", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
@@ -316,9 +356,21 @@ $(document).ready(function() {
 													<li>Equipes
 														<ul>
 															<% unless workshop.teams.eql?(nil) %>												
-																<% workshop.teams.each do |team| %>
+																<% workshop.teams.each do |team| %>																	
 																	<li>
-																		<div class = "direction team" style = "font-weight: bold;"><%= team.team_name %></div>
+																		<% if team.daily %>		
+																		<script type="text/javascript">	
+																			$(document).ready(function() {	
+																				options['innerHtml'] = "Equipe de journaliers";								
+																				$("#team_<%= team.id %>").CreateBubblePopup( options );
+																			});
+																		</script>		
+																		<% end %>														
+																		<div class = "direction team" style = "font-weight: bold;">
+																			<% div_for (team) do %>																		
+																				<%= team.team_name %> &nbsp; <%= link_to "", change_to_daily_or_normal_path(team.id), :class => "direction edit_button", :confirm => "Êtes vous sûr de vouloir changer le statut de cette équipe?" %>
+																			<% end %>
+																		</div>																		
 																	</li>
 																<% end %>												
 															<% end %>															

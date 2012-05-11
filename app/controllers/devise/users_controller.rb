@@ -204,8 +204,9 @@ class Devise::UsersController < Devise::RegistrationsController
 						dae_path_on_failure("Une ligne du même nom existe déjà dans la section.")
 					end
 				when "Equipe"
-					if Team.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id} AND team_name = '#{capitalization(@value)}'")
-						Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value), :max_number_of_casuals => 10)
+					if Team.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id} AND team_name = '#{capitalization(@value)}'").empty?
+						params[:daily][:answer].eql?("no") ? @daily = false : @daily = true
+						Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value), :max_number_of_casuals => 50, :daily => @daily)
 						dae_path_on_success("L'équipe:", capitalization(@value))
 					else
 						dae_path_on_failure("Une équipe du même nom existe déjà dans l'atelier.")
@@ -220,6 +221,18 @@ class Devise::UsersController < Devise::RegistrationsController
   
   def dae_path_on_failure(message)
   	redirect_to dae_path, :alert => message
+  end
+  
+  def change_to_daily_or_normal
+  	@team = Team.find(params[:format].to_i)
+  	if @team.daily
+  		@team.update_attribute(:daily, false)
+  		@message = "#{@team.team_name}: a été changée en équipe normale."
+  	else
+  		@team.update_attribute(:daily, true)
+  		@message = "#{@team.team_name}: a été changée en équipe journalière."
+  	end
+  	redirect_to :back, :notice => @message
   end
 	
 end

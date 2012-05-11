@@ -20,7 +20,7 @@
     <div class="portlet-header">Liste des équipes</div>
     	<div class="portlet-content"> 
     		<% @teams.each do |team| %>
-    			<%= team.team_name %> (<%= Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count %>/<%= team.max_number_of_casuals %>)<br /><br />
+    			<div class = "direction team" style = "font-weight: bold;"><%= team.team_name %> (<%= Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count %>/<%= team.max_number_of_casuals %>)</div><br />
     		<% end %>				
 			</div>
 	</div>

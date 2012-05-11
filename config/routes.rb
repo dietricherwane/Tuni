@@ -28,6 +28,7 @@ Tuni::Application.routes.draw do
     match '/users/delete_user' => 'devise/users#delete_user', :as => :delete_user   
     match 'user/edit' => 'devise/users#edit', :as => :edit_user
   	match 'user/update' => 'devise/users#update', :as => :update_user
+  	match 'user/change_to_daily_or_normal' => 'devise/users#change_to_daily_or_normal', :as => :change_to_daily_or_normal
   end
   
   match 'casuals/settings' => 'casuals#casuals_settings', :as => :casuals_settings
@@ -50,6 +51,9 @@ Tuni::Application.routes.draw do
   match 'workshop/delete_configuration_plan' => 'workshops#delete_configuration_plan', :as => :delete_configuration_plan
   match 'workshop/delete_line' => 'workshops#delete_line', :as => :delete_line
   match 'workshop/delete_working_day' => 'workshops#delete_working_day', :as => :delete_working_day
+  match 'workshop/daily_team' => 'workshops#daily_team'
+  match 'team/allot_to_line' => 'teams#allot_to_line', :as => :allot_to_line
+  match 'team/casual_allocation_to_line' => 'teams#casual_allocation_to_line', :as => :casual_allocation_to_line
   
   #resources :companies
   #resources :cities

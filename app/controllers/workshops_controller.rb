@@ -36,7 +36,7 @@ class WorkshopsController < ApplicationController
 					redirect_to :back, :notice => "Les temporaires ont été affectés dans l'équipe #{@team.team_name}."
 				end
 			else
-				redirect_to :back, :alert => "Veuillez affecter au moins un temporaire."
+				redirect_to :back, :alert => "Veuillez affecter au moins un temporaire dans cette équipe."
 			end
   	end
   end
@@ -51,7 +51,7 @@ class WorkshopsController < ApplicationController
   		redirect_to :back, :alert => "Veuillez choisir l'équipe dont vous voulez modifier le nombre maximal de temporaires."
   	else
   		if is_not_a_number?(params[:casual_number]) || params[:casual_number].to_i <= 0
-  			redirect_to :back, :alert => "Le nombre maximal de temporaires ne doit pas être vide et doit être numérique."
+  			redirect_to :back, :alert => "Le nombre maximal de temporaires doit être un nombre supérieur à 0."
   		else
   			if params[:casual_number].to_i < Casual.where("team_id = #{@team_id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count
   				redirect_to :back, :alert => "Le nombre maximal de temporaires est inférieur au nombre de temporaires dans l'équipe."
@@ -74,12 +74,6 @@ class WorkshopsController < ApplicationController
   def configuration_plan(date, week_number)
   	@workshop = Workshop.find_by_id(current_user.status_number)
   	@teams = @workshop.teams.where("disabled IS NOT TRUE").order("team_name ASC")
-  	#@team_clean = []
-  	#@team.each do |team|
-  		#unless team.configuration.eql?(nil)
-  			#@team_clean << team
-  		#end
-  	#end  	
   	@rolling_types = RollingType.where("disabled IS NOT TRUE").order("type_name ASC")
   	@beginning_of_next_week = (date).beginning_of_week
   	@end_of_next_week = (date).end_of_week
@@ -122,12 +116,7 @@ class WorkshopsController < ApplicationController
   		redirect_to :back, :alert => @alert.html_safe
   	else 		
   		@week_number = Date.today.cweek
-  		@team = Team.find_by_id(@team_id.to_i)
-  		@configuration_trash = Configuration.where(:week_number => @week_number, :team_id => @team.id).first
-  		
-  		#method_delete_configuration_plan(@configuration_trash)
-  		  		  		
-  		#@team.configurations.create(:user_id => current_user.id, :week_number => @week_number)  	
+  		@team = Team.find_by_id(@team_id.to_i)	
   		@configuration = Configuration.where(:week_number => @week_number, :team_id => @team.id).first	
   		
   		unless @line_checked.eql?(false)
@@ -137,32 +126,32 @@ class WorkshopsController < ApplicationController
 			end
   		
   		unless @monday_plan.empty?
-  			@configuration.rolling_monday.delete unless @configuration.rolling_monday.eql?(nil)
-  			@configuration.create_rolling_monday(:time_description => RollingType.find_by_id(@monday_plan.to_i).description)
+  			RollingMonday.destroy(@configuration.rolling_monday.id) unless @configuration.rolling_monday.eql?(nil)
+  			@configuration.create_rolling_monday(:time_description => RollingType.find_by_id(@monday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@monday_plan.to_i).number_of_hours)
   		end
   		unless @tuesday_plan.empty?
-  			@configuration.rolling_tuesday.delete unless @configuration.rolling_tuesday.eql?(nil)
-  			@configuration.create_rolling_tuesday(:time_description => RollingType.find_by_id(@tuesday_plan.to_i).description)
+  			RollingTuesday.destroy(@configuration.rolling_tuesday.id) unless @configuration.rolling_tuesday.eql?(nil)
+  			@configuration.create_rolling_tuesday(:time_description => RollingType.find_by_id(@tuesday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@tuesday_plan.to_i).number_of_hours)
   		end
   		unless @wednesday_plan.empty?
-  			@configuration.rolling_wednesday.delete unless @configuration.rolling_wednesday.eql?(nil)
-  			@configuration.create_rolling_wednesday(:time_description => RollingType.find_by_id(@wednesday_plan.to_i).description)
+  			RollingWednesday.destroy(@configuration.rolling_wednesday.id) unless @configuration.rolling_wednesday.eql?(nil)
+  			@configuration.create_rolling_wednesday(:time_description => RollingType.find_by_id(@wednesday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@wednesday_plan.to_i).number_of_hours)
   		end
   		unless @thursday_plan.empty?
-  			@configuration.rolling_thursday.delete unless @configuration.rolling_thursday.eql?(nil)
-  			@configuration.create_rolling_thursday(:time_description => RollingType.find_by_id(@thursday_plan.to_i).description)
+  			RollingThursday.destroy(@configuration.rolling_thursday.id) unless @configuration.rolling_thursday.eql?(nil)
+  			@configuration.create_rolling_thursday(:time_description => RollingType.find_by_id(@thursday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@thursday_plan.to_i).number_of_hours)
   		end
   		unless @friday_plan.empty?
-  			@configuration.rolling_friday.delete unless @configuration.rolling_friday.eql?(nil)
-  			@configuration.create_rolling_friday(:time_description => RollingType.find_by_id(@friday_plan.to_i).description)
+  			RollingFriday.destroy(@configuration.rolling_friday.id) unless @configuration.rolling_friday.eql?(nil)
+  			@configuration.create_rolling_friday(:time_description => RollingType.find_by_id(@friday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@friday_plan.to_i).number_of_hours)
   		end
   		unless @saturday_plan.empty?
-  			@configuration.rolling_saturday.delete unless @configuration.rolling_saturday.eql?(nil)
-  			@configuration.create_rolling_saturday(:time_description => RollingType.find_by_id(@saturday_plan.to_i).description)
+  			RollingSaturday.destroy(@configuration.rolling_saturday.id) unless @configuration.rolling_saturday.eql?(nil)
+  			@configuration.create_rolling_saturday(:time_description => RollingType.find_by_id(@saturday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@saturday_plan.to_i).number_of_hours)
   		end
   		unless @sunday_plan.empty?
-  			@configuration.rolling_sunday.delete unless @configuration.rolling_sunday.eql?(nil)
-  			@configuration.create_rolling_sunday(:time_description => RollingType.find_by_id(@sunday_plan.to_i).description)
+  			RollingSunday.destroy(@configuration.rolling_sunday.id) unless @configuration.rolling_sunday.eql?(nil)
+  			@configuration.create_rolling_sunday(:time_description => RollingType.find_by_id(@sunday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@sunday_plan.to_i).number_of_hours)
   		end
   		 		
   		redirect_to :back, :notice => "#{Team.find_by_id(@team_id.to_i).team_name}: la configuration et le plan de production ont été faits."
@@ -193,31 +182,40 @@ class WorkshopsController < ApplicationController
 		  <br />Cochez les lignes sur lesquelles doivent travailler cette équipe.
 		  <br />Choisissez le nombre d'heures à effectuer par jour.
 		HTML
-  	 	
-  	if (@team_id.empty? || @line_checked.eql?(false) || (@monday_plan.empty? && @tuesday_plan.empty? && @wednesday_plan.empty? && @thursday_plan.empty? && @friday_plan.empty? && @saturday_plan.empty? && @sunday_plan.empty?))
+  	@team = Team.find_by_id(@team_id.to_i) 	
+  	if (@team_id.empty? || (@line_checked.eql?(false) && !@team.daily) || (@monday_plan.empty? && @tuesday_plan.empty? && @wednesday_plan.empty? && @thursday_plan.empty? && @friday_plan.empty? && @saturday_plan.empty? && @sunday_plan.empty?))
   		redirect_to :back, :alert => @alert.html_safe
   	else 		
   		@week_number = Date.today.cweek + 1
-  		@team = Team.find_by_id(@team_id.to_i)
+  		
   		@configuration_trash = Configuration.where(:week_number => @week_number, :team_id => @team.id).first
   		
   		method_delete_configuration_plan(@configuration_trash)
   		  		  		
   		@team.configurations.create(:user_id => current_user.id, :week_number => @week_number)  	
   		@configuration = Configuration.where(:week_number => @week_number, :team_id => @team.id).first	
-  		@line_id_table.each do |line_id|
-  			@configuration.lines << Line.find_by_id(line_id)
-  		end
   		
-  		@configuration.create_rolling_monday(:time_description => RollingType.find_by_id(@monday_plan.to_i).description) unless @monday_plan.empty?
-  		@configuration.create_rolling_tuesday(:time_description => RollingType.find_by_id(@tuesday_plan.to_i).description) unless @tuesday_plan.empty?
-  		@configuration.create_rolling_wednesday(:time_description => RollingType.find_by_id(@wednesday_plan.to_i).description) unless @wednesday_plan.empty?
-  		@configuration.create_rolling_thursday(:time_description => RollingType.find_by_id(@thursday_plan.to_i).description) unless @thursday_plan.empty?
-  		@configuration.create_rolling_friday(:time_description => RollingType.find_by_id(@friday_plan.to_i).description) unless @friday_plan.empty?
-  		@configuration.create_rolling_saturday(:time_description => RollingType.find_by_id(@saturday_plan.to_i).description) unless @saturday_plan.empty?
-  		@configuration.create_rolling_sunday(:time_description => RollingType.find_by_id(@sunday_plan.to_i).description) unless @sunday_plan.empty?
-  		redirect_to :back, :notice => "#{Team.find_by_id(@team_id.to_i).team_name}: la configuration et le plan de production ont été faits."
+  		unless @team.daily
+				@line_id_table.each do |line_id|
+					@configuration.lines << Line.find_by_id(line_id)
+				end
+			end
+  		
+  		@configuration.create_rolling_monday(:time_description => RollingType.find_by_id(@monday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@monday_plan.to_i).number_of_hours) unless @monday_plan.empty?
+  		@configuration.create_rolling_tuesday(:time_description => RollingType.find_by_id(@tuesday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@tuesday_plan.to_i).number_of_hours) unless @tuesday_plan.empty?
+  		@configuration.create_rolling_wednesday(:time_description => RollingType.find_by_id(@wednesday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@wednesday_plan.to_i).number_of_hours) unless @wednesday_plan.empty?
+  		@configuration.create_rolling_thursday(:time_description => RollingType.find_by_id(@thursday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@thursday_plan.to_i).number_of_hours) unless @thursday_plan.empty?
+  		@configuration.create_rolling_friday(:time_description => RollingType.find_by_id(@friday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@friday_plan.to_i).number_of_hours) unless @friday_plan.empty?
+  		@configuration.create_rolling_saturday(:time_description => RollingType.find_by_id(@saturday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@saturday_plan.to_i).number_of_hours) unless @saturday_plan.empty?
+  		@configuration.create_rolling_sunday(:time_description => RollingType.find_by_id(@sunday_plan.to_i).description, :number_of_hours => RollingType.find_by_id(@sunday_plan.to_i).number_of_hours) unless @sunday_plan.empty?
+  		redirect_to :back, :notice => "#{Team.find_by_id(@team_id.to_i).team_name}: la configuration équipe-lignes et le plan de production ont été faits."
   	end
+  end
+  
+  def daily_team
+  	@selected_team = params.first.first
+  	Team.find_by_team_name(@selected_team).daily ? @daily = true : @daily = false
+  	render :text => @daily
   end
   
   def delete_configuration_plan

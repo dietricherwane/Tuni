@@ -24,13 +24,16 @@ class User < ActiveRecord::Base
 		"#{firstname} #{lastname} [#{@status_name}]"
 	end
 	
+	def status_name(current_user)
+		Status.find_by_id(current_user.status_id).status_name
+	end
+	
 	def status(current_user)
 		@status_name = Status.find_by_id(current_user.status_id).status_name
 		if (@status_name != "Administrateur")
 			@status_name += " | #{translate_status(@status_name, current_user)}"
 		end
 		@status_name
-		#translate_status(@status_name, current_user)
   end
 	
 	def translate_status(status_name, current_user)

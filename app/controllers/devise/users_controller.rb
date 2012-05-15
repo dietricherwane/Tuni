@@ -105,8 +105,13 @@ class Devise::UsersController < Devise::RegistrationsController
       
   def enable_user 
   	@user = User.find_by_id(params[:format])
-  	@user.update_attribute(:enabled, true)
-  	redirect_to dashboard_path, :notice => "Le compte de #{@user.firstname} #{@user.lastname} a été activé"
+  	@user_duplicated = User.where("status_id = #{@user.status_id} AND status_number = #{@user.status_number} AND confirmation_token IS NULL AND enabled IS NOT FALSE")
+  	if @user_duplicated.empty?
+  		@user.update_attribute(:enabled, true)
+  		redirect_to dashboard_path, :notice => "Le compte de #{@user.firstname} #{@user.lastname} a été activé"
+  	else
+  		redirect_to :back, :alert => "#{@user_duplicated.first.firstname} #{@user_duplicated.first.lastname} est déjà #{@user_duplicated.first.status(@user_duplicated.first)}"
+  	end  	
   end
   
   def disable_user
@@ -138,7 +143,8 @@ class Devise::UsersController < Devise::RegistrationsController
 		@lastname = capitalization(params[:user][:lastname])
 		@phone_number = params[:user][:phone_number]
 		@mobile_number = params[:user][:mobile_number]
-		
+
+# Si le statut de l'utilisateur n'a pas été modifié.		
 		if @status.eql?(nil)
 			@user.update_attributes(:firstname => @firstname, :lastname => @lastname, :phone_number => @phone_number, :mobile_number => @mobile_number)
 			redirect_to dashboard_path, :notice => "Le profil de #{@user.firstname} #{@user.lastname} a été mis à jour."
@@ -150,11 +156,19 @@ class Devise::UsersController < Devise::RegistrationsController
 				render :action => 'edit'
 			else
 				if (@status.status_name.eql?("Chef de direction") || @status.status_name.eql?("Chef d'atelier") || @status.status_name.eql?("Chef d'équipe"))
-      	@user.update_attributes(:firstname => @firstname, :lastname => @lastname, :phone_number => @phone_number, :mobile_number => @mobile_number, :status_id => @status.id, :status_number => translate_status(@status.id, params[:direction_name], params[:workshop_name], params[:team_name]))
+
+#Empecher que deux utilisateurs du meme profil soient activés en meme temps (sauf admin et supadmin)
+					@user_duplicated = User.where("status_id = #{@status.id} AND status_number = #{translate_status(@status.id, params[:direction_name], params[:workshop_name], params[:team_name])} AND confirmation_token IS NULL AND enabled IS NOT FALSE")
+      		if @user_duplicated.empty?
+      			@user.update_attributes(:firstname => @firstname, :lastname => @lastname, :phone_number => @phone_number, :mobile_number => @mobile_number, :status_id => @status.id, :status_number => translate_status(@status.id, params[:direction_name], params[:workshop_name], params[:team_name]))
+      			redirect_to dashboard_path, :notice => "Le profil de #{@user.firstname} #{@user.lastname} a été mis à jour."
+      		else
+      			redirect_to :back, :alert => "#{@user_duplicated.first.firstname} #{@user_duplicated.first.lastname} est déjà #{@user_duplicated.first.status(@user_duplicated.first)}"
+      		end
 		    else
 		    	@user.update_attributes(:firstname => @firstname, :lastname => @lastname, :phone_number => @phone_number, :mobile_number => @mobile_number, :status_id => @status.id, :status_number => nil)
-		    end
-		    redirect_to dashboard_path, :notice => "Le profil de #{@user.firstname} #{@user.lastname} a été mis à jour."
+		    	redirect_to dashboard_path, :notice => "Le profil de #{@user.firstname} #{@user.lastname} a été mis à jour."
+		    end		    
 			end
 		end
   end
@@ -198,7 +212,7 @@ class Devise::UsersController < Devise::RegistrationsController
 					end
 				when "Ligne"
 					if Line.where("section_id = #{Section.find_by_section_name(@section).id} AND line_name = '#{capitalization(@value)}'").empty?
-						Section.find_by_section_name(@section).lines.create(:line_name => capitalization(@value))
+						Section.find_by_section_name(@section).lines.create(:line_name => capitalization(@value), :max_number_of_casuals => 10)
 						dae_path_on_success("La ligne:", capitalization(@value))
 					else
 						dae_path_on_failure("Une ligne du même nom existe déjà dans la section.")
@@ -206,7 +220,7 @@ class Devise::UsersController < Devise::RegistrationsController
 				when "Equipe"
 					if Team.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id} AND team_name = '#{capitalization(@value)}'").empty?
 						params[:daily][:answer].eql?("no") ? @daily = false : @daily = true
-						Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value), :max_number_of_casuals => 50, :daily => @daily)
+						Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value), :max_number_of_casuals => 30, :number_of_operators => 2, :daily => @daily)
 						dae_path_on_success("L'équipe:", capitalization(@value))
 					else
 						dae_path_on_failure("Une équipe du même nom existe déjà dans l'atelier.")

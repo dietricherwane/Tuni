@@ -128,6 +128,7 @@ $(document).ready(function() {
   <div><%= f.label 'Prénoms' %><br />
   <%= f.text_field :lastname %></div><br />
   
+  <% unless (@user.status_name(@user).eql?("Administrateur") && User.where("status_id = #{Status.find_by_status_name("Administrateur").id} AND confirmation_token IS NULL AND enabled IS NOT FALSE").count < 2)  %>
   <p> 
   	<%= f.label 'Statut' %><br />   
     <%= collection_select(:post, :status_id, @statuses, :id, :status_name, options ={:prompt => "-Veuillez choisir un statut-"}) %>
@@ -150,6 +151,7 @@ $(document).ready(function() {
   	<%= select_tag "team_name", options_for_select([ "-Veuillez choisir une équipe-"], "-Veuillez choisir une équipe-") %>
   	</div>
   </p>
+  <% end %>
   
   <div><%= f.label 'Numéro fixe' %><br />
   <%= f.text_field :phone_number %></div><br />

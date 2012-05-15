@@ -127,6 +127,16 @@ class Devise::RegistrationsController < ApplicationController
   def get_teams
   	@selected_workshop = params.first.first
   	@teams_options = "<option>-Veuillez choisir une équipe-</option>"
+  	@teams = Workshop.find_by_workshop_name(@selected_workshop).teams.where("daily IS NOT TRUE")
+  	@teams.each do |team|
+  		@teams_options << "<option>#{team.team_name}</option>"
+  	end
+  	render :text => @teams_options
+  end
+  
+  def get_all_teams
+  	@selected_workshop = params.first.first
+  	@teams_options = "<option>-Veuillez choisir une équipe-</option>"
   	@teams = Workshop.find_by_workshop_name(@selected_workshop).teams
   	@teams.each do |team|
   		@teams_options << "<option>#{team.team_name}</option>"
@@ -158,7 +168,7 @@ class Devise::RegistrationsController < ApplicationController
     end
 
     # The path used after sign up for inactive accounts. You need to overwrite
-    # this method in your own RegistrationsController.
+    # this method in your own RegistrationsController.    
     def after_inactive_sign_up_path_for(resource)
       root_path
     end

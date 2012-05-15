@@ -1,4 +1,3 @@
-
 <%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
 <script type="text/javascript" language="JavaScript">
 $(document).ready(function() {
@@ -257,23 +256,21 @@ $(document).ready(function() {
 </script>
 
 <script type="text/javascript">		
-	
-		options =	{ 
-			position : 'top',
-			align	 : 'center',						
-			innerHtmlStyle: {
-								color:'#FFFFFF', 
-								'text-align':'left',
-								padding:'2px',
-								'font-size':'13px'
-							},	
-			tail: {
-					hidden: true
-						},															
-			themeName: 	'all-black',
-			themePath: 	'../../../images/jquerybubblepopup-theme'
-		};	
-	
+	options =	{ 
+		position : 'top',
+		align	 : 'center',						
+		innerHtmlStyle: {
+							color:'#FFFFFF', 
+							'text-align':'left',
+							padding:'2px',
+							'font-size':'13px'
+						},	
+		tail: {
+				hidden: true
+					},															
+		themeName: 	'all-black',
+		themePath: 	'../../../images/jquerybubblepopup-theme'
+	};		
 </script>
 
 <h2 class="top-title">Directions, ateliers, sections, lignes, équipes</h2><br />	
@@ -322,7 +319,7 @@ $(document).ready(function() {
 					</p>
 					
 					<div id = "daily">
-						<%= label_tag "Equipe de journaliers?" %><br />
+						<%= label_tag "Equipe journalière?" %><br />
 						<%= select( "daily", "answer", { "Non" => "no", "Oui" => "yes"}) %>
 					</div>
 									 
@@ -340,7 +337,7 @@ $(document).ready(function() {
 </div>
 
 <div class="column_right">
-	<div class="portlet" id="widget-2">
+	<div class="portlet" id="widget-3">
     <div class="portlet-header">Visualisation</div>
     	<div class="portlet-content">    				
 				<ul id="collapser">
@@ -361,14 +358,14 @@ $(document).ready(function() {
 																		<% if team.daily %>		
 																		<script type="text/javascript">	
 																			$(document).ready(function() {	
-																				options['innerHtml'] = "Equipe de journaliers";								
+																				options['innerHtml'] = "Equipe journalière.";								
 																				$("#team_<%= team.id %>").CreateBubblePopup( options );
 																			});
 																		</script>		
 																		<% end %>														
 																		<div class = "direction team" style = "font-weight: bold;">
 																			<% div_for (team) do %>																		
-																				<%= team.team_name %> &nbsp; <%= link_to "", change_to_daily_or_normal_path(team.id), :class => "direction edit_button", :confirm => "Êtes vous sûr de vouloir changer le statut de cette équipe?" %>
+																				<%= team.team_name %> &nbsp; <%#= link_to "", change_to_daily_or_normal_path(team.id), :class => "direction edit_button", :confirm => "Êtes vous sûr de vouloir changer le statut de cette équipe?" %>
 																			<% end %>
 																		</div>																		
 																	</li>

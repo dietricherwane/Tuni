@@ -23,6 +23,7 @@ Tuni::Application.routes.draw do
     match 'users/get_workshops' => 'devise/registrations#get_workshops'
     match 'users/get_sections' => 'devise/registrations#get_sections'
     match 'users/get_teams' => 'devise/registrations#get_teams'
+    match 'users/get_all_teams' => 'devise/registrations#get_all_teams'
     match '/users/enable_user' => 'devise/users#enable_user', :as => :enable_user
     match '/users/disable_user' => 'devise/users#disable_user', :as => :disable_user
     match '/users/delete_user' => 'devise/users#delete_user', :as => :delete_user   

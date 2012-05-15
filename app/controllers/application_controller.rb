@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   
   before_filter :set_cache_buster
+  before_filter :logout_disabled_user
   
   def change_password
   	if user_signed_in?
@@ -30,31 +31,41 @@ class ApplicationController < ActionController::Base
   end
   
   def logout_disabled_user
-    if current_user.eql?(nil)
-    	sign_out(current_user)
-   	  redirect_to sign_in_path, :notice => "Veuillez d'abord vous connecter."
-   	else
-		  unless current_user.user_enabled?(current_user)
+    #if current_user.eql?(nil)
+    	#sign_out(current_user)
+   	  #redirect_to sign_in_path, :notice => "Veuillez d'abord vous connecter."
+   	#else
+   	if user_signed_in?
+		  if current_user.user_enabled?(current_user).eql?(false)
 		 	  sign_out(current_user)
 		 	  redirect_to sign_in_path, :notice => "Votre compte a été désactivé, veuillez contacter l'administrateur."
 		  end
 		end
+		#end
   end 
   
   def layout_used
-  	@user_status = current_user_status
-  	case @user_status
-			when 'Administrateur'
-				"application"
-			when 'Chef de direction'
-				"direction_chief"
-			when "Chef d'atelier"
-				"workshop_chief"
-			when "Chef d'équipe"
-				"team_chief"
-			else
+  	@user_status = current_user_status 
+  	if user_signed_in?
+  		if ((current_user.sign_in_count == 1) && current_user.reset_password_token.nil?)
 				"default"
-			end
+			else	
+				case @user_status
+					when 'Administrateur'
+						"application"
+					when 'Chef de direction'
+						"direction_chief"
+					when "Chef d'atelier"
+						"workshop_chief"
+					when "Chef d'équipe"
+						"team_chief"
+					else									
+						"default"
+					end
+			end			
+		else			
+			"default"
+		end
   end 
   
   def current_user_status
@@ -65,6 +76,7 @@ class ApplicationController < ActionController::Base
    	else
 		  @user_status = Status.find_by_id(current_user.status_id).status_name
 		end
+		@user_status
   end  
   
   def capitalization(raw_name)

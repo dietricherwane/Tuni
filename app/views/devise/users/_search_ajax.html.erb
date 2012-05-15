@@ -72,7 +72,7 @@
 					<% end %>
 				<% end %>
 			<% else %>
-      	<td class = "ui-widget-content"><%= link_to "Effacer", delete_user_path(r.id), :confirm => "Êtes vous sûr de vouloir supprimer cet utilisateur?", :class => "delete-record" %></td>
+      	<td class = "ui-widget-content"><%= link_to "Supprimer", delete_user_path(r.id), :confirm => "Êtes vous sûr de vouloir supprimer cet utilisateur?", :class => "delete-record" %></td>
       <% end %>
 		</tr>
 		<% @tab_color = !@tab_color %>			

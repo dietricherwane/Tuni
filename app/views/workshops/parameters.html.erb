@@ -1,14 +1,150 @@
+<%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
+<script type="text/javascript">	
+$(function(){	
+	$('#collapser').jqcollapse({
+		 slide: true,
+		 speed: 1000,
+		 easing: 'easeOutCubic'
+	});	
+});	
+</script>
+
+<script type="text/javascript">		
+	options =	{ 
+		position : 'top',
+		align	 : 'center',						
+		innerHtmlStyle: {
+							color:'#FFFFFF', 
+							'text-align':'left',
+							padding:'2px',
+							'font-size':'13px'
+						},	
+		tail: {
+				hidden: true
+					},															
+		themeName: 	'all-black',
+		themePath: 	'../../../images/jquerybubblepopup-theme'
+	};		
+</script>
+
+<script type="text/javascript" language="JavaScript">
+$(document).ready(function() {
+		//write a better function for hideAll
+  	$(function(){
+  		hideAll();
+		});
+		
+    $("#post_direction_id").change(function() {
+    	selected_direction = this.options[this.selectedIndex].text; 
+	  	pleaseSelectDirection(selected_direction);
+    });
+    
+    $("#workshop_name").change(function() {
+    	selected_workshop = this.options[this.selectedIndex].text;
+    	if (selected_workshop == "-Veuillez choisir un atelier-"){
+    		$("#numbers").hide("slow");
+    		$("#team").hide("slow");
+    	}
+    	if (selected_workshop != "-Veuillez choisir un atelier-"){
+		  	$(this).getComboBoxValues(selected_workshop, "#team_name", "<%= url_for :action => 'get_all_teams', :controller => 'devise/registrations' %>");
+		  	$("#team").show("slow");
+		  }
+    });
+    
+    $("#team_name").change(function() {
+    	selected_team = this.options[this.selectedIndex].text;
+    	if (selected_team == "-Veuillez choisir une équipe-"){
+    		$("#numbers").hide("slow");
+    	}
+    	if (selected_team != "-Veuillez choisir une équipe-"){
+		  	$("#numbers").show("slow");
+		  }
+    });
+    	  
+    $.fn.getComboBoxValues = function(selected_value, target_tag, url) {
+      $.ajax({      
+        url: url,
+        data: selected_value,
+        dataType: "text",
+        error: function(){  }, //alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
+        success: function(response, response_status, xhr) {
+          $(target_tag).children().remove();
+          $(response).appendTo(target_tag);        
+        }
+      });
+    } 
+     
+    $.fn.getSelectValue = function(selectId) {
+     	var selectElmt = document.getElementById(selectId);
+			return selectElmt.options[selectElmt.selectedIndex].text;
+    }
+    
+    $.fn.populateDirection = function(selected_status) {
+			$(this).getComboBoxValues(selected_status, "#direction_name", "<%= url_for :action => 'get_directions', :controller => 'devise/registrations' %>");
+    }
+    
+    function pleaseSelectDirection(selected_direction){
+    	if (selected_direction == "-Veuillez choisir une direction-"){
+    		$("#numbers").hide("slow");
+    		$("#team").hide("slow");
+				$("#workshop").hide("slow");
+			}
+			else {
+				$(this).getComboBoxValues(selected_direction, "#workshop_name", "<%= url_for :action => 'get_workshops', :controller => 'devise/registrations' %>");
+				showWorkshop("slow");
+			}
+    }
+        
+    function hideAll(slow){ 
+    	$("#numbers").hide(slow);
+  		$("#team").hide(slow);
+    	$("#workshop").hide(slow);
+		} 
+		
+		function showDirection(slow){ 
+  		$("#team").hide(slow);
+    	$("#workshop").hide(slow);
+    	$("#direction").show(slow);
+		}
+		
+		function showWorkshop(slow){ 
+  		$("#team").hide(slow);
+    	$("#workshop").show(slow);
+    	$("#direction").show(slow);
+		}		
+		
+});
+</script>
+
 <h2 class="top-title">Paramètres</h2><br />
 <div class="column">
 	<div class="portlet" id="widget-1">
     <div class="portlet-header">Nombre de temporaires par équipe</div>
     	<div class="portlet-content"> 
-    		<%= form_tag set_workshop_parameters_path do %>   	
-    			<div id= "space"><%= label_tag "Equipe" %><br />
-					<%= collection_select(:post, :team_id, @teams, :id, :team_name, options ={:prompt => "-Veuillez choisir une équipe-"}) %></div>							
-					<div id = "space"><%= label_tag "Nombre maximal de temporaires" %><br />
+    		<%= form_tag set_workshop_parameters_path do %> 
+    			<div id= "direction">  	
+    			<div id= "space"><%= label_tag "Direction" %><br />
+					<%= collection_select(:post, :direction_id, @directions, :id, :direction_name, options ={:prompt => "-Veuillez choisir une direction-"}) %></div>
+					</div>
+					
+					<div id= "workshop">
+					<div id= "space"><%= label_tag "Atelier" %><br />
+					<%= select_tag "workshop_name", options_for_select(["-Veuillez choisir un atelier-"], "-Veuillez choisir un atelier-") %></div>	
+					</div>
+					
+					<div id= "team">
+					<div id= "space"><%= label_tag "Equipe" %><br />
+					<%= select_tag "team_name", options_for_select([ "-Veuillez choisir une équipe-"], "-Veuillez choisir une équipe-") %></div>	
+					</div>
+					
+					<div id="numbers">						
+					<div id = "space"><%= label_tag "Nombre de temporaires" %><br />
 					<%= text_field_tag 'casual_number', '' %></div>
-					<br />
+					
+					<div id = "space"><%= label_tag "Nombre de caristes" %><br />
+					<%= text_field_tag 'operator_number', '' %></div>
+					</div>
+					
   				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
 				<% end %>					
 			</div>
@@ -18,10 +154,45 @@
 <div class="column_right">
 	<div class="portlet" id="widget-2">
     <div class="portlet-header">Liste des équipes</div>
-    	<div class="portlet-content"> 
-    		<% @teams.each do |team| %>
-    			<div class = "direction team" style = "font-weight: bold;"><%= team.team_name %> (<%= Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count %>/<%= team.max_number_of_casuals %>)</div><br />
-    		<% end %>				
+    	<div class="portlet-content"> 	
+    		<ul id="collapser">
+					<% unless @directions.eql?(nil) %>
+					<% @directions.each do |direction| %>
+						<li><div class = "direction dir" style = "font-weight: bold;"><%= direction.direction_name %></div>
+							<% unless direction.workshops.eql?(nil) %>
+								<ul>
+									<% direction.workshops.each do |workshop| %>
+										<li>
+											<div class = "direction workshop" style = "font-weight: bold;"><%= workshop.workshop_name %></div>
+												<ul>
+													<% unless workshop.teams.eql?(nil) %>												
+														<% workshop.teams.each do |team| %>																	
+															<li>
+																<% if team.daily %>		
+																<script type="text/javascript">	
+																	$(document).ready(function() {	
+																		options['innerHtml'] = "Equipe journalière.";								
+																		$("#team_<%= team.id %>").CreateBubblePopup( options );
+																	});
+																</script>		
+																<% end %>														
+																<div class = "direction team" style = "font-weight: bold;">
+																	<% div_for (team) do %>																		
+																		<%= team.team_name %> &nbsp; (<%= Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE AND casual_type_id = #{CasualType.find_by_type_name('Normal').id}").count %>/<%= team.max_number_of_casuals %>) - (<%= Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE AND casual_type_id = #{CasualType.find_by_type_name('Cariste').id}").count %>/<%= team.number_of_operators %>)
+																	<% end %>
+																</div>																		
+															</li>
+														<% end %>												
+													<% end %>																										
+												</ul>
+										</li>
+									<% end %>
+								</ul>
+							<% end %>
+						</li>
+					<% end %>
+					<% end %>
+				</ul>			
 			</div>
 	</div>
 </div>

@@ -42,22 +42,22 @@ class WorkshopsController < ApplicationController
   end
   
   def parameters
-  	@teams = Workshop.find_by_id(current_user.status_number).teams.order("team_name ASC")
+  	@directions = Direction.all
   end
   
   def set_parameters
-  	@team_id = params[:post][:team_id].to_i
-  	if params[:post][:team_id].empty?
+  	@team = Team.find_by_team_name(params[:team_name])
+  	if @team.nil?
   		redirect_to :back, :alert => "Veuillez choisir l'équipe dont vous voulez modifier le nombre maximal de temporaires."
   	else
-  		if is_not_a_number?(params[:casual_number]) || params[:casual_number].to_i <= 0
-  			redirect_to :back, :alert => "Le nombre maximal de temporaires doit être un nombre supérieur à 0."
+  		if (is_not_a_number?(params[:casual_number]) || params[:casual_number].to_i <= 0 || is_not_a_number?(params[:operator_number]) || params[:operator_number].to_i <= 0)
+  			redirect_to :back, :alert => "Le nombre maximal de temporaires et de caristes doivent être des nombres supérieurs à 0."
   		else
-  			if params[:casual_number].to_i < Casual.where("team_id = #{@team_id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count
-  				redirect_to :back, :alert => "Le nombre maximal de temporaires est inférieur au nombre de temporaires dans l'équipe."
+  			if params[:casual_number].to_i < Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE AND casual_type_id = #{CasualType.find_by_type_name('Normal').id}").count || params[:operator_number].to_i < Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE AND casual_type_id = #{CasualType.find_by_type_name('Cariste').id}").count
+  				redirect_to :back, :alert => "Le nombre maximal de temporaires et de caristes doit etre supérieur au nombre de temporaires dans l'équipe."
   			else
-  				Team.find_by_id(params[:post][:team_id].to_i).update_attribute(:max_number_of_casuals, params[:casual_number].to_i)
-  			redirect_to :back, :notice => "Le nombre maximal de temporaires de l'équipe: #{Team.find_by_id(params[:post][:team_id].to_i).team_name} a été fixé à: #{params[:casual_number].to_i}."
+  				@team.update_attributes(:max_number_of_casuals => params[:casual_number].to_i, :number_of_operators => params[:operator_number].to_i)
+  			redirect_to :back, :notice => "Le nombre maximal de temporaires et de caristes de l'équipe: #{@team.team_name} a été fixé à: #{params[:casual_number].to_i} et #{params[:operator_number].to_i}."
   			end
   		end
   	end
@@ -74,7 +74,7 @@ class WorkshopsController < ApplicationController
   def configuration_plan(date, week_number)
   	@workshop = Workshop.find_by_id(current_user.status_number)
   	@teams = @workshop.teams.where("disabled IS NOT TRUE").order("team_name ASC")
-  	@rolling_types = RollingType.where("disabled IS NOT TRUE").order("type_name ASC")
+  	@rolling_types = RollingType.where("description != 'Journalier'")
   	@beginning_of_next_week = (date).beginning_of_week
   	@end_of_next_week = (date).end_of_week
   	@configured_teams_table = []
@@ -194,7 +194,8 @@ class WorkshopsController < ApplicationController
   		  		  		
   		@team.configurations.create(:user_id => current_user.id, :week_number => @week_number)  	
   		@configuration = Configuration.where(:week_number => @week_number, :team_id => @team.id).first	
-  		
+
+# save lines the team can be affected to unless the team is daily 		
   		unless @team.daily
 				@line_id_table.each do |line_id|
 					@configuration.lines << Line.find_by_id(line_id)
@@ -258,6 +259,8 @@ class WorkshopsController < ApplicationController
   	redirect_to :back, :notice => "#{@configuration.team.team_name}: le #{params[:french_date_name]} a été supprimé."
   end
   
-  
+  def set_max_number_of_casuals_and_operators
+  	
+  end  
 
 end

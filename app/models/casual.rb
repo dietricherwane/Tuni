@@ -6,13 +6,8 @@ class Casual < ActiveRecord::Base
 	belongs_to :casual_type
 	has_many :migration_dates
 	belongs_to :line
-	has_many :monday_tickings
-	has_many :tuesday_tickings
-	has_many :wednesday_tickings
-	has_many :thursday_tickings
-	has_many :friday_tickings
-	has_many :saturday_tickings
-	has_many :sunday_tickings
+	has_many :tickings
+	
 	# lié à la création des Casual: migration_date
 	default_scope order('casuals.created_at DESC', 'casuals.firstname ASC', 'casuals.lastname ASC')
 	

@@ -6,7 +6,7 @@
 #   gem install pg -- --with-pg-config=/opt/local/lib/postgresql84/bin/pg_config
 # On Windows:
 #   gem install pg
-#       Choose the win32 build.
+#       Choose the win32 build.192.168.1.100
 #       Install PostgreSQL and put its /bin directory on your path.
 development:
   adapter: postgresql

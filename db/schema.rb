@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120514214945) do
+ActiveRecord::Schema.define(:version => 20120517132923) do
 
   create_table "casual_types", :force => true do |t|
     t.string   "type_name"
@@ -92,6 +92,7 @@ ActiveRecord::Schema.define(:version => 20120514214945) do
     t.datetime "updated_at"
     t.integer  "section_id"
     t.integer  "max_number_of_casuals"
+    t.integer  "max_number_of_operators"
   end
 
   create_table "migration_dates", :force => true do |t|

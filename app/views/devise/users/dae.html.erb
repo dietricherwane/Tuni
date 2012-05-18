@@ -68,6 +68,11 @@ $(document).ready(function() {
 			}
     });
     
+    $("#post_direction_id").change(function() {
+    	selected_direction = this.options[this.selectedIndex].text; 
+	  	pleaseSelectDirectionParams(selected_direction);
+    });
+    
     $("#workshop_name").change(function() {
     	selected_workshop = this.options[this.selectedIndex].text;
     	selected_dae = $(this).getSelectValue('dae_name');
@@ -93,6 +98,28 @@ $(document).ready(function() {
     	if (selected_workshop == "-Veuillez choisir un atelier-"){
     		pleaseSelectWorkshop(selected_workshop);
     	}
+    });
+    
+    $(".workshop_name").change(function() {
+    	selected_workshop = this.options[this.selectedIndex].text;
+    	if (selected_workshop == "-Veuillez choisir un atelier-"){
+    		$("#numbers").hide("slow");
+    		$("#team_params").hide("slow");
+    	}
+    	if (selected_workshop != "-Veuillez choisir un atelier-"){
+		  	$(this).getComboBoxValues(selected_workshop, ".team_name", "<%= url_for :action => 'get_all_teams', :controller => 'devise/registrations' %>");
+		  	$("#team_params").show("slow");
+		  }
+    });
+    
+    $(".team_name").change(function() {
+    	selected_team = this.options[this.selectedIndex].text;
+    	if (selected_team == "-Veuillez choisir une équipe-"){
+    		$("#numbers").hide("slow");
+    	}
+    	if (selected_team != "-Veuillez choisir une équipe-"){
+		  	$("#numbers").show("slow");
+		  }
     });
     
     $("#section_name").change(function() {
@@ -155,6 +182,18 @@ $(document).ready(function() {
 			}
     }
     
+    function pleaseSelectDirectionParams(selected_direction){
+    	if (selected_direction == "-Veuillez choisir une direction-"){
+    		$("#numbers").hide("slow");
+    		$("#team_params").hide("slow");
+				$("#workshop_params").hide("slow");
+			}
+			else {
+				$(this).getComboBoxValues(selected_direction, ".workshop_name", "<%= url_for :action => 'get_workshops', :controller => 'devise/registrations' %>");
+				showWorkshopParams("slow");
+			}
+    }
+    
     function pleaseSelectWorkshop(selected_workshop){
     	if (selected_workshop == "-Veuillez choisir un atelier-"){
     		$("#daily").hide("slow");
@@ -199,6 +238,9 @@ $(document).ready(function() {
   		$("#section").hide(slow);
     	$("#workshop").hide(slow);
     	$("#direction").hide(slow);
+    	$("#numbers").hide(slow);
+  		$("#team_params").hide(slow);
+    	$("#workshop_params").hide(slow);
 		} 
 		
 		function showDirectionValueField(slow){ 
@@ -242,6 +284,11 @@ $(document).ready(function() {
 			$("#section").hide(slow);
     	$("#workshop").show(slow);
     	$("#direction").show(slow);  		
+		}
+		
+		function showWorkshopParams(slow){ 
+  		$("#team_params").hide(slow);
+    	$("#workshop_params").show(slow);
 		}
 		
 		$(function(){				
@@ -334,6 +381,38 @@ $(document).ready(function() {
 				<% end %>				
 			</div>
 	</div>
+	
+	<div class="portlet" id="widget-2">
+    <div class="portlet-header">Nombre de temporaires et de caristes par équipe</div>
+    	<div class="portlet-content"> 
+    		<%= form_tag set_workshop_parameters_path do %> 
+    			<div id= "direction">  	
+    			<div id= "space"><%= label_tag "Direction" %><br />
+					<%= collection_select(:post, :direction_id, @directions, :id, :direction_name, options ={:prompt => "-Veuillez choisir une direction-"}) %></div>
+					</div>
+					
+					<div id= "workshop_params">
+					<div id= "space"><%= label_tag "Atelier" %><br />
+					<%= select_tag "workshop_name", options_for_select(["-Veuillez choisir un atelier-"], "-Veuillez choisir un atelier-"), :class => 'workshop_name' %></div>	
+					</div>
+					
+					<div id= "team_params">
+					<div id= "space"><%= label_tag "Equipe" %><br />
+					<%= select_tag "team_name", options_for_select([ "-Veuillez choisir une équipe-"], "-Veuillez choisir une équipe-"), :class => 'team_name' %></div>	
+					</div>
+					
+					<div id="numbers">						
+					<div id = "space"><%= label_tag "Nombre de temporaires" %><br />
+					<%= text_field_tag 'casual_number', '' %></div>
+					
+					<div id = "space"><%= label_tag "Nombre de caristes" %><br />
+					<%= text_field_tag 'operator_number', '' %></div>
+					</div>
+					
+  				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+				<% end %>					
+			</div>
+	</div>
 </div>
 
 <div class="column_right">
@@ -365,7 +444,7 @@ $(document).ready(function() {
 																		<% end %>														
 																		<div class = "direction team" style = "font-weight: bold;">
 																			<% div_for (team) do %>																		
-																				<%= team.team_name %> &nbsp; <%#= link_to "", change_to_daily_or_normal_path(team.id), :class => "direction edit_button", :confirm => "Êtes vous sûr de vouloir changer le statut de cette équipe?" %>
+																				<%= team.team_name %> &nbsp; (<%= Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE AND casual_type_id = #{CasualType.find_by_type_name('Normal').id}").count %>/<%= team.max_number_of_casuals %>) - (<%= Casual.where("team_id = #{team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE AND casual_type_id = #{CasualType.find_by_type_name('Cariste').id}").count %>/<%= team.number_of_operators %>) <%#= link_to "", change_to_daily_or_normal_path(team.id), :class => "direction edit_button", :confirm => "Êtes vous sûr de vouloir changer le statut de cette équipe?" %>
 																			<% end %>
 																		</div>																		
 																	</li>

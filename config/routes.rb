@@ -55,6 +55,9 @@ Tuni::Application.routes.draw do
   match 'workshop/daily_team' => 'workshops#daily_team'
   match 'team/allot_to_line' => 'teams#allot_to_line', :as => :allot_to_line
   match 'team/casual_allocation_to_line' => 'teams#casual_allocation_to_line', :as => :casual_allocation_to_line
+  match 'team/remove_from_line' => 'teams#remove_from_line', :as => :remove_from_line
+  match 'team/remove_from_team' => 'teams#remove_from_team', :as => :remove_from_team
+  match 'team/ticking' => 'teams#ticking', :as => :ticking
   
   #resources :companies
   #resources :cities

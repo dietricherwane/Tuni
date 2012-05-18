@@ -1,0 +1,235 @@
+<%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
+<script type="text/javascript">	
+$(function(){	
+	$('#collapser').jqcollapse({
+		 slide: true,
+		 speed: 1000,
+		 easing: 'easeOutCubic'
+	});	
+});	
+</script>
+
+<h2 class="top-title">Fiche de pointage du <%= Date.today.beginning_of_week.strftime("%d") %> au <%= Date.today.end_of_week.strftime("%d %B %Y") %></h2><br />
+<div class="column_large_left">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Pointage des temporaires</div>
+    	<div class="portlet-content"> 
+    		<%= form_tag save_current_week_configuration_plan_path do %>   	
+    													
+					<table class="list-table">
+						<thead class = "ui-widget-header ui-corner-all">
+							<tr>				
+									<th width="16%">Nom</th>	
+								<% unless @configuration.rolling_monday.nil? %>
+									<th width="12%">Lundi</th>
+								<% end %>
+								<% unless @configuration.rolling_tuesday.nil? %>
+									<th width="12%">Mardi</th>
+								<% end %>
+								<% unless @configuration.rolling_wednesday.nil? %>
+									<th width="12%">Mercredi</th>
+								<% end %>
+								<% unless @configuration.rolling_thursday.nil? %>
+									<th width="12%">Jeudi</th>
+								<% end %>
+								<% unless @configuration.rolling_friday.nil? %>
+									<th width="12%">Vendredi</th>
+								<% end %>
+								<% unless @configuration.rolling_saturday.nil? %>
+									<th width="12%">Samedi</th>
+								<% end %>
+								<% unless @configuration.rolling_sunday.nil? %>
+									<th width="12%">Dimanche</th>
+								<% end %>
+							</tr>
+						</thead>
+						<tbody>
+							<% if @casuals.empty? %>
+								<tr>
+									<td colspan = 8 class = "ui-widget-content" >Aucun temporaire à pointer</td>									
+								</tr>
+							<% else %>
+								<% @casuals.each do |casual| %>
+									<tr class = "odd">
+										<td class = "ui-widget-content">
+											<%= "#{casual.firstname} #{casual.lastname}" %>
+										</td>
+										<% unless @configuration.rolling_monday.nil? %>
+											<% if @weekday == 1 %>
+												<td class = "ui-widget-content">
+													<%= select_tag casual.id, options_for_select((0..@configuration.rolling_monday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+												</td>	
+											<% else %>
+												<% if casual.tickings.where("week_number = #{@configuration.week_number}").empty? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.where("week_number = #{@configuration.week_number}").first.monday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															0
+														</td>
+													<% else %>
+														<td class = "ui-widget-content">
+															casual.tickings.where("week_number = #{@configuration.week_number}").first.monday_ticking.number_of_hours
+														</td>
+													<% end %>
+												<% end %>
+											<% end %>
+										<% end %>
+										
+										<% unless @configuration.rolling_tuesday.nil? %>
+											<% if @weekday == 2 %>
+												<td class = "ui-widget-content">
+													<%= select_tag casual.id, options_for_select((0..@configuration.rolling_tuesday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+												</td>	
+											<% else %>
+												<% if casual.tickings.where("week_number = #{@configuration.week_number}").empty? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.where("week_number = #{@configuration.week_number}").first.tuesday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															0
+														</td>
+													<% else %>
+														<td class = "ui-widget-content">
+															casual.tickings.where("week_number = #{@configuration.week_number}").first.tuesday_ticking.number_of_hours
+														</td>
+													<% end %>
+												<% end %>
+											<% end %>
+										<% end %>
+										
+										<% unless @configuration.rolling_wednesday.nil? %>
+											<% if @weekday == 3 %>
+												<td class = "ui-widget-content">
+													<%= select_tag casual.id, options_for_select((0..@configuration.rolling_wednesday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+												</td>	
+											<% else %>
+												<% if casual.tickings.where("week_number = #{@configuration.week_number}").empty? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.where("week_number = #{@configuration.week_number}").first.wednesday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															0
+														</td>
+													<% else %>
+														<td class = "ui-widget-content">
+															casual.tickings.where("week_number = #{@configuration.week_number}").first.wednesday_ticking.number_of_hours
+														</td>
+													<% end %>
+												<% end %>
+											<% end %>
+										<% end %>
+										
+										<% unless @configuration.rolling_thursday.nil? %>
+											<% if @weekday == 4 %>
+												<td class = "ui-widget-content">
+													<%= select_tag casual.id, options_for_select((0..@configuration.rolling_thursday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+												</td>	
+											<% else %>
+												<% if casual.tickings.where("week_number = #{@configuration.week_number}").empty? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.where("week_number = #{@configuration.week_number}").first.thursday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															0
+														</td>
+													<% else %>
+														<td class = "ui-widget-content">
+															casual.tickings.where("week_number = #{@configuration.week_number}").first.thursday_ticking.number_of_hours
+														</td>
+													<% end %>
+												<% end %>
+											<% end %>
+										<% end %>
+										
+										<% unless @configuration.rolling_friday.nil? %>
+											<% if @weekday == 5 %>
+												<td class = "ui-widget-content">
+													<%= select_tag casual.id, options_for_select((0..@configuration.rolling_friday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+												</td>	
+											<% else %>
+												<% if casual.tickings.where("week_number = #{@configuration.week_number}").empty? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.where("week_number = #{@configuration.week_number}").first.friday_ticking.nil? %>
+														<td>
+															0
+														</td class = "ui-widget-content">
+													<% else %>
+														<td class = "ui-widget-content">
+															casual.tickings.where("week_number = #{@configuration.week_number}").first.friday_ticking.number_of_hours
+														</td>
+													<% end %>
+												<% end %>
+											<% end %>
+										<% end %>
+										
+										<% unless @configuration.rolling_saturday.nil? %>
+											<% if @weekday == 6 %>
+												<td class = "ui-widget-content">
+													<%= select_tag casual.id, options_for_select((0..@configuration.rolling_saturday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+												</td>	
+											<% else %>
+												<% if casual.tickings.where("week_number = #{@configuration.week_number}").empty? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.where("week_number = #{@configuration.week_number}").first.saturday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															0
+														</td>
+													<% else %>
+														<td class = "ui-widget-content">
+															casual.tickings.where("week_number = #{@configuration.week_number}").first.saturday_ticking.number_of_hours
+														</td>
+													<% end %>
+												<% end %>
+											<% end %>
+										<% end %>
+										
+										<% unless @configuration.rolling_sunday.nil? %>
+											<% if @weekday == 0 %>
+												<td class = "ui-widget-content">
+													<%= select_tag casual.id, options_for_select((0..@configuration.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+												</td>	
+											<% else %>
+												<% if casual.tickings.where("week_number = #{@configuration.week_number}").empty? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.where("week_number = #{@configuration.week_number}").first.sunday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															0
+														</td>
+													<% else %>
+														<td class = "ui-widget-content">
+															casual.tickings.where("week_number = #{@configuration.week_number}").first.sunday_ticking.number_of_hours
+														</td>
+													<% end %>
+												<% end %>
+											<% end %>
+										<% end %>
+									</tr>
+								<% end %>
+							<% end %>
+						</tbody>
+					</table>
+					<br />
+  				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+				<% end %>						
+			</div>
+	</div>
+</div>
+

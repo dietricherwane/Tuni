@@ -36,22 +36,22 @@ $(document).ready(function() {
 		
     $("#post_direction_id").change(function() {
     	selected_direction = this.options[this.selectedIndex].text; 
-	  	pleaseSelectDirection(selected_direction);
+	  	pleaseSelectDirectionParams(selected_direction);
     });
     
-    $("#workshop_name").change(function() {
+    $(".workshop_name").change(function() {
     	selected_workshop = this.options[this.selectedIndex].text;
     	if (selected_workshop == "-Veuillez choisir un atelier-"){
     		$("#numbers").hide("slow");
-    		$("#team").hide("slow");
+    		$("#team_params").hide("slow");
     	}
     	if (selected_workshop != "-Veuillez choisir un atelier-"){
-		  	$(this).getComboBoxValues(selected_workshop, "#team_name", "<%= url_for :action => 'get_all_teams', :controller => 'devise/registrations' %>");
-		  	$("#team").show("slow");
+		  	$(this).getComboBoxValues(selected_workshop, ".team_name", "<%= url_for :action => 'get_all_teams', :controller => 'devise/registrations' %>");
+		  	$("#team_params").show("slow");
 		  }
     });
     
-    $("#team_name").change(function() {
+    $(".team_name").change(function() {
     	selected_team = this.options[this.selectedIndex].text;
     	if (selected_team == "-Veuillez choisir une équipe-"){
     		$("#numbers").hide("slow");
@@ -79,37 +79,34 @@ $(document).ready(function() {
 			return selectElmt.options[selectElmt.selectedIndex].text;
     }
     
-    $.fn.populateDirection = function(selected_status) {
-			$(this).getComboBoxValues(selected_status, "#direction_name", "<%= url_for :action => 'get_directions', :controller => 'devise/registrations' %>");
-    }
-    
-    function pleaseSelectDirection(selected_direction){
+   
+    function pleaseSelectDirectionParams(selected_direction){
     	if (selected_direction == "-Veuillez choisir une direction-"){
     		$("#numbers").hide("slow");
-    		$("#team").hide("slow");
-				$("#workshop").hide("slow");
+    		$("#team_params").hide("slow");
+				$("#workshop_params").hide("slow");
 			}
 			else {
-				$(this).getComboBoxValues(selected_direction, "#workshop_name", "<%= url_for :action => 'get_workshops', :controller => 'devise/registrations' %>");
-				showWorkshop("slow");
+				$(this).getComboBoxValues(selected_direction, ".workshop_name", "<%= url_for :action => 'get_workshops', :controller => 'devise/registrations' %>");
+				showWorkshopParams("slow");
 			}
     }
         
     function hideAll(slow){ 
     	$("#numbers").hide(slow);
-  		$("#team").hide(slow);
-    	$("#workshop").hide(slow);
+  		$("#team_params").hide(slow);
+    	$("#workshop_params").hide(slow);
 		} 
 		
 		function showDirection(slow){ 
-  		$("#team").hide(slow);
-    	$("#workshop").hide(slow);
-    	$("#direction").show(slow);
+  		$("#team_params").hide(slow);
+    	$("#workshop_params").hide(slow);
+    	//$("#direction").show(slow);
 		}
 		
-		function showWorkshop(slow){ 
-  		$("#team").hide(slow);
-    	$("#workshop").show(slow);
+		function showWorkshopParams(slow){ 
+  		$("#team_params").hide(slow);
+    	$("#workshop_params").show(slow);
     	$("#direction").show(slow);
 		}		
 		
@@ -127,14 +124,14 @@ $(document).ready(function() {
 					<%= collection_select(:post, :direction_id, @directions, :id, :direction_name, options ={:prompt => "-Veuillez choisir une direction-"}) %></div>
 					</div>
 					
-					<div id= "workshop">
+					<div id= "workshop_params">
 					<div id= "space"><%= label_tag "Atelier" %><br />
-					<%= select_tag "workshop_name", options_for_select(["-Veuillez choisir un atelier-"], "-Veuillez choisir un atelier-") %></div>	
+					<%= select_tag "workshop_name", options_for_select(["-Veuillez choisir un atelier-"], "-Veuillez choisir un atelier-"), :class => 'workshop_name' %></div>	
 					</div>
 					
-					<div id= "team">
+					<div id= "team_params">
 					<div id= "space"><%= label_tag "Equipe" %><br />
-					<%= select_tag "team_name", options_for_select([ "-Veuillez choisir une équipe-"], "-Veuillez choisir une équipe-") %></div>	
+					<%= select_tag "team_name", options_for_select([ "-Veuillez choisir une équipe-"], "-Veuillez choisir une équipe-"), :class => 'team_name' %></div>	
 					</div>
 					
 					<div id="numbers">						

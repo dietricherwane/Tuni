@@ -16,16 +16,16 @@ Devise.setup do |config|
   # available as additional gems.
   require 'devise/orm/active_record'
 	
-	#ActionMailer::Base.smtp_settings = {
-		#:openssl_verify_mode => 'none',
-		#:address => "smtp.gmail.com",
-		#:enable_starttls_auto => true,
-		#:port => 587,
-		#:authentication => :plain,
-		#:user_name => "dietricherwane@gmail.com",
-		#:password => '20dianapopoulos11'
+	ActionMailer::Base.smtp_settings = {
+		:openssl_verify_mode => 'none',
+		:address => "smtp.gmail.com",
+		:enable_starttls_auto => true,
+		:port => 587,
+		:authentication => :plain,
+		:user_name => "dietricherwane@gmail.com",
+		:password => '20dianapopoulos11'
 		
-	#}
+	}
   # ==> Configuration for any authentication mechanism
   # Configure which keys are used when authenticating a user. The default is
   # just :email. You can configure it to use [:username, :subdomain], so for

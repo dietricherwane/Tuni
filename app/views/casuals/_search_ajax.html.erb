@@ -11,7 +11,52 @@
 		themeName: 	'all-black',
 		themePath: 	'../../images/jquerybubblepopup-theme'
 	};	
-</script>		
+</script>
+
+<script type="text/javascript" language="JavaScript">
+$(document).ready(function() {
+  	$(function(){
+  		$("#wa_workshop").hide();
+		});
+    
+    $("#wa_direction_id").change(function() {
+    	selected_direction = this.options[this.selectedIndex].text; 
+			pleaseSelectDirection(selected_direction);
+    });
+    
+    $.fn.getComboBoxValues = function(selected_value, target_tag, url) {
+      $.ajax({      
+        url: url,
+        data: selected_value,
+        dataType: "text",
+        error: function(){ alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter."); },
+        success: function(response, response_status, xhr) {
+          $(target_tag).children().remove();
+          $(response).appendTo(target_tag);        
+        }
+      });
+    } 
+       
+    function pleaseSelectDirection(selected_direction){
+    	if (selected_direction == "-Direction-"){
+				$("#wa_workshop").hide("slow");
+			}
+			else {
+				$(this).getComboBoxValues(selected_direction, "#wa_workshop_name", "<%= url_for :action => 'get_workshops', :controller => 'devise/registrations' %>");
+				$("#wa_workshop").show("slow");
+			}
+    }
+});
+</script>
+
+<style>	
+	input.text { margin-bottom:12px; width:95%; padding: .4em; }
+	fieldset { padding:0; border:0; margin-top:25px; }
+	h1 { font-size: 1.2em; margin: .6em 0; }
+	
+	.ui-dialog .ui-state-error { padding: .3em; }
+	.validateTips { border: 1px solid transparent; padding: 0.3em; }
+</style>
 
 <table class="list-table">
 	<thead class = "ui-widget-header ui-corner-all">
@@ -21,7 +66,7 @@
 			<th width="14%">Statut</th>
 			<th>Compagnie</th>
 			<th>Type</th>
-			<th>Date d'entrée</th>
+			<th>Affecter</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -37,7 +82,7 @@
 		<% else %>	
 			<% @casuals.each do |casual| %>			
 				<script type="text/javascript">		
-					options['innerHtml'] = "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %>";								
+					options['innerHtml'] = "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %><br>Date d'entrée: <%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>";								
 					$("#casual_<%= casual.id %>").CreateBubblePopup( options );
 				</script>		
 				<% if @tr_color %>
@@ -46,12 +91,14 @@
 					<tr>
 				<% end %>
 					<td class = "ui-widget-content">
-						<% div_for (casual) do %>
+						<%= div_for (casual) do %>
 							<%= casual.firstname+" "+casual.lastname %>
 						<% end %>
 					</td>
 					<td class = "ui-widget-content">
+						<% unless casual.workshop_id.eql?(nil) %>
 							<%= Workshop.find_by_id(casual.workshop_id).workshop_name %>
+						<% end %>
 					</td>			
 					<td class = "ui-widget-content">		
 					<% case casual.casual_status(casual) %>
@@ -72,7 +119,21 @@
 							<%= CasualType.find_by_id(casual.casual_type_id).type_name %>
 					</td>
 					<td class = "ui-widget-content">
-						<%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>
+						<% if casual.workshop_id.nil? %>
+						
+							<script type="text/javascript">
+								//Affichage de la popup pour l'affectation des temporaires aux ateliers
+								$(document).ready(function(){								
+									$( "#<%= casual.id %>" ).click(function() {
+											document.getElementById("casual_id").value = <%= casual.id %>
+											<% @user_to_be_affected = casual.firstname+" "+casual.lastname %>
+											$( "#dialog-form" ).dialog( "open" );
+										});																									
+								});
+								</script>
+								
+								<a href = "#" id = "<%= casual.id %>" class = "preview-record">Affecter</a>
+						<% end %>
 					</td>			
 				</tr>
 				<% @tab_color = !@tab_color %>			
@@ -81,6 +142,45 @@
 	</tbody>
 </table>
 
-<!--<div id="pagination">
+	<script>
+	$(function() {
+		$( "#dialog:ui-dialog" ).dialog( "destroy" );
+			
+		$( "#dialog-form" ).dialog({
+			autoOpen: false,
+			height: 300,
+			width: 350,
+			modal: true,
+			
+			close: function() {
+				allFields.val( "" ).removeClass( "ui-state-error" );
+			}
+		});
+	});
+	</script>
+
+<div id="dialog-form" title="Affecter <%= @user_to_be_affected %> à un atelier">
+	<%= form_tag allot_to_workshop_path do %> 
+	<fieldset>
+		<p>
+			<div id= "wa_direction">
+				<%= label_tag "Direction" %><br />
+				<%= collection_select(:wa, :direction_id, @directions, :id, :direction_name, options ={:prompt => "-Direction-"}) %>
+			</div>
+		</p>
+		</p>
+			<div id= "wa_workshop">
+				<%= label_tag "Atelier" %><br />
+				<%= select_tag "wa_workshop_name", options_for_select(["-Veuillez choisir un atelier-"], "-Veuillez choisir un atelier-") %>		
+			</div>
+		</p>
+		<%= hidden_field_tag 'casual_id' %>
+		<br />
+		<%= submit_tag "Affecter", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+	</fieldset>
+	<% end %>
+</div>
+
+	<!--<div id="pagination">
 		<%= will_paginate @users %>
 	</div>-->

@@ -45,7 +45,7 @@ $(document).ready(function() {
         	alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
         },
         success: function(response, response_status, xhr) {
-          $("#result").html(response);        
+          $("#result").html(response);     
         }
       });  
     }
@@ -130,7 +130,6 @@ $(document).ready(function() {
 					</p>					
 					<br />
   				<%= f.submit "Enregistrer", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
-
 				<% end %>
 			</div>
 		</div>

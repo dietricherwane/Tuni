@@ -2,8 +2,17 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   
-  before_filter :set_cache_buster
-  before_filter :logout_disabled_user
+  prepend_before_filter :authenticate_user!, :logout_disabled_user, :set_cache_buster#, :layout_used
+  
+  #before_filter :set_cache_buster
+  #before_filter :logout_disabled_user
+  #before_filter :authenticate_user!
+  
+  def duke
+  	unless user_signed_in?
+  		redirect_to root_path, :alert => "Access Denied"
+  	end
+  end
   
   def change_password
   	if user_signed_in?

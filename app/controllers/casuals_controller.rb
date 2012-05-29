@@ -2,7 +2,7 @@
 class CasualsController < ApplicationController
 	before_filter :authenticate_user!
 	layout :layout_used
-	
+
 	def casuals_settings
 		@cities = City.all.paginate(:page => params[:page], :per_page => 15)
 		@companies = Company.all.paginate(:page => params[:page], :per_page => 15)
@@ -59,7 +59,9 @@ class CasualsController < ApplicationController
     @searched_fields = ["firstname","lastname", "phone_number"]  	
     @casuals = custom_ajax_search(@searched_fields, @params, Casual, params[:status]).paginate(:page => params[:page], :per_page => 10)    	 
     @tr_color = true
-    render :partial => "search_ajax" 
+    @user_to_be_affected = ""
+    @directions = Direction.all    
+    render :partial => "search_ajax"
 	end
 	
 	def custom_ajax_search(searched_fields, parameters, concerned_model, range)
@@ -142,7 +144,7 @@ class CasualsController < ApplicationController
     	end
     	@res += @casual_types_container
     	
-    	#éléments de recherche pa matricule
+    	#éléments de recherche par matricule
     	@res += "OR identifier ILIKE "+"'%"+parameter+"%'"
     	
     	
@@ -184,6 +186,28 @@ class CasualsController < ApplicationController
 			@workshops_options << "<option>#{workshop.workshop_name}</option>"
 		end
   	render :text => @workshops_options
+  end
+  
+  #Allocation of casual to workshop
+  def allot_to_workshop
+  	@direction_id = params[:wa][:direction_id]
+  	@workshop_name = params[:wa_workshop_name]
+  	
+  	if @direction_id.empty? || @workshop_name.eql?("-Veuillez choisir un atelier-")
+  		redirect_to :back, :alert => "Veuillez choisir une direction et un atelier dans lequel affecter le temporaire."
+  	else
+  		@casual = Casual.find(params[:casual_id].to_i)
+  		@workshop = Workshop.find_by_workshop_name(@workshop_name)
+  		@casuals_in_workshop = Casual.where("workshop_id = #{@workshop.id} AND expired IS NOT TRUE").count
+  		@max_number_of_casuals = Team.find_by_sql("SELECT SUM(max_number_of_casuals + number_of_operators) AS number_of_casuals_in_workshop FROM teams WHERE workshop_id = #{@workshop.id};").first.number_of_casuals_in_workshop.to_i
+  		
+  		if @casuals_in_worksho.eql?(@max_number_of_casuals)
+  			redirect_to :back, :alert => "Le nombre maximal de temporaires de l'atelier: #{@worksop_name} qui est de: #{@casuals_in_workshop} a été atteint."
+  		else
+				@casual.update_attributes(:workshop_id => @workshop.id, :retired_from_ticking => false)
+				redirect_to :back, :notice => "#{@casual.firstname+" "+@casual.lastname} a été affecté à l'atelier #{@workshop_name}. #{@max_number_of_casuals}"
+			end
+  	end
   end
 	
 end

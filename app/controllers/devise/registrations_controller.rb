@@ -124,6 +124,16 @@ class Devise::RegistrationsController < ApplicationController
   	render :text => @sections_options
   end
   
+  def get_lines
+  	@selected_section = params.first.first
+  	@lines_options = "<option>-Veuillez choisir une ligne-</option>"
+		@lines = Section.find_by_section_name(@selected_section).lines
+		@lines.each do |line|
+			@lines_options << "<option>#{line.line_name}</option>"
+		end
+  	render :text => @lines_options
+  end
+  
   def get_teams
   	@selected_workshop = params.first.first
   	@teams_options = "<option>-Veuillez choisir une équipe-</option>"

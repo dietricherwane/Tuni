@@ -48,16 +48,34 @@ class WorkshopsController < ApplicationController
   def set_parameters
   	@team = Team.find_by_team_name(params[:team_name])
   	if @team.nil?
-  		redirect_to :back, :alert => "Veuillez choisir l'équipe dont vous voulez modifier le nombre maximal de temporaires."
+  		redirect_to :back, :alert => "Veuillez choisir l'équipe dont vous souhaitez modifier le nombre maximal de temporaires."
   	else
   		if (is_not_a_number?(params[:casual_number]) || params[:casual_number].to_i <= 0 || is_not_a_number?(params[:operator_number]) || params[:operator_number].to_i <= 0)
   			redirect_to :back, :alert => "Le nombre maximal de temporaires et de caristes doivent être des nombres supérieurs à 0."
   		else
   			if params[:casual_number].to_i < Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE AND casual_type_id = #{CasualType.find_by_type_name('Normal').id}").count || params[:operator_number].to_i < Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE AND casual_type_id = #{CasualType.find_by_type_name('Cariste').id}").count
-  				redirect_to :back, :alert => "Le nombre maximal de temporaires et de caristes doit etre supérieur au nombre de temporaires dans l'équipe."
+  				redirect_to :back, :alert => "Le nombre maximal d'ordinaires et de caristes doit etre supérieur au nombre de ceux présents dans l'équipe."
   			else
   				@team.update_attributes(:max_number_of_casuals => params[:casual_number].to_i, :number_of_operators => params[:operator_number].to_i)
-  			redirect_to :back, :notice => "Le nombre maximal de temporaires et de caristes de l'équipe: #{@team.team_name} a été fixé à: #{params[:casual_number].to_i} et #{params[:operator_number].to_i}."
+  			redirect_to :back, :notice => "Le nombre maximal d'ordinaires et de caristes de l'équipe: #{@team.team_name} a été fixé à: #{params[:casual_number].to_i} et #{params[:operator_number].to_i}."
+  			end
+  		end
+  	end
+  end
+  
+  def line_parameters
+  	@line = Line.find_by_line_name(params[:line_name])
+  	if @line.nil?
+  		redirect_to :back, :alert => "Veuillez choisir la ligne dont vous souhautez modifier le nombre maximal de temporaires."
+  	else
+  		if (is_not_a_number?(params[:no_casual_number]) || params[:no_casual_number].to_i <= 0 || is_not_a_number?(params[:no_operator_number]) || params[:no_operator_number].to_i <= 0)
+  			redirect_to :back, :alert => "Le nombre maximal de temporaires et de caristes doivent être des nombres supérieurs à 0."
+  		else
+  			if params[:no_casual_number].to_i < Casual.where("line_id = #{@line.id} AND casual_type_id = #{CasualType.find_by_type_name('Normal').id}").count || params[:no_operator_number].to_i < Casual.where("line_id = #{@line.id} AND casual_type_id = #{CasualType.find_by_type_name('Cariste').id}").count
+  				redirect_to :back, :alert => "Le nombre maximal d'ordinaires et de caristes doit etre supérieur au nombre de ceux présents sur la ligne."
+  			else
+  				@line.update_attributes(:max_number_of_casuals => params[:no_casual_number].to_i, :max_number_of_operators => params[:no_operator_number].to_i)
+  			redirect_to :back, :notice => "Le nombre maximal d'ordinaires et de caristes de la ligne: #{@line.line_name} a été fixé à: #{params[:no_casual_number].to_i} et #{params[:no_operator_number].to_i}."
   			end
   		end
   	end
@@ -241,20 +259,24 @@ class WorkshopsController < ApplicationController
   end
   
   def delete_line
-  	@configuration = Configuration.find_by_id(params[:configuration].to_i)
-  	@line = Line.find_by_id(params[:line].to_i)
-  	
-  	if @configuration.lines.count < 2
-  		redirect_to :back, :alert => "#{@configuration.team.team_name}: il doit rester au moins une ligne dans la configuration."
-  	else
-			@configuration.lines.delete(@line)
-			redirect_to :back, :notice => "#{@configuration.team.team_name}: la ligne #{@line.line_name} a été supprimée de la configuration."
+  	@configuration = Configuration.find(params[:configuration].to_i)
+  	@line = Line.find(params[:line].to_i)
+  	@casuals_on_line = Casual.find_by_line_id(@line.id)
+  	if @casuals_on_line.nil?
+			if @configuration.lines.count < 2
+				redirect_to :back, :alert => "#{@configuration.team.team_name}: il doit rester au moins une ligne dans la configuration."
+			else
+				@configuration.lines.delete(@line)
+				redirect_to :back, :notice => "#{@configuration.team.team_name}: la ligne #{@line.line_name} a été supprimée de la configuration."
+			end
+		else
+			redirect_to :back, :alert => "Veuillez d'abord supprimer les temporaires affectés sur la ligne #{@line.line_name}"
 		end
   end
   
   def delete_working_day
   	@rolling_day = params[:model_name].constantize.find_by_id(params[:rolling_day_id].to_i)
-  	@configuration = Configuration.find_by_id(params[:configuration].to_i)
+  	@configuration = Configuration.find(params[:configuration].to_i)
   	@rolling_day.delete
   	redirect_to :back, :notice => "#{@configuration.team.team_name}: le #{params[:french_date_name]} a été supprimé."
   end
@@ -262,5 +284,15 @@ class WorkshopsController < ApplicationController
   def set_max_number_of_casuals_and_operators
   	
   end  
+  
+  def remove_from_workshop
+  	@casual = Casual.find(params[:format].to_i)
+  	@casual.update_attributes(:workshop_id => nil, :retired_from_ticking => true)
+  	redirect_to :back, :notice => "#{@casual.firstname} #{@casual.lastname} a été retiré de l'atelier."
+  end
+  
+  def set_line_parameters
+  
+  end
 
 end

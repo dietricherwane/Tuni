@@ -19,7 +19,8 @@ class Casual < ActiveRecord::Base
   	if ((casual.team_id.eql?(nil)) && (casual.retired_from_ticking != true) && (casual.expired != true))
   		@value = "unaffected"
   	end
-  	if ((casual.team_id != nil) && (casual.retired_from_ticking.eql?(true)) && (casual.expired != true))
+  	#if ((casual.team_id != nil) && (casual.retired_from_ticking.eql?(true)) && (casual.expired != true))
+  	if ((casual.retired_from_ticking.eql?(true)) && (casual.expired != true))
   		@value = "retired"
   	end
   	if casual.expired.eql?(true)

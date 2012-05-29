@@ -22,6 +22,7 @@ Tuni::Application.routes.draw do
     match 'users/get_directions' => 'devise/registrations#get_directions'
     match 'users/get_workshops' => 'devise/registrations#get_workshops'
     match 'users/get_sections' => 'devise/registrations#get_sections'
+    match 'users/get_lines' => 'devise/registrations#get_lines'
     match 'users/get_teams' => 'devise/registrations#get_teams'
     match 'users/get_all_teams' => 'devise/registrations#get_all_teams'
     match '/users/enable_user' => 'devise/users#enable_user', :as => :enable_user
@@ -42,9 +43,12 @@ Tuni::Application.routes.draw do
   match 'casual/get_workshops' => 'casuals#get_workshops'
   match 'casuals/search' => 'casuals#search_ajax'
   match 'casual/allot_to_team' => 'workshops#allot_to_team', :as => :allot_casual_to_team
+  match 'casual/allot_to_workshop' => 'casuals#allot_to_workshop', :as => :allot_to_workshop
+  
   match 'allocation' => 'workshops#casual_allocation', :as => :casual_allocation
   match 'workshop/parameters' => 'workshops#parameters', :as => :workshop_parameters
   match 'workshop/set_parameters' => 'workshops#set_parameters', :as => :set_workshop_parameters
+  match 'workshop/line_parameters' => 'workshops#line_parameters', :as => :set_line_parameters
   match 'workshop/next_week_configuration' => 'workshops#next_week_configuration_plan', :as => :next_week_configuration_plan
   match 'workshop/current_week_configuration' => 'workshops#current_week_configuration_plan', :as => :current_week_configuration_plan
   match 'workshop/save_next_week_configuration' => 'workshops#save_next_week_configuration_plan', :as => :save_next_week_configuration_plan
@@ -53,6 +57,7 @@ Tuni::Application.routes.draw do
   match 'workshop/delete_line' => 'workshops#delete_line', :as => :delete_line
   match 'workshop/delete_working_day' => 'workshops#delete_working_day', :as => :delete_working_day
   match 'workshop/daily_team' => 'workshops#daily_team'
+  match 'workshop/remove_from_workshop' => 'workshops#remove_from_workshop', :as => :remove_from_workshop
   match 'team/allot_to_line' => 'teams#allot_to_line', :as => :allot_to_line
   match 'team/casual_allocation_to_line' => 'teams#casual_allocation_to_line', :as => :casual_allocation_to_line
   match 'team/remove_from_line' => 'teams#remove_from_line', :as => :remove_from_line

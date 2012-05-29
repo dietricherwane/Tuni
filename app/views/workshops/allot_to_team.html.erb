@@ -19,13 +19,13 @@ $(function(){
 					<%= collection_select(:post, :team_id, @teams, :id, :team_name, options ={:prompt => "-Veuillez choisir une équipe-"}) %></div>							
 					<table class="list-table">
 						<thead class = "ui-widget-header ui-corner-all">
-							<tr>
-								<!--<th width="14%">Matricule</th>-->							
-								<th width="28%">Nom</th>
-								<th>Compagnie</th>
-								<th>Type</th>
-								<th>Date d'entrée</th>
-								<th width="14%">Affecter</th>
+							<tr>						
+								<th width="26%">Nom</th>
+								<th width="16%">Compagnie</th>
+								<th width="14%">Type</th>
+								<th width="18%">Date d'entrée</th>
+								<th width="12%">Affecter</th>
+								<th width="14%"></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -55,6 +55,9 @@ $(function(){
 										<td class = "ui-widget-content">
 												<%= check_box("post", "#{casual.id}") %>
 										</td>		
+										<td class = "ui-widget-content">
+										  <%= link_to "Retirer", remove_from_workshop_path(casual.id), :confirm => "Êtes vous sûr de vouloir supprimer ce temporaire de l'atelier?", :class => "direction delete_button", :style => "font-weight: bold;" %>
+										</td>
 									</tr>
 									<% @tab_color = !@tab_color %>			
 								<% end %>

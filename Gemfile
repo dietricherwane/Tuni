@@ -15,6 +15,7 @@ gem 'heroku'
 gem 'taps'
 gem 'jquery-rails', '>= 1.0.12'
 gem 'dynamic_form'
+gem 'whenever', :require => false
 # Use unicorn as the web server
 # gem 'unicorn'
 

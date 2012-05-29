@@ -1,6 +1,7 @@
 # -*- encoding : utf-8 -*-
 class Devise::UsersController < Devise::RegistrationsController
-	before_filter :authenticate_user!
+	prepend_before_filter :authenticate_user!
+	before_filter :duke
 	layout :layout_used
 
 	def search_ajax

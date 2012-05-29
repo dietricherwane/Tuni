@@ -235,7 +235,9 @@ $(function(){
 						</tbody>
 					</table>
 					<br />
-  				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+					<% unless @configuration.empty? %>
+  					<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+  				<% end %>
 				<% end %>						
 			</div>
 	</div>

@@ -18,6 +18,11 @@ $(function(){
     													
 					<table class="list-table">
 						<thead class = "ui-widget-header ui-corner-all">
+							<% if @configuration.empty? %>
+								<tr>
+									<td colspan = 8 class = "ui-widget-content" >Aucun temporaire à pointer</td>									
+								</tr>
+							<% else %>
 							<tr>				
 									<th width="16%">Nom</th>	
 								<% unless (@configuration.rolling_monday.nil? || !(Date.today.wday >= 1)) %>
@@ -224,6 +229,7 @@ $(function(){
 											<% end %>
 										<% end %>
 									</tr>
+									<% end %>
 								<% end %>
 							<% end %>
 						</tbody>

@@ -183,7 +183,10 @@ class TeamsController < ApplicationController
   
   def ticking
   	@team = Team.find(current_user.status_number)
-  	@configuration = @team.configurations.where("week_number = #{Date.today.cweek}").first
+  	@configuration = ""
+  	unless @team.configurations.where("week_number = #{Date.today.cweek}").empty?
+  		@configuration = @team.configurations.where("week_number = #{Date.today.cweek}").first
+  	end
   	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND line_id IS NOT NULL")
   	@weekday = Date.today.wday
   end

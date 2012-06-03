@@ -36,7 +36,7 @@ class CasualsController < ApplicationController
 			if (@phone_number.empty? || (@phone_number.size.eql?(8) && !is_not_a_number?(@phone_number)))				
 
 					if Casual.find_by_identifier("#{@identifier+City.find_by_id(@city_id.to_i).short_name}").eql?(nil)
-						@max_number_of_casuals = Team.find_by_sql("SELECT SUM(max_number_of_casuals + number_of_operators) AS number_of_casuals_in_workshop FROM teams WHERE workshop_id = #{@workshop.id};").first.number_of_casuals_in_workshop.to_i
+						@max_number_of_casuals = Team.find_by_sql("SELECT SUM(max_number_of_casuals + number_of_operators) AS number_of_casuals_in_workshop FROM teams WHERE workshop_id = #{Workshop.find_by_workshop_name(@workshop).id};").first.number_of_casuals_in_workshop.to_i
 					if @max_number_of_casuals.eql?(Casual.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id}").count)
 						redirect_to :back, :alert => "Vous avez atteint le nombre maximal de personnes pouvant être affectées dans l'atelier: #{@workshop}."
 					else

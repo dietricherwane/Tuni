@@ -255,11 +255,11 @@ class TeamsController < ApplicationController
 	  		unless params[("#{casual_id + "_last_sunday"}").to_sym].nil?
 					@last_sunday_ticking.sunday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_last_sunday").to_sym].to_i)
 				end
-				@ticking = @casual.tickings.find_by_week_number(@week_number)
+				
 	  		# si le temporaire n'a pas encore été pointé...	  		
 	  		if @casual.tickings.find_by_week_number(@week_number).nil?
 					@casual.tickings.create(:week_number => @week_number)
-					
+					@ticking = @casual.tickings.find_by_week_number(@week_number)
 					
 					unless params[("#{casual_id + "_monday"}").to_sym].nil?
 						@ticking.create_monday_ticking(:time_description => @configuration.rolling_monday.time_description, :number_of_hours => params[(casual_id + "_monday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
@@ -283,7 +283,8 @@ class TeamsController < ApplicationController
 						@ticking.create_sunday_ticking(:time_description => @configuration.rolling_sunday.time_description, :number_of_hours => params[(casual_id + "_sunday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
 					end
 				# si il a déjà été pointé...
-				else					
+				else	
+					@ticking = @casual.tickings.find_by_week_number(@week_number)				
 					unless params[("#{casual_id + "_monday"}").to_sym].nil?
 # Pour les temporaires ayant récemment changé d'équipe, ils peuvent avoir une config mais pas de pointage pour un jour de leur nouveau plan de production
 						if @ticking.monday_ticking.nil?

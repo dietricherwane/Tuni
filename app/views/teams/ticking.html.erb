@@ -117,9 +117,7 @@ $(function(){
 											<% if @weekday == 1 || @weekday == 2 %>
 												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
 													<td class = "ui-widget-content">
-														<td class = "ui-widget-content">
-															<%= select_tag "#{casual.id}_monday", options_for_select((0..@configuration.first.rolling_monday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
-														</td>
+														<%= select_tag "#{casual.id}_monday", options_for_select((0..@configuration.first.rolling_monday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
 													</td>
 												<% else %>
 													<% if casual.tickings.find_by_week_number(@week_number).monday_ticking.nil? %>
@@ -165,7 +163,7 @@ $(function(){
 											<% if @weekday == 2 || @weekday == 3 %>
 												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
 													<td class = "ui-widget-content">
-														0
+														<%= select_tag "#{casual.id}_tuesday", options_for_select((0..@configuration.first.rolling_tuesday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
 													</td>
 												<% else %>
 													<% if casual.tickings.find_by_week_number(@week_number).tuesday_ticking.nil? %>
@@ -211,7 +209,7 @@ $(function(){
 											<% if @weekday == 3 || @weekday == 4 %>
 												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
 													<td class = "ui-widget-content">
-														0
+														<%= select_tag "#{casual.id}_wednesday", options_for_select((0..@configuration.first.rolling_wednesday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
 													</td>
 												<% else %>
 													<% if casual.tickings.find_by_week_number(@week_number).wednesday_ticking.nil? %>
@@ -257,12 +255,12 @@ $(function(){
 											<% if @weekday == 4 || @weekday == 5 %>
 												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
 													<td class = "ui-widget-content">
-														0
+														<%= select_tag "#{casual.id}_thursday", options_for_select((0..@configuration.first.rolling_thursday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
 													</td>
 												<% else %>
 													<% if casual.tickings.find_by_week_number(@week_number).thursday_ticking.nil? %>
 														<td class = "ui-widget-content">
-															<%= select_tag "#{casual.id}_saturday", options_for_select((0..@configuration.first.rolling_thursday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+															<%= select_tag "#{casual.id}_thursday", options_for_select((0..@configuration.first.rolling_thursday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
 														</td>
 													<% else %>
 														<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.team_id != casual.team_id %>
@@ -272,7 +270,7 @@ $(function(){
 														</td>
 														<% else %>
 															<td class = "ui-widget-content">
-																<%= select_tag "#{casual.id}_saturday", options_for_select((0..@configuration.first.rolling_thursday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@week_number).nil? ? 0 : casual.tickings.find_by_week_number(@week_number).thursday_ticking.nil? ? 0 : casual.tickings.find_by_week_number(@week_number).thursday_ticking.number_of_hours), :style => "width:100%" %>
+																<%= select_tag "#{casual.id}_thursday", options_for_select((0..@configuration.first.rolling_thursday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@week_number).nil? ? 0 : casual.tickings.find_by_week_number(@week_number).thursday_ticking.nil? ? 0 : casual.tickings.find_by_week_number(@week_number).thursday_ticking.number_of_hours), :style => "width:100%" %>
 															</td>
 														<% end %>
 													<% end %>
@@ -303,7 +301,7 @@ $(function(){
 											<% if @weekday == 5 || @weekday == 6 %>
 												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
 													<td class = "ui-widget-content">
-														0
+														<%= select_tag "#{casual.id}_friday", options_for_select((0..@configuration.first.rolling_friday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
 													</td>
 												<% else %>
 													<% if casual.tickings.find_by_week_number(@week_number).friday_ticking.nil? %>
@@ -349,7 +347,7 @@ $(function(){
 											<% if (@weekday == 6 || @weekday == 0) %>												
 												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
 													<td class = "ui-widget-content">
-														0
+														<%= select_tag "#{casual.id}_saturday", options_for_select((0..@configuration.first.rolling_saturday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
 													</td>
 												<% else %>
 													<% if casual.tickings.find_by_week_number(@week_number).saturday_ticking.nil? %>
@@ -396,7 +394,7 @@ $(function(){
 											<% if @weekday == 0 %>
 												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
 													<td class = "ui-widget-content">
-														0
+														<%= select_tag "#{casual.id}_sunday", options_for_select((0..@configuration.first.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
 													</td>
 												<% else %>
 													<% if casual.tickings.find_by_week_number(@week_number).sunday_ticking.nil? %>

@@ -1,3 +1,20 @@
+<script type="text/javascript">		
+	$(document).ready(function() {
+		options =	{ 
+			position : 'top',
+			align	 : 'center',						
+			innerHtmlStyle: {
+								color:'#FFFFFF', 
+								'text-align':'left',
+								padding:'2px',
+								'font-size':'13px'
+							},																
+			themeName: 	'all-black',
+			themePath: 	'../../../images/jquerybubblepopup-theme'
+		};	
+	});
+</script>
+
 <%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
 <script type="text/javascript">	
 $(function(){	
@@ -9,40 +26,66 @@ $(function(){
 });	
 </script>
 
+
+
 <h2 class="top-title">Fiche de pointage du <%= Date.today.beginning_of_week.strftime("%d") %> au <%= Date.today.end_of_week.strftime("%d %B %Y") %></h2><br />
 <div class="column_large_left">
 	<div class="portlet" id="widget-1">
     <div class="portlet-header">Pointage des temporaires</div>
     	<div class="portlet-content"> 
-    		<%= form_tag save_current_week_configuration_plan_path do %>   	
-    													
+    		<%= form_tag save_ticking_path do %>   	    													
 					<table class="list-table">
-						<thead class = "ui-widget-header ui-corner-all">
-							<% if @configuration.empty? %>
-								<tr>
-									<td colspan = 8 class = "ui-widget-content" >Aucun temporaire à pointer</td>									
-								</tr>
+						<thead>
+							<% if @configuration.empty?  %>
+								<% if (!@sunday_ticking_exists || (@sunday_ticking_exists && !Date.today.wday.eql?(1))) %>
+									<tr>
+										<td colspan = 8 class = "ui-widget-content" >Vous n'êtes pas programmé pour cette semaine.</td>								
+									</tr>
+								<% end %>								
+								<% if (@sunday_ticking_exists && Date.today.wday.eql?(1)) %>
+									<tr class = "odd">
+										<th width="25%">Nom</th>	
+										<th width="75%">Dimanche</th>									
+									</tr>
+									<% @casuals_ticked_previous_sunday.each do |casual| %>
+										<script type="text/javascript">		
+										$(document).ready(function() {
+											options['innerHtml'] = "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %><br>Type: <%= CasualType.find(casual.casual_type_id).type_name %><br>Date d'entrée: <%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>";								
+											$("#casual_<%= casual.id %>").CreateBubblePopup( options );
+										});
+										</script>
+										<tr>
+											<%= hidden_field_tag casual.id %>
+											<td class = "ui-widget-content">
+												<%= div_for (casual) do %>
+													<%= casual.firstname+ " " +casual.lastname %>
+												<% end %>
+											</td>
+											<td class = "ui-widget-content">
+												<%= select_tag "#{casual.id}_last_sunday", options_for_select((0..@previous_configuration.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(Date.today.cweek - 1).sunday_ticking.number_of_hours), :style => "width:100%" %>
+											</td>
+										</tr>
+									<% end %>
+								<% end %>
 							<% else %>
 							<tr>				
-									<th width="16%">Nom</th>	
-								<% unless (@configuration.first.rolling_monday.nil? || !(Date.today.wday >= 1)) %>
+								<th width="16%">Nom</th>	
+								<% unless (@configuration.first.rolling_monday.nil? || !(Date.today.wday >= 1 || Date.today.wday == 0)) %>
 									<th width="12%">Lundi</th>
 								<% end %>
-								<% unless (@configuration.first.rolling_tuesday.nil? || !(Date.today.wday >= 2)) %>
+								<% unless (@configuration.first.rolling_tuesday.nil? || !(Date.today.wday >= 2 || Date.today.wday == 0)) %>
 									<th width="12%">Mardi</th>
 								<% end %>
-								<% unless (@configuration.first.rolling_wednesday.nil? || !(Date.today.wday >= 3)) %>
-									<%# if Date.today.wday > 3 %>
+								<% unless (@configuration.first.rolling_wednesday.nil? || !(Date.today.wday >= 3 || Date.today.wday == 0)) %>
 									<th width="12%">Mercredi</th>
-									<%# end %>
 								<% end %>
-								<% unless (@configuration.first.rolling_thursday.nil? || !(Date.today.wday >= 4)) %>
+								<% unless (@configuration.first.rolling_thursday.nil? || !(Date.today.wday >= 4 || Date.today.wday == 0)) %>
 									<th width="12%">Jeudi</th>
 								<% end %>
-								<% unless (@configuration.first.rolling_friday.nil? || !(Date.today.wday >= 5)) %>
+								<% unless (@configuration.first.rolling_friday.nil? || !(Date.today.wday >= 5 || Date.today.wday == 0)) %>
 									<th width="12%">Vendredi</th>
 								<% end %>
-								<% unless (@configuration.first.rolling_saturday.nil? || !(Date.today.wday >= 6)) %>
+								<% unless (@configuration.first.rolling_saturday.nil? || !(Date.today.wday >= 6 || Date.today.wday == 0)) %>
 									<th width="12%">Samedi</th>
 								<% end %>
 								<% unless (@configuration.first.rolling_sunday.nil? || !(Date.today.wday == 0)) %>
@@ -57,15 +100,43 @@ $(function(){
 								</tr>
 							<% else %>
 								<% @casuals.each do |casual| %>
+									<script type="text/javascript">		
+									$(document).ready(function() {
+										options['innerHtml'] = "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %><br>Type: <%= CasualType.find(casual.casual_type_id).type_name %><br>Date d'entrée: <%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>";								
+										$("#casual_<%= casual.id %>").CreateBubblePopup( options );
+									});
+									</script>
+									<%= hidden_field_tag casual.id %>
 									<tr class = "odd">
 										<td class = "ui-widget-content">
-											<%= "#{casual.firstname} #{casual.lastname}" %>
+											<%= div_for (casual) do %>
+												<%= casual.firstname+ " "+casual.lastname %>
+											<% end %>
 										</td>
-										<% unless (@configuration.first.rolling_monday.nil? || !(Date.today.wday >= 1)) %>
+										<% unless (@configuration.first.rolling_monday.nil? || !(Date.today.wday >= 1 || Date.today.wday == 0)) %>
 											<% if @weekday == 1 || @weekday == 2 %>
-												<td class = "ui-widget-content">
-													<%= select_tag casual.id, options_for_select((0..@configuration.first.rolling_monday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
-												</td>	
+												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.find_by_week_number(@week_number).monday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															<%= select_tag "#{casual.id}_monday", options_for_select((0..@configuration.first.rolling_monday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+														</td>
+													<% else %>
+														<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.team_id != casual.team_id %>
+															<td class = "ui-widget-content">
+																<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.number_of_hours %>															
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.team_id).team_name %></div>
+														</td>
+														<% else %>
+															<td class = "ui-widget-content">
+																<%= select_tag "#{casual.id}_monday", options_for_select((0..@configuration.first.rolling_monday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@week_number).nil? ? 0 : casual.tickings.find_by_week_number(@week_number).monday_ticking.nil? ? 0 : casual.tickings.find_by_week_number(@week_number).monday_ticking.number_of_hours), :style => "width:100%" %>
+															</td>
+														<% end %>
+													<% end %>
+												<% end %> 
 											<% else %>
 												<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").empty? %>
 													<td class = "ui-widget-content">
@@ -78,18 +149,40 @@ $(function(){
 														</td>
 													<% else %>
 														<td class = "ui-widget-content">
-															casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.number_of_hours
+															<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.number_of_hours %>
+															<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.team_id != casual.team_id %>
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.team_id).team_name %></div>
+															<% end %>
 														</td>
 													<% end %>
 												<% end %>
 											<% end %>
 										<% end %>
 										
-										<% unless (@configuration.first.rolling_tuesday.nil? || !(Date.today.wday >= 2)) %>
+										<% unless (@configuration.first.rolling_tuesday.nil? || !(Date.today.wday >= 2 || Date.today.wday == 0)) %>
 											<% if @weekday == 2 || @weekday == 3 %>
-												<td class = "ui-widget-content">
-													<%= select_tag casual.id, options_for_select((0..@configuration.first.rolling_tuesday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
-												</td>	
+												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.find_by_week_number(@week_number).tuesday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															<%= select_tag "#{casual.id}_tuesday", options_for_select((0..@configuration.first.rolling_tuesday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+														</td>
+													<% else %>
+														<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.team_id != casual.team_id %>
+															<td class = "ui-widget-content">
+																<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.number_of_hours %>															
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.team_id).team_name %></div>
+														</td>
+														<% else %>
+															<td class = "ui-widget-content">
+																<%= select_tag "#{casual.id}_tuesday", options_for_select((0..@configuration.first.rolling_tuesday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@week_number).nil? ? 0 : casual.tickings.find_by_week_number(@week_number).tuesday_ticking.nil? ? 0 : casual.tickings.find_by_week_number(@week_number).tuesday_ticking.number_of_hours), :style => "width:100%" %>
+															</td>
+														<% end %>
+													<% end %>
+												<% end %> 
 											<% else %>
 												<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").empty? %>
 													<td class = "ui-widget-content">
@@ -102,18 +195,40 @@ $(function(){
 														</td>
 													<% else %>
 														<td class = "ui-widget-content">
-															casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.number_of_hours
+															<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.number_of_hours %>
+															<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.team_id != casual.team_id %>
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.team_id).team_name %></div>
+															<% end %>
 														</td>
 													<% end %>
 												<% end %>
 											<% end %>
 										<% end %>
 										
-										<% unless (@configuration.first.rolling_wednesday.nil? || !(Date.today.wday >= 3)) %>
+										<% unless (@configuration.first.rolling_wednesday.nil? || !(Date.today.wday >= 3 || Date.today.wday == 0)) %>
 											<% if @weekday == 3 || @weekday == 4 %>
-												<td class = "ui-widget-content">
-													<%= select_tag casual.id, options_for_select((0..@configuration.first.rolling_wednesday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
-												</td>	
+												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.find_by_week_number(@week_number).wednesday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															<%= select_tag "#{casual.id}_wednesday", options_for_select((0..@configuration.first.rolling_wednesday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+														</td>
+													<% else %>
+														<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.team_id != casual.team_id %>
+															<td class = "ui-widget-content">
+																<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.number_of_hours %>															
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.team_id).team_name %></div>
+														</td>
+														<% else %>
+															<td class = "ui-widget-content">
+																<%= select_tag "#{casual.id}_wednesday", options_for_select((0..@configuration.first.rolling_wednesday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@week_number).nil? ? 0 : casual.tickings.find_by_week_number(@week_number).wednesday_ticking.nil? ? 0 : casual.tickings.find_by_week_number(@week_number).wednesday_ticking.number_of_hours), :style => "width:100%" %>
+															</td>
+														<% end %>
+													<% end %>
+												<% end %> 	
 											<% else %>
 												<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").empty? %>
 													<td class = "ui-widget-content">
@@ -126,18 +241,40 @@ $(function(){
 														</td>
 													<% else %>
 														<td class = "ui-widget-content">
-															casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.number_of_hours
+															<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.number_of_hours %>
+															<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.team_id != casual.team_id %>
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.team_id).team_name %></div>
+															<% end %>
 														</td>
 													<% end %>
 												<% end %>
 											<% end %>
 										<% end %>
 										
-										<% unless (@configuration.first.rolling_thursday.nil? || !(Date.today.wday >= 4)) %>
+										<% unless (@configuration.first.rolling_thursday.nil? || !(Date.today.wday >= 4 || Date.today.wday == 0)) %>
 											<% if @weekday == 4 || @weekday == 5 %>
-												<td class = "ui-widget-content">
-													<%= select_tag casual.id, options_for_select((0..@configuration.first.rolling_thursday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
-												</td>	
+												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.find_by_week_number(@week_number).thursday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															<%= select_tag "#{casual.id}_saturday", options_for_select((0..@configuration.first.rolling_thursday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+														</td>
+													<% else %>
+														<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.team_id != casual.team_id %>
+															<td class = "ui-widget-content">
+																<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.number_of_hours %>															
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.team_id).team_name %></div>
+														</td>
+														<% else %>
+															<td class = "ui-widget-content">
+																<%= select_tag "#{casual.id}_saturday", options_for_select((0..@configuration.first.rolling_thursday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@week_number).nil? ? 0 : casual.tickings.find_by_week_number(@week_number).thursday_ticking.nil? ? 0 : casual.tickings.find_by_week_number(@week_number).thursday_ticking.number_of_hours), :style => "width:100%" %>
+															</td>
+														<% end %>
+													<% end %>
+												<% end %> 	
 											<% else %>
 												<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").empty? %>
 													<td class = "ui-widget-content">
@@ -150,18 +287,40 @@ $(function(){
 														</td>
 													<% else %>
 														<td class = "ui-widget-content">
-															casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.number_of_hours
+															<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.number_of_hours %>
+															<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.team_id != casual.team_id %>
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.team_id).team_name %></div>
+															<% end %>
 														</td>
 													<% end %>
 												<% end %>
 											<% end %>
 										<% end %>
 										
-										<% unless (@configuration.first.rolling_friday.nil? || !(Date.today.wday >= 5)) %>
+										<% unless (@configuration.first.rolling_friday.nil? || !(Date.today.wday >= 5 || Date.today.wday == 0)) %>
 											<% if @weekday == 5 || @weekday == 6 %>
-												<td class = "ui-widget-content">
-													<%= select_tag casual.id, options_for_select((0..@configuration.first.rolling_friday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
-												</td>	
+												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.find_by_week_number(@week_number).friday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															<%= select_tag "#{casual.id}_friday", options_for_select((0..@configuration.first.rolling_friday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+														</td>
+													<% else %>
+														<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.team_id != casual.team_id %>
+															<td class = "ui-widget-content">
+																<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.number_of_hours %>															
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.team_id).team_name %></div>
+														</td>
+														<% else %>
+															<td class = "ui-widget-content">
+																<%= select_tag "#{casual.id}_friday", options_for_select((0..@configuration.first.rolling_friday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@week_number).nil? ? 0 : casual.tickings.find_by_week_number(@week_number).friday_ticking.nil? ? 0 : casual.tickings.find_by_week_number(@week_number).friday_ticking.number_of_hours), :style => "width:100%" %>
+															</td>
+														<% end %>
+													<% end %>
+												<% end %> 	
 											<% else %>
 												<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").empty? %>
 													<td class = "ui-widget-content">
@@ -174,18 +333,41 @@ $(function(){
 														</td class = "ui-widget-content">
 													<% else %>
 														<td class = "ui-widget-content">
-															casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.number_of_hours
+															<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.number_of_hours %>
+															<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.team_id != casual.team_id %>
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.team_id).team_name %></div>
+															<% end %>
 														</td>
 													<% end %>
 												<% end %>
 											<% end %>
 										<% end %>
 										
-										<% unless (@configuration.first.rolling_saturday.nil? || !(Date.today.wday >= 6)) %>
-											<% if @weekday == 6 || @weekday == 0 %>
-												<td class = "ui-widget-content">
-													<%= select_tag casual.id, options_for_select((0..@configuration.first.rolling_saturday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
-												</td>	
+										<% unless (@configuration.first.rolling_saturday.nil? || !(Date.today.wday >= 6 || Date.today.wday == 0)) %>
+											<% if (@weekday == 6 || @weekday == 0) %>												
+												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.find_by_week_number(@week_number).saturday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															<%= select_tag "#{casual.id}_saturday", options_for_select((0..@configuration.first.rolling_saturday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+														</td>
+													<% else %>
+														<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.team_id != casual.team_id %>
+															<td class = "ui-widget-content">
+																<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.number_of_hours %>															
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.team_id).team_name %></div>
+														</td>
+														<% else %>
+															<td class = "ui-widget-content">
+																<%= select_tag "#{casual.id}_saturday", options_for_select((0..@configuration.first.rolling_saturday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@week_number).nil? ? 0 : casual.tickings.find_by_week_number(@week_number).saturday_ticking.nil? ? 0 : casual.tickings.find_by_week_number(@week_number).saturday_ticking.number_of_hours), :style => "width:100%" %>
+															</td>
+														<% end %>
+													<% end %>
+												<% end %> 
+																																					
 											<% else %>
 												<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").empty? %>
 													<td class = "ui-widget-content">
@@ -198,7 +380,10 @@ $(function(){
 														</td>
 													<% else %>
 														<td class = "ui-widget-content">
-															casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.number_of_hours
+															<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.number_of_hours %>
+															<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.team_id != casual.team_id %>
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.team_id).team_name %></div>
+															<% end %>
 														</td>
 													<% end %>
 												<% end %>
@@ -207,9 +392,28 @@ $(function(){
 										
 										<% unless (@configuration.first.rolling_sunday.nil? || !(Date.today.wday == 0)) %>
 											<% if @weekday == 0 %>
-												<td class = "ui-widget-content">
-													<%= select_tag casual.id, options_for_select((0..@configuration.first.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
-												</td>	
+												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
+													<td class = "ui-widget-content">
+														0
+													</td>
+												<% else %>
+													<% if casual.tickings.find_by_week_number(@week_number).sunday_ticking.nil? %>
+														<td class = "ui-widget-content">
+															<%= select_tag "#{casual.id}_sunday", options_for_select((0..@configuration.first.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+														</td>
+													<% else %>
+														<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.team_id != casual.team_id %>
+															<td class = "ui-widget-content">
+																<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.number_of_hours %>															
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.team_id).team_name %></div>
+														</td>
+														<% else %>
+															<td class = "ui-widget-content">
+																<%= select_tag "#{casual.id}_sunday", options_for_select((0..@configuration.first.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@week_number).nil? ? 0 : casual.tickings.find_by_week_number(@week_number).sunday_ticking.nil? ? 0 : casual.tickings.find_by_week_number(@week_number).sunday_ticking.number_of_hours), :style => "width:100%" %>
+															</td>
+														<% end %>
+													<% end %>
+												<% end %> 	
 											<% else %>
 												<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").empty? %>
 													<td class = "ui-widget-content">
@@ -222,7 +426,10 @@ $(function(){
 														</td>
 													<% else %>
 														<td class = "ui-widget-content">
-															casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.number_of_hours
+															<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.number_of_hours %>
+															<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.team_id != casual.team_id %>
+																<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.team_id).team_name %></div>
+															<% end %>
 														</td>
 													<% end %>
 												<% end %>
@@ -235,10 +442,95 @@ $(function(){
 						</tbody>
 					</table>
 					<br />
-					<% unless @configuration.empty? %>
+					<% if (!@configuration.empty? || (@sunday_ticking_exists && Date.today.wday.eql?(1))) %>
   					<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
   				<% end %>
 				<% end %>						
+			</div>
+	</div>
+</div>
+
+<div class="column_right">	
+	<div class="portlet" id="widget-2">
+    <div class="portlet-header">Lignes || Plan de production</div>
+    	<div class="portlet-content">    								
+				<ul id="collapser">
+					<% if @configuration.empty? %>
+						Vous n'avez pas été programmé pour cette semaine.
+					<% else %>
+					<% @configuration.each do |configuration| %>
+						<% unless @sections_array.empty? %>
+    					<% @sections_array.each do |section_name| %>
+									<li><div class = "direction section" style = "font-weight: bold;"><%= Section.find_by_section_name(section_name).section_name %></div>
+										<ul>
+											<% Section.find_by_section_name(section_name).lines.where("id IN (#{@line_ids})").each do |line| %>
+												<li>
+													<div class = "direction line" style = "font-weight: bold;">
+														<%= line.line_name %> &nbsp; (<%= Casual.where("team_id = #{@team.id} AND line_id = #{line.id}").count %>)
+														</div>
+														<% unless Casual.where("team_id = #{@team.id} AND line_id = #{line.id}").empty? %>
+															<ul>
+																<% Casual.where("team_id = #{@team.id} AND line_id = #{line.id}").each do |casual| %>									
+																		<li>																			
+																				<%= casual.firstname+ " " +casual.lastname %> &nbsp;<%= link_to "", remove_from_line_path(casual.id), :confirm => "Êtes vous sûr de vouloir retirer ce temporaire de la ligne?", :class => "direction delete_button", :style => "font-weight: bold;" %>																			
+																		</li>
+																<% end %>
+															</ul>
+														<% end %>
+												</li>
+											<% end %>
+										</ul>
+									</li>
+								<% end %>
+							<% end %>
+							<li>Jours de travail
+								<ul>
+									<% unless configuration.rolling_monday.eql?(nil) %>
+									<li>
+										<div class = "day" style = "font-weight: bold;">Lundi: <%= configuration.rolling_monday.time_description %>
+									</li>
+									<% end %>
+									<% unless configuration.rolling_tuesday.eql?(nil) %>
+									<li>
+										<div class = "day" style = "font-weight: bold;">Mardi: <%= configuration.rolling_tuesday.time_description %>
+										</div>
+									</li>
+									<% end %>
+									<% unless configuration.rolling_wednesday.eql?(nil) %>
+									<li>
+										<div class = "day" style = "font-weight: bold;">Mercredi: <%= configuration.rolling_wednesday.time_description %>
+										</div>
+									</li>
+									<% end %>
+									<% unless configuration.rolling_thursday.eql?(nil) %>
+									<li>
+										<div class = "day" style = "font-weight: bold;">Jeudi: <%= configuration.rolling_thursday.time_description %>
+										</div>
+									</li>
+									<% end %>
+									<% unless configuration.rolling_friday.eql?(nil) %>
+									<li>
+										<div class = "day" style = "font-weight: bold;">Vendredi: <%= configuration.rolling_friday.time_description %>
+										</div>
+									</li>
+									<% end %>
+									<% unless configuration.rolling_saturday.eql?(nil) %>
+									<li>
+										<div class = "day" style = "font-weight: bold;">Samedi: <%= configuration.rolling_saturday.time_description %>
+										</div>
+									</li>
+									<% end %>
+									<% unless configuration.rolling_sunday.eql?(nil) %>
+									<li>
+										<div class = "day" style = "font-weight: bold;">Dimanche: <%= configuration.rolling_sunday.time_description %>
+										</div>
+									</li>
+									<% end %>
+								</ul>
+							</li>
+					<% end %>	
+					<% end %>																
+				</ul>										
 			</div>
 	</div>
 </div>

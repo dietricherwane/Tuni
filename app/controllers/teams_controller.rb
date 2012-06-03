@@ -25,13 +25,15 @@ class TeamsController < ApplicationController
   def casual_allocation_to_line 
   	@line_name = params[:post][:line]
   	@casuals_hash = {}
-			@casuals_hash.merge!(params[:post])
-			@casual_checked = false
-			@casuals_hash.each_pair {|key, value|
-		 		if value.to_i.eql?(1)
-		 			@casual_checked =	true 			
-		 		end
-		  }
+# Delete line name from hash	
+		@casuals_hash.merge!(params[:post]).except("line")
+		@casual_checked = false
+		@message = ""
+		@casuals_hash.each_pair {|key, value|
+	 		if value.to_i.eql?(1)
+	 			@casual_checked =	true 			
+	 		end
+	  }
   	if (@line_name.nil? || @casual_checked.eql?(false))
   		redirect_to :back, :alert => "Veuillez choisir une ligne sur laquelle affecter les temporaires et cocher les temporaires à affecter."
   	else
@@ -41,8 +43,8 @@ class TeamsController < ApplicationController
   		
   		@casuals_hash.each_pair {|key, value|
 		 		if value.to_i.eql?(1)		 		
-		 			@newcomer = Casual.find_by_id(key.to_i)
-		 			@casual_type = @newcomer.casual_type.type_name
+		 			@newcomer = Casual.find(key.to_i)
+		 			@casual_type = @newcomer.casual_type
 		 			@newcomer_configuration = @newcomer.team.configurations.where("week_number = #{@week_number}").first
 		 				 			
 		 			@monday_time = ""
@@ -91,81 +93,71 @@ class TeamsController < ApplicationController
 		 				@newcomer_sunday_time = @newcomer_configuration.rolling_sunday.time_description
 		 			end  
 		 				 			
-		 			@teams_table = []		 			
-		 			@casuals = Casual.where("line_id = #{@line.id} AND expired IS NOT TRUE AND casual_type_id = #{CasualType.find_by_type_name(@casual_type).id}")
+		 			@teams_table = []		
 		 			
+# non expired casuals on selected line 			
+		 			@casuals = Casual.where("line_id = #{@line.id} AND expired IS NOT TRUE AND casual_type_id = #{@casual_type.id}")
+
+# tableau contenant la liste des équipes dont des temporaires tournent sur la ligne sélectionnée		 			
 		 			@casuals.each do |casual|
 		 				unless @teams_table.include?(casual.team)
 		 					@teams_table << casual.team
 		 				end		 				
 		 			end
+
+# s'il y a des temporaires sur la ligne...		 			
+		 			unless @teams_table.empty?
+			 			@teams_table.each do |team|
+		 					@configuration = team.configurations.where("week_number = #{@week_number}").first
+		 					unless @configuration.rolling_monday.nil?
+		 						if @configuration.rolling_monday.time_description.eql?(@newcomer_monday_time)
+		 							@counter_monday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+		 						end
+		 					end
+		 					unless @configuration.rolling_tuesday.nil?
+		 						if @configuration.rolling_tuesday.time_description.eql?(@newcomer_tuesday_time)
+		 							@counter_tuesday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+		 						end
+		 					end
+		 					unless @configuration.rolling_wednesday.nil?
+		 						if @configuration.rolling_wednesday.time_description.eql?(@newcomer_wednesday_time)
+		 							@counter_wednesday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+		 						end
+		 					end
+		 					unless @configuration.rolling_thursday.nil?
+		 						if @configuration.rolling_thursday.time_description.eql?(@newcomer_thursday_time)
+		 							@counter_thursday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+		 						end
+		 					end
+		 					unless @configuration.rolling_friday.nil?
+		 						if @configuration.rolling_friday.time_description.eql?(@newcomer_friday_time)
+		 							@counter_friday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+		 						end
+		 					end
+		 					unless @configuration.rolling_saturday.nil?
+		 						if @configuration.rolling_saturday.time_description.eql?(@newcomer_saturday_time)
+		 							@counter_saturday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+		 						end
+		 					end
+		 					unless @configuration.rolling_sunday.nil?
+		 						if @configuration.rolling_sunday.time_description.eql?(@newcomer_sunday_time)
+		 							@counter_sunday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+		 						end
+		 					end
+		 					#@message << "#{team.team_name} || #{@counter_monday} #{@counter_tuesday} #{@counter_wednesday} #{@counter_thursday} #{@counter_friday} #{@counter_saturday} #{@counter_sunday} #{@newcomer_tuesday_time} || "
+		 				end		 				
+		 			end	 	
 		 			
-		 			@teams_table.each do |team|
-	 					@configuration = team.configurations.where("week_number = #{@week_number}").first
-	 					unless @configuration.rolling_monday.nil?
-	 						if @configuration.rolling_monday.time_description.eql?(@newcomer_monday_time)
-	 							@counter_monday += @configuration.team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-	 						end
-	 					end
-	 					unless @configuration.rolling_tuesday.nil?
-	 						if @configuration.rolling_tuesday.time_description.eql?(@newcomer_monday_time)
-	 							@counter_tuesday += @configuration.team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-	 						end
-	 					end
-	 					unless @configuration.rolling_wednesday.nil?
-	 						if @configuration.rolling_wednesday.time_description.eql?(@newcomer_monday_time)
-	 							@counter_wednesday += @configuration.team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-	 						end
-	 					end
-	 					unless @configuration.rolling_thursday.nil?
-	 						if @configuration.rolling_thursday.time_description.eql?(@newcomer_monday_time)
-	 							@counter_thursday += @configuration.team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-	 						end
-	 					end
-	 					unless @configuration.rolling_friday.nil?
-	 						if @configuration.rolling_friday.time_description.eql?(@newcomer_monday_time)
-	 							@counter_friday += @configuration.team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-	 						end
-	 					end
-	 					unless @configuration.rolling_saturday.nil?
-	 						if @configuration.rolling_saturday.time_description.eql?(@newcomer_monday_time)
-	 							@counter_saturday += @configuration.team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-	 						end
-	 					end
-	 					unless @configuration.rolling_sunday.nil?
-	 						if @configuration.rolling_sunday.time_description.eql?(@newcomer_monday_time)
-	 							@counter_sunday += @configuration.team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-	 						end
-	 					end
-	 				end
-	 				
-	 				if @casual_type.eql?("Normal")
-	 					if (@counter_monday.eql?(@line.max_number_of_casuals) || @counter_tuesday.eql?(@line.max_number_of_casuals) || @counter_wednesday.eql?(@line.max_number_of_casuals) || @counter_thursday.eql?(@line.max_number_of_casuals) || @counter_friday.eql?(@line.max_number_of_casuals) || @counter_saturday.eql?(@line.max_number_of_casuals) || @counter_sunday.eql?(@line.max_number_of_casuals))
-	 						#redirect_to :back, :notice => "Le nombre maximal de temporaires de la ligne: #{@line_name} a été atteint. / #{@counter}"
-	 						#break
-	 						@message = "Tous les temporaires n'ont pas été affectés sur la ligne car le nombre maximal est atteint."
-	 					else
-	 						@newcomer.update_attribute(:line_id, @line.id)	
-	 						@message = "Les temporaires ont été affectés sur la ligne: #{@line_name}." 						
-	 					end 
-	 				else
-	 					if (@counter_monday.eql?(@line.max_number_of_casuals) || @counter_tuesday.eql?(@line.max_number_of_casuals) || @counter_wednesday.eql?(@line.max_number_of_casuals) || @counter_thursday.eql?(@line.max_number_of_casuals) || @counter_friday.eql?(@line.max_number_of_casuals) || @counter_saturday.eql?(@line.max_number_of_casuals) || @counter_sunday.eql?(@line.max_number_of_casuals))
-	 						#redirect_to :back, :notice => "Le nombre maximal de caristes de la ligne: #{@line_name} a été atteint. / #{@counter}"
-	 						#break
-	 						@message = "Tous les temporaires n'ont pas été affectés sur la ligne car le nombre maximal est atteint."
-	 					else
-	 						@newcomer.update_attribute(:line_id, @line.id)
-	 						@message = "Les temporaires ont été affectés sur la ligne: #{@line_name}."
-	 						#break
-	 					end
-	 				end
-		 			#@casual.update_attribute(:line_id, @line.id)		 			
-		 		end
-			}			
+		 			if (@counter_monday.eql?(@line.max_number_of_casuals) || @counter_tuesday.eql?(@line.max_number_of_casuals) || @counter_wednesday.eql?(@line.max_number_of_casuals) || @counter_thursday.eql?(@line.max_number_of_casuals) || @counter_friday.eql?(@line.max_number_of_casuals) || @counter_saturday.eql?(@line.max_number_of_casuals) || @counter_sunday.eql?(@line.max_number_of_casuals))
+						@message = "Tous les temporaires n'ont pas été affectés sur la ligne car le nombre maximal est atteint."
+					else
+						@newcomer.update_attribute(:line_id, @line.id)	
+						@message = "Les temporaires ont été affectés sur la ligne: #{@line_name}." 						
+					end								 			
+		 		end		 		
+			}						
 			redirect_to :back, :notice => @message
-			#redirect_to :back, :notice => "Les temporaires ont été affectés sur la ligne: #{@line_name} / #{@counter_monday} #{@counter_tuesday} #{@counter_wednesday} #{@counter_thursday} #{@counter_friday} #{@counter_saturday} #{@counter_sunday} #{@newcomer_tuesday_time}."
-  	end		
-  	
+  	end		  	
   end
   
   def remove_from_line
@@ -184,11 +176,174 @@ class TeamsController < ApplicationController
   def ticking
   	@team = Team.find(current_user.status_number)
   	@configuration = ""
-  	unless @team.configurations.where("week_number = #{Date.today.cweek}").empty?
-  		@configuration = @team.configurations.where("week_number = #{Date.today.cweek}")
-  	end
-  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND line_id IS NOT NULL")
+  	@previous_configuration = @team.configurations.find_by_week_number(Date.today.cweek - 1)
+  	@sunday_ticking_exists = false 
+  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NOT NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})").order("casual_type_id DESC")
   	@weekday = Date.today.wday
+  	@week_number = Date.today.cweek  	
+  	@casuals_ticked_previous_sunday = []
+  	
+  	@sections_array = []
+  	@line_ids = ""
+  	unless @configuration.first.nil?
+  		@configuration.first.lines.each do |line|
+  			unless @sections_array.include?(line.section.section_name)
+  				@sections_array << line.section.section_name
+  			end
+  			@line_ids << line.id.to_i.to_s << ',' 			
+  		end
+  		@line_ids.sub!(/\,$/, '')
+  	end
+  	
+  	@sections = @team.workshop.sections
+  	
+  	@casuals.each do |casual|
+  		unless casual.tickings.find_by_week_number(@week_number - 1).nil?
+  			unless casual.tickings.find_by_week_number(@week_number - 1).sunday_ticking.nil?
+  				@sunday_ticking_exists = true
+  				@casuals_ticked_previous_sunday << casual  				
+  			end	
+  		end
+  	end
+ 	 	
+  	unless @team.configurations.where("week_number = #{@week_number}").empty?
+  		@configuration = @team.configurations.where("week_number = #{@week_number}")
+  	end
+  	
+  	@sections_array = []
+  	@line_ids = ""
+  	unless @configuration.empty?
+  		@configuration.first.lines.each do |line|
+  			unless @sections_array.include?(line.section.section_name)
+  				@sections_array << line.section.section_name
+  			end
+  			@line_ids << line.id.to_i.to_s << ',' 			
+  		end
+  		@line_ids.sub!(/\,$/, '')
+  	end
+  	
+  	@sections = @team.workshop.sections
+  	
+  end
+  
+  def save_ticking
+  	@message = ""
+  	@casuals_id_table = []
+  	@raw_hash = {}
+# nettoyage du hash
+		@raw_hash.merge!(params).except!("utf8", "authenticity_token", "commit", "controller", "action")
+# hash contenant la liste des correspondances: temporaire - pointages
+# tableau contenant les id des temporaires pointés
+		@raw_hash.each_pair {|key, value|
+	 		if !is_not_a_number?(key)	
+	 			@casuals_id_table << key
+	 			@raw_hash.except!("#{key}")
+	 		end
+	  }
+	  
+	  if @raw_hash.empty?	  
+	  	redirect_to :back, :alert => "Vous ne pouvez pas pointer."
+	  else
+	  	@week_number = Date.today.cweek	 
+	  	@configuration = Casual.find(@casuals_id_table.first).team.configurations.find_by_week_number(@week_number) 
+	  	@casuals_id_table.each do |casual_id|
+	  		@casual = Casual.find(casual_id.to_i)
+	  		# devrait aussi passer pour les caristes
+	  		@line_id = @casual.line_id
+	  		# pointage du dimanche précédent
+	  		@last_sunday_ticking = @casual.tickings.find_by_week_number(Date.today.cweek - 1)
+	  		unless params[("#{casual_id + "_last_sunday"}").to_sym].nil?
+					@last_sunday_ticking.sunday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_last_sunday").to_sym].to_i)
+				end
+				@ticking = @casual.tickings.find_by_week_number(@week_number)
+	  		# si le temporaire n'a pas encore été pointé...	  		
+	  		if @casual.tickings.find_by_week_number(@week_number).nil?
+					@casual.tickings.create(:week_number => @week_number)
+					
+					
+					unless params[("#{casual_id + "_monday"}").to_sym].nil?
+						@ticking.create_monday_ticking(:time_description => @configuration.rolling_monday.time_description, :number_of_hours => params[(casual_id + "_monday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+					end
+					unless params[("#{casual_id + "_tuesday"}").to_sym].nil?
+						@ticking.create_tuesday_ticking(:time_description => @configuration.rolling_tuesday.time_description, :number_of_hours => params[(casual_id + "_tuesday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+					end
+					unless params[("#{casual_id + "_wednesday"}").to_sym].nil?
+						@ticking.create_wednesday_ticking(:time_description => @configuration.rolling_wednesday.time_description, :number_of_hours => params[(casual_id + "_wednesday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+					end
+					unless params[("#{casual_id + "_thursday"}").to_sym].nil?
+						@ticking.create_thursday_ticking(:time_description => @configuration.rolling_thursday.time_description, :number_of_hours => params[(casual_id + "_thursday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+					end
+					unless params[("#{casual_id + "_friday"}").to_sym].nil?
+						@ticking.create_friday_ticking(:time_description => @configuration.rolling_friday.time_description, :number_of_hours => params[(casual_id + "_friday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+					end
+					unless params[("#{casual_id + "_saturday"}").to_sym].nil?
+						@ticking.create_saturday_ticking(:time_description => @configuration.rolling_saturday.time_description, :number_of_hours => params[(casual_id + "_saturday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+					end
+					unless params[("#{casual_id + "_sunday"}").to_sym].nil?
+						@ticking.create_sunday_ticking(:time_description => @configuration.rolling_sunday.time_description, :number_of_hours => params[(casual_id + "_sunday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+					end
+				# si il a déjà été pointé...
+				else					
+					unless params[("#{casual_id + "_monday"}").to_sym].nil?
+# Pour les temporaires ayant récemment changé d'équipe, ils peuvent avoir une config mais pas de pointage pour un jour de leur nouveau plan de production
+						if @ticking.monday_ticking.nil?
+							@ticking.create_monday_ticking(:time_description => @configuration.rolling_monday.time_description, :number_of_hours => params[(casual_id + "_monday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+						else
+							@ticking.monday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_monday").to_sym].to_i)
+						end
+					end
+					unless params[("#{casual_id + "_tuesday"}").to_sym].nil?
+# Pour les temporaires ayant récemment changé d'équipe, ils peuvent avoir une config mais pas de pointage pour un jour de leur nouveau plan de production
+						if @ticking.tuesday_ticking.nil?
+							@ticking.create_tuesday_ticking(:time_description => @configuration.rolling_tuesday.time_description, :number_of_hours => params[(casual_id + "_tuesday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+						else
+							@ticking.tuesday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_tuesday").to_sym].to_i)
+						end
+					end
+					unless params[("#{casual_id + "_wednesday"}").to_sym].nil?
+# Pour les temporaires ayant récemment changé d'équipe, ils peuvent avoir une config mais pas de pointage pour un jour de leur nouveau plan de production
+						if @ticking.wednesday_ticking.nil?
+							@ticking.create_wednesday_ticking(:time_description => @configuration.rolling_wednesday.time_description, :number_of_hours => params[(casual_id + "_wednesday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+						else
+							@ticking.wednesday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_wednesday").to_sym].to_i)
+						end
+					end
+					unless params[("#{casual_id + "_thursday"}").to_sym].nil?
+# Pour les temporaires ayant récemment changé d'équipe, ils peuvent avoir une config mais pas de pointage pour un jour de leur nouveau plan de production
+						if @ticking.thursday_ticking.nil?
+							@ticking.create_thursday_ticking(:time_description => @configuration.rolling_thursday.time_description, :number_of_hours => params[(casual_id + "_thursday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+						else
+							@ticking.thursday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_thursday").to_sym].to_i)
+						end
+					end
+					unless params[("#{casual_id + "_friday"}").to_sym].nil?
+# Pour les temporaires ayant récemment changé d'équipe, ils peuvent avoir une config mais pas de pointage pour un jour de leur nouveau plan de production
+						if @ticking.friday_ticking.nil?
+							@ticking.create_friday_ticking(:time_description => @configuration.rolling_friday.time_description, :number_of_hours => params[(casual_id + "_friday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+						else
+							@ticking.friday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_friday").to_sym].to_i)
+						end
+					end
+					unless params[("#{casual_id + "_saturday"}").to_sym].nil?
+# Pour les temporaires ayant récemment changé d'équipe, ils peuvent avoir une config mais pas de pointage pour un jour de leur nouveau plan de production
+						if @ticking.saturday_ticking.nil?
+							@ticking.create_saturday_ticking(:time_description => @configuration.rolling_saturday.time_description, :number_of_hours => params[(casual_id + "_saturday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+						else
+							@ticking.saturday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_saturday").to_sym].to_i)
+						end
+					end
+					unless params[("#{casual_id + "_sunday"}").to_sym].nil?
+# Pour les temporaires ayant récemment changé d'équipe, ils peuvent avoir une config mais pas de pointage pour un jour de leur nouveau plan de production
+						if @ticking.sunday_ticking.nil?
+							@ticking.create_sunday_ticking(:time_description => @configuration.rolling_sunday.time_description, :number_of_hours => params[(casual_id + "_sunday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id)
+						else
+							@ticking.sunday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_sunday").to_sym].to_i)
+						end
+					end
+				end		
+	  	end	
+			redirect_to :back, :notice => "Le pointage a été fait. #{@message}"
+		end
   end
 
 end

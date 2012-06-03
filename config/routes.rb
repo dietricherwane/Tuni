@@ -63,6 +63,7 @@ Tuni::Application.routes.draw do
   match 'team/remove_from_line' => 'teams#remove_from_line', :as => :remove_from_line
   match 'team/remove_from_team' => 'teams#remove_from_team', :as => :remove_from_team
   match 'team/ticking' => 'teams#ticking', :as => :ticking
+  match 'team/save_ticking' => 'teams#save_ticking', :as => :save_ticking
   
   #resources :companies
   #resources :cities

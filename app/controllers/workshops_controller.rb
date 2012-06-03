@@ -16,7 +16,7 @@ class WorkshopsController < ApplicationController
   		redirect_to :back, :alert => "Veuillez choisir l'équipe dans laquelle affecter les temporaires."
   	else
 			@casuals = {}
-			@casuals.merge!(params[:post])
+			@casuals.merge!(params[:post]).except(:post)
 			@casual_checked = false
 			@casuals.each_pair {|key, value|
 		 		if value.to_i.eql?(1)
@@ -24,17 +24,33 @@ class WorkshopsController < ApplicationController
 		 		end
 		  }
 			if @casual_checked
-				if Casual.where("team_id = #{@team_id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count == Team.find_by_id(@team_id).max_number_of_casuals
-					redirect_to :back, :alert => "Le nombre maximal de temporaires dans cette équipe a déjà été atteint."
-				else
-					@team = Team.find_by_id(@team_id)
+				#if Casual.where("team_id = #{@team_id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count == Team.find(@team_id).max_number_of_casuals
+					#redirect_to :back, :alert => "Le nombre maximal de temporaires dans cette équipe a déjà été atteint."
+				#else
+					@team = Team.find(@team_id)
 			 		@casuals.each_pair {|key, value|
 				 		if value.to_i.eql?(1)
-				 			Casual.find_by_id(key.to_i).update_attribute(:team_id, Team.find_by_id(@team).id)		 			
+				 			@casual = Casual.find(key.to_i)
+				 			if CasualType.find(Casual.find(key.to_i).casual_type_id).type_name.eql?("Normal")
+				 				if Casual.where("team_id = #{@team_id} AND casual_type_id = #{CasualType.find_by_type_name("Normal").id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count == @team.max_number_of_casuals
+				 					@message = "Le nombre maximal de temporaires normaux de cette équipe a déjà été atteint."
+				 				else
+				 					@casual.update_attribute(:team_id, @team.id)
+				 					@message = "Les temporaires ont été affectés dans l'équipe #{@team.team_name}."
+				 				end
+				 			else
+				 				if Casual.where("team_id = #{@team_id} AND casual_type_id = #{CasualType.find_by_type_name("Cariste").id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count == @team.number_of_operators
+				 					@message = "Le nombre maximal de caristes de cette équipe a déjà été atteint."
+				 				else
+				 					@casual.update_attribute(:team_id, @team.id)
+				 					@message = "Les temporaires ont été affectés dans l'équipe #{@team.team_name}."
+				 				end
+				 			end
+				 						 			
 				 		end
 					}		
-					redirect_to :back, :notice => "Les temporaires ont été affectés dans l'équipe #{@team.team_name}."
-				end
+					redirect_to :back, :notice => @message
+				#end
 			else
 				redirect_to :back, :alert => "Veuillez affecter au moins un temporaire dans cette équipe."
 			end
@@ -68,14 +84,14 @@ class WorkshopsController < ApplicationController
   	if @line.nil?
   		redirect_to :back, :alert => "Veuillez choisir la ligne dont vous souhautez modifier le nombre maximal de temporaires."
   	else
-  		if (is_not_a_number?(params[:no_casual_number]) || params[:no_casual_number].to_i <= 0 || is_not_a_number?(params[:no_operator_number]) || params[:no_operator_number].to_i <= 0)
-  			redirect_to :back, :alert => "Le nombre maximal de temporaires et de caristes doivent être des nombres supérieurs à 0."
+  		if (is_not_a_number?(params[:no_casual_number]) || params[:no_casual_number].to_i <= 0)
+  			redirect_to :back, :alert => "Le nombre maximal d'ordinaires doit être un nombre supérieur à 0."
   		else
-  			if params[:no_casual_number].to_i < Casual.where("line_id = #{@line.id} AND casual_type_id = #{CasualType.find_by_type_name('Normal').id}").count || params[:no_operator_number].to_i < Casual.where("line_id = #{@line.id} AND casual_type_id = #{CasualType.find_by_type_name('Cariste').id}").count
-  				redirect_to :back, :alert => "Le nombre maximal d'ordinaires et de caristes doit etre supérieur au nombre de ceux présents sur la ligne."
+  			if params[:no_casual_number].to_i < Casual.where("line_id = #{@line.id} AND casual_type_id = #{CasualType.find_by_type_name('Normal').id}").count
+  				redirect_to :back, :alert => "Le nombre maximal d'ordinaires doit etre supérieur au nombre de ceux présents sur la ligne."
   			else
-  				@line.update_attributes(:max_number_of_casuals => params[:no_casual_number].to_i, :max_number_of_operators => params[:no_operator_number].to_i)
-  			redirect_to :back, :notice => "Le nombre maximal d'ordinaires et de caristes de la ligne: #{@line.line_name} a été fixé à: #{params[:no_casual_number].to_i} et #{params[:no_operator_number].to_i}."
+  				@line.update_attribute(:max_number_of_casuals, params[:no_casual_number].to_i)
+  			redirect_to :back, :notice => "Le nombre maximal d'ordinaires de la ligne: #{@line.line_name} a été fixé à: #{params[:no_casual_number].to_i}."
   			end
   		end
   	end
@@ -201,6 +217,7 @@ class WorkshopsController < ApplicationController
 		  <br />Choisissez le nombre d'heures à effectuer par jour.
 		HTML
   	@team = Team.find_by_id(@team_id.to_i) 	
+# if no team has been checked || no line has been checked while the team is not daily; daily teams must not be checked || no hourly rate has been checked
   	if (@team_id.empty? || (@line_checked.eql?(false) && !@team.daily) || (@monday_plan.empty? && @tuesday_plan.empty? && @wednesday_plan.empty? && @thursday_plan.empty? && @friday_plan.empty? && @saturday_plan.empty? && @sunday_plan.empty?))
   		redirect_to :back, :alert => @alert.html_safe
   	else 		
@@ -209,7 +226,8 @@ class WorkshopsController < ApplicationController
   		@configuration_trash = Configuration.where(:week_number => @week_number, :team_id => @team.id).first
   		
   		method_delete_configuration_plan(@configuration_trash)
-  		  		  		
+
+# configuration creation  		  		  		
   		@team.configurations.create(:user_id => current_user.id, :week_number => @week_number)  	
   		@configuration = Configuration.where(:week_number => @week_number, :team_id => @team.id).first	
 

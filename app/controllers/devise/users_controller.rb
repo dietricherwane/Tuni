@@ -2,7 +2,7 @@
 class Devise::UsersController < Devise::RegistrationsController
 	prepend_before_filter :authenticate_user!
 	before_filter :duke
-	layout :layout_used
+	#layout :layout_used
 
 	def search_ajax
 		@params = params[:query].strip.split

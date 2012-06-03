@@ -40,8 +40,8 @@ class CasualsController < ApplicationController
 						redirect_to :back, :alert => "Vous avez atteint le nombre maximal de personnes pouvant être affectées dans l'atelier: #{@workshop}."
 					else
 						Casual.create(:firstname => capitalization(@firstname), :lastname => capitalization(@lastname), :phone_number => @phone_number, :birthdate => @birthdate, :identifier => "#{@identifier+City.find_by_id(@city_id.to_i).short_name}", :city_id => @city_id.to_i, :company_id => @company_id.to_i, :casual_type_id => @casual_type_id.to_i, :workshop_id => Workshop.find_by_workshop_name(@workshop).id)
-					# lié au defaultscope de Casual
-						Casual.first.migration_dates.create(:entrance_date => Date.today.beginning_of_week)
+					# lié au defaultscope de Casual || not anymore
+						Casual.find_by_identifier("#{@identifier+City.find_by_id(@city_id.to_i).short_name}").migration_dates.create(:entrance_date => Date.today.beginning_of_week)
 						redirect_to :back, :notice => "Le temporaire #{capitalization(@firstname)} #{capitalization(@lastname)} a été créé."
 					end
 				else
@@ -201,11 +201,11 @@ class CasualsController < ApplicationController
   		@casuals_in_workshop = Casual.where("workshop_id = #{@workshop.id} AND expired IS NOT TRUE").count
   		@max_number_of_casuals = Team.find_by_sql("SELECT SUM(max_number_of_casuals + number_of_operators) AS number_of_casuals_in_workshop FROM teams WHERE workshop_id = #{@workshop.id};").first.number_of_casuals_in_workshop.to_i
   		
-  		if @casuals_in_worksho.eql?(@max_number_of_casuals)
+  		if @casuals_in_workshop.eql?(@max_number_of_casuals)
   			redirect_to :back, :alert => "Le nombre maximal de temporaires de l'atelier: #{@worksop_name} qui est de: #{@casuals_in_workshop} a été atteint."
   		else
 				@casual.update_attributes(:workshop_id => @workshop.id, :retired_from_ticking => false)
-				redirect_to :back, :notice => "#{@casual.firstname+" "+@casual.lastname} a été affecté à l'atelier #{@workshop_name}. #{@max_number_of_casuals}"
+				redirect_to :back, :notice => "#{@casual.firstname+" "+@casual.lastname} a été affecté à l'atelier #{@workshop_name}."
 			end
   	end
   end

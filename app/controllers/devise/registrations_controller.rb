@@ -8,13 +8,13 @@ class Devise::RegistrationsController < ApplicationController
   
   # GET /resource/sign_up
   def new
-  	#if user_signed_in?
+  	if user_signed_in?
 		  resource = build_resource({})
 		 	@statuses = Status.all 
 		  respond_with_navigational(resource){ render_with_scope :new }
-    #else
-    	#redirect_to new_user_session_path, :alert => "Veuillez d'abord vous connecter."
-    #end
+    else
+    	redirect_to new_user_session_path, :alert => "Veuillez d'abord vous connecter."
+    end
   end
   
   # POST /resource

@@ -606,14 +606,15 @@ button.submit.round, input.submit.round, .button.submit.round {
 	font-size:10px;
 }
 
-/*.list-table th, .mini-.list-table th {
+.list-table th, .mini-.list-table th {
 	color:#DDD;
-	padding:8px;
+	/*padding:8px;*/
+	background-color: #595959;
 	text-align:left; 
 	font-weight:bold;
 	color:#FFF;
 	border-right:solid 1px #e1e1e1;
-}*/
+}
 
 .list-table td {
 	padding:10px; 

@@ -40,6 +40,7 @@ GEM
     dynamic_form (1.1.4)
     erubis (2.6.6)
       abstract (>= 1.0.0)
+    facets (2.9.3)
     heroku (2.14.0)
       launchy (>= 0.3.2)
       rest-client (~> 1.6.1)
@@ -116,6 +117,7 @@ GEM
     whenever (0.7.3)
       activesupport (>= 2.3.4)
       chronic (~> 0.6.3)
+    wicked_pdf (0.7.9)
     will_paginate (3.0.3)
 
 PLATFORMS
@@ -124,6 +126,7 @@ PLATFORMS
 DEPENDENCIES
   devise
   dynamic_form
+  facets
   heroku
   jquery-rails (>= 1.0.12)
   magic_encoding
@@ -133,4 +136,5 @@ DEPENDENCIES
   randumb
   taps
   whenever
+  wicked_pdf
   will_paginate (~> 3.0)

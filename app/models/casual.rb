@@ -9,7 +9,7 @@ class Casual < ActiveRecord::Base
 	has_many :tickings
 	
 	# lié à la création des Casual: migration_date
-	default_scope order('casuals.created_at DESC', 'casuals.firstname ASC', 'casuals.lastname ASC')
+	#default_scope order('casuals.created_at DESC', 'casuals.firstname ASC', 'casuals.lastname ASC')
 	
 	def casual_status(casual)
   	@value = ""
@@ -31,6 +31,10 @@ class Casual < ActiveRecord::Base
   
   def casual_team(casual)
   	@team = Team.find_by_id(casual.team_id).team_name
+  end
+  
+  def normal_casual?(casual)
+  	casual.casual_type_id.eql?(CasualType.find_by_type_name("Normal").id) ? true : false
   end
   
 end

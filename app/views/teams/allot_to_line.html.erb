@@ -69,7 +69,9 @@ $(function(){
 											<%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>
 										</td>	
 										<td class = "ui-widget-content">
-											<%= check_box("post", "#{casual.id}") %>
+											<% if casual.normal_casual?(casual) %>
+												<%= check_box("post", "#{casual.id}") %>
+											<% end %>
 										</td>	
 										<td class = "ui-widget-content">
 										  <%= link_to "Retirer", remove_from_team_path(casual.id), :confirm => "Êtes vous sûr de vouloir supprimer ce temporaire de l'équipe?", :class => "direction delete_button", :style => "font-weight: bold;" %>

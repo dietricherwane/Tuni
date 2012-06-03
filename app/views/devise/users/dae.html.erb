@@ -492,7 +492,7 @@ $(document).ready(function() {
 	</div>
 	
 	<div class="portlet" id="widget-3">
-    <div class="portlet-header">Nombre d'ordinaires et de caristes par ligne</div>
+    <div class="portlet-header">Nombre d'ordinaires par ligne</div>
     	<div class="portlet-content">
     		<!-- no = normal-operator --> 
     		<%= form_tag set_line_parameters_path do %> 
@@ -522,16 +522,14 @@ $(document).ready(function() {
 					
 					<div id="no_numbers">						
 						<div id = "space"><%= label_tag "Nombre d'ordinaires" %><br />
-						<%= text_field_tag 'no_casual_number', '' %></div>
-					
-						<div id = "space"><%= label_tag "Nombre de caristes" %><br />
-						<%= text_field_tag 'no_operator_number', '' %></div>
+						<%= text_field_tag 'no_casual_number', '' %></div>					
 					</div>
 					
   				<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
 				<% end %>					
 			</div>
 	</div>
+	<br />
 </div>
 
 <div class="column_right">
@@ -580,7 +578,7 @@ $(document).ready(function() {
 																			<% unless section.lines.eql?(nil) %>
 																				<% section.lines.each do |line| %>
 																					<li>
-																						<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %> &nbsp; (<%= Casual.where("line_id = #{line.id} AND casual_type_id = #{CasualType.find_by_type_name('Normal').id}").count %>/<%= line.max_number_of_casuals %>) - (<%= Casual.where("line_id = #{line.id} AND casual_type_id = #{CasualType.find_by_type_name('Cariste').id}").count %>/<%= line.max_number_of_operators %>)</div>
+																						<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %> &nbsp; (<%= Casual.where("line_id = #{line.id} AND casual_type_id = #{CasualType.find_by_type_name('Normal').id}").count %>/<%= line.max_number_of_casuals %>)</div>
 																					</li>
 																				<% end %>
 																			<% end %>

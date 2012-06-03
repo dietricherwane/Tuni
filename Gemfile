@@ -15,7 +15,9 @@ gem 'heroku'
 gem 'taps'
 gem 'jquery-rails', '>= 1.0.12'
 gem 'dynamic_form'
-gem 'whenever', :require => false
+gem 'whenever', :require => false # to deal with cron jobs
+gem 'facets'
+gem 'wicked_pdf'
 # Use unicorn as the web server
 # gem 'unicorn'
 

@@ -36,7 +36,8 @@ class CasualsController < ApplicationController
 			if (@phone_number.empty? || (@phone_number.size.eql?(8) && !is_not_a_number?(@phone_number)))				
 
 					if Casual.find_by_identifier("#{@identifier+City.find_by_id(@city_id.to_i).short_name}").eql?(nil)
-					if Workshop.find_by_workshop_name(@workshop).max_number_of_casuals <= Casual.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id}").count
+						@max_number_of_casuals = Team.find_by_sql("SELECT SUM(max_number_of_casuals + number_of_operators) AS number_of_casuals_in_workshop FROM teams WHERE workshop_id = #{@workshop.id};").first.number_of_casuals_in_workshop.to_i
+					if @max_number_of_casuals.eql?(Casual.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id}").count)
 						redirect_to :back, :alert => "Vous avez atteint le nombre maximal de personnes pouvant être affectées dans l'atelier: #{@workshop}."
 					else
 						Casual.create(:firstname => capitalization(@firstname), :lastname => capitalization(@lastname), :phone_number => @phone_number, :birthdate => @birthdate, :identifier => "#{@identifier+City.find_by_id(@city_id.to_i).short_name}", :city_id => @city_id.to_i, :company_id => @company_id.to_i, :casual_type_id => @casual_type_id.to_i, :workshop_id => Workshop.find_by_workshop_name(@workshop).id)
@@ -163,7 +164,7 @@ class CasualsController < ApplicationController
 				end
     else
     	#concerned_model.where("#{@res.sub(/OR$/, '').sub(/OR $/, '') << ")" << @range_sql}")
-    	concerned_model.where("#{@res.sub(/AND$/, '') << ")" << @range_sql}")  
+    	concerned_model.where("#{@res.sub(/AND$/, '') << ")" << @range_sql}")
     end
   end
   

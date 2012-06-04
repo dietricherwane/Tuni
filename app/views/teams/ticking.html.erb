@@ -117,7 +117,9 @@ $(function(){
 											<% if @weekday == 1 || @weekday == 2 %>
 												<% if casual.tickings.find_by_week_number(@week_number).nil? %>
 													<td class = "ui-widget-content">
-														0
+														<td class = "ui-widget-content">
+															<%= select_tag "#{casual.id}_monday", options_for_select((0..@configuration.first.rolling_monday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+														</td>
 													</td>
 												<% else %>
 													<% if casual.tickings.find_by_week_number(@week_number).monday_ticking.nil? %>

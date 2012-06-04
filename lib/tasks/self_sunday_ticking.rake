@@ -6,16 +6,21 @@ namespace :on_sunday do
 		@teams_configured_this_week = []
 # récupération des équipes tournant cette semaine
 		Configuration.where("week_number = #{@week}").each do |configuration|
-			@teams_configured_this_week << configuration.team
+			unless configuration.rolling_sunday.nil?
+				@teams_configured_this_week << configuration.team
+			end
 		end
-		@teams_configured_this_week.each do |team|
-			team.casuals.each do |casual|
-				unless casual.tickings.find_by_week_number(@week).nil?
-					casual.tickings.create(:week_number => @week)
-				end
-				@ticking = casual.tickings.find_by_week_number(@week)
-				if @ticking.sunday_ticking.nil?
-					@ticking.create_sunday_ticking(:time_description => team.configurations.find_by_week_number(@week).rolling_sunday.time_description, :number_of_hours => 0, :team_id => casual.team_id, :line_id => casual.line_id)
+
+		unless @teams_configured_this_week.empty?
+			@teams_configured_this_week.each do |team|
+				team.casuals.each do |casual|
+					unless casual.tickings.find_by_week_number(@week).nil?
+						casual.tickings.create(:week_number => @week)
+					end
+					@ticking = casual.tickings.find_by_week_number(@week)
+					if @ticking.sunday_ticking.nil?
+						@ticking.create_sunday_ticking(:time_description => team.configurations.find_by_week_number(@week).rolling_sunday.time_description, :number_of_hours => 0, :team_id => casual.team_id, :line_id => casual.line_id)
+					end
 				end
 			end
 		end 

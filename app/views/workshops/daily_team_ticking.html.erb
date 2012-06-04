@@ -193,7 +193,7 @@ $(function(){
 											<% if casual.normal_casual?(casual) %>
 												<ul>							
 													<li>																			
-														<%= link_to "R", remove_from_line_path(casual.id), :confirm => "Êtes vous sûr de vouloir retirer ce temporaire de la ligne?", :class => "direction delete_button", :style => "font-weight: bold;" %>																			
+														<%= link_to "R", remove_from_team_path(casual.id), :confirm => "Êtes vous sûr de vouloir retirer ce temporaire de la ligne?", :class => "direction delete_button", :style => "font-weight: bold;" %>																			
 													</li>
 												</ul>
 											<% end %>

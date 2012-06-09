@@ -255,16 +255,18 @@
 				<td class = "ui-widget-content">
 					<%= @partialh75 %>
 					<% @global_h75 += @partialh75 %>
+					<% @cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.75) * @partialh75) %>
 				</td>
 				
 				<td class = "ui-widget-content">
 					<%= @partialh100 %>
 					<% @global_h100 += @partialh100 %>
+					<% @cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 1) * @partialh100) %>
 				</td>
 				
 				<td class = "ui-widget-content">
 					<%= @hours = @hours_worked- @partialh15 - @partialh50 - @partialh75 - @partialh100 %>
-					<% @global_normals_hours += @hours %>
+					<% @global_normals_hours += @hours %>					
 				</td>
 				
 				<td class = "ui-widget-content">

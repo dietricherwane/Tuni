@@ -123,6 +123,7 @@ Atelier: <%= @team.workshop.workshop_name %> || équipe: <%= @team.team_name %>
 	 @global_h75 = 0
 	 @global_h100 = 0
 	 @global_pp = 0
+	 @cash_amount = 0
 %>
 <table class="list-table">
 	<thead>
@@ -198,7 +199,7 @@ Atelier: <%= @team.workshop.workshop_name %> || équipe: <%= @team.team_name %>
 					<td colspan = 14 class = "ui-widget-content" ><h3>Normaux</h3></td>									
 				</tr>
 				<% @normals.each do |casual| %>				
-					<%= render :partial => "normals_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number, :configuration => @configuration, :global_hours_worked => @global_hours_worked, :global_normals_hours => @global_normals_hours, :global_h15 => @global_h15, :global_h50 => @global_h50, :global_h75 => @global_h75, :global_h100 => @global_h100, :global_pp => @global_pp } %>
+					<%= render :partial => "normals_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number, :configuration => @configuration, :global_hours_worked => @global_hours_worked, :global_normals_hours => @global_normals_hours, :global_h15 => @global_h15, :global_h50 => @global_h50, :global_h75 => @global_h75, :global_h100 => @global_h100, :global_pp => @global_pp, :cash_amount => @cash_amount } %>
 				<% end %>
 			<% end %>
 <!-- Caristes -->	
@@ -207,7 +208,7 @@ Atelier: <%= @team.workshop.workshop_name %> || équipe: <%= @team.team_name %>
 					<td colspan = 14 class = "ui-widget-content" ><h3>Caristes</h3></td>									
 				</tr>
 				<% @operators.each do |casual| %>				
-					<%= render :partial => "normals_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number } %>
+					<%= render :partial => "operators_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number, :configuration => @configuration, :global_hours_worked => @global_hours_worked, :global_normals_hours => @global_normals_hours, :global_h15 => @global_h15, :global_h50 => @global_h50, :global_h75 => @global_h75, :global_h100 => @global_h100, :global_pp => @global_pp, :cash_amount => @cash_amount } %>
 				<% end %>
 			<% end %>	
 			<tr>
@@ -227,7 +228,8 @@ Nombre total d'heures: <%= @global_hours_worked %><br />
 Heures normales: <%= @global_normals_hours %><br />
 Heures 75%: <%= @global_h75 %><br />
 Heures 100%: <%= @global_h100 %><br />
-Prime panier: <%= @global_pp %></h3>
+Prime panier: <%= @global_pp %><br />
+Montant total: <%= @cash_amount %></h3>
 
 <h2 class="short-title">
 	<div style="float: left;;">Visa chef de production</div>

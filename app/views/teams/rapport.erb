@@ -199,7 +199,7 @@ Atelier: <%= @team.workshop.workshop_name %> || équipe: <%= @team.team_name %>
 					<td colspan = 16 class = "ui-widget-content" ><h3>Caristes</h3></td>									
 				</tr>
 				<% @operators.each do |casual| %>				
-					<%= render :partial => "normals_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number } %>
+					<%= render :partial => "normals_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number, :configuration => @configuration, :global_hours_worked => @global_hours_worked, :global_normals_hours => @global_normals_hours, :global_h15 => @global_h15, :global_h50 => @global_h50, :global_h75 => @global_h75, :global_h100 => @global_h100, :global_pp => @global_pp } %>
 				<% end %>
 			<% end %>	
 			<tr>

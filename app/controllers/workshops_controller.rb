@@ -555,9 +555,11 @@ class WorkshopsController < ApplicationController
 					unless casual.tickings.find_by_week_number(@week_number).nil?
 						@ticking = casual.tickings.find_by_week_number(@week_number)
 						unless @ticking.monday_ticking.nil?
-							if @lines.include?(Line.find(@ticking.monday_ticking.line_id))
-								unless @casuals.include?(casual)
-									@casuals << casual
+							unless @ticking.monday_ticking.line_id.nil?
+								if @lines.include?(Line.find(@ticking.monday_ticking.line_id))
+									unless @casuals.include?(casual)
+										@casuals << casual
+									end
 								end
 							end
 						end

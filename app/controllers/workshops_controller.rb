@@ -564,44 +564,56 @@ class WorkshopsController < ApplicationController
 							end
 						end
 						unless @ticking.tuesday_ticking.nil?
-							if @lines.include?(Line.find(@ticking.tuesday_ticking.line_id))
-								unless @casuals.include?(casual)
-									@casuals << casual
+							unless @ticking.tuesday_ticking.line_id.nil?
+								if @lines.include?(Line.find(@ticking.tuesday_ticking.line_id))
+									unless @casuals.include?(casual)
+										@casuals << casual
+									end
 								end
 							end
 						end
 						unless @ticking.wednesday_ticking.nil?
-							if @lines.include?(Line.find(@ticking.wednesday_ticking.line_id))
-								unless @casuals.include?(casual)
-									@casuals << casual
+							unless @ticking.wednesday_ticking.line_id.nil?
+								if @lines.include?(Line.find(@ticking.wednesday_ticking.line_id))
+									unless @casuals.include?(casual)
+										@casuals << casual
+									end
 								end
 							end
 						end
 						unless @ticking.thursday_ticking.nil?
-							if @lines.include?(Line.find(@ticking.thursday_ticking.line_id))
-								unless @casuals.include?(casual)
-									@casuals << casual
+							unless @ticking.thursday_ticking.line_id.nil?
+								if @lines.include?(Line.find(@ticking.thursday_ticking.line_id))
+									unless @casuals.include?(casual)
+										@casuals << casual
+									end
 								end
 							end
 						end
 						unless @ticking.friday_ticking.nil?
-							if @lines.include?(Line.find(@ticking.friday_ticking.line_id))
-								unless @casuals.include?(casual)
-									@casuals << casual
+							unless @ticking.friday_ticking.line_id.nil?
+								if @lines.include?(Line.find(@ticking.friday_ticking.line_id))
+									unless @casuals.include?(casual)
+										@casuals << casual
+									end
 								end
 							end
 						end
 						unless @ticking.saturday_ticking.nil?
-							if @lines.include?(Line.find(@ticking.saturday_ticking.line_id))
-								unless @casuals.include?(casual)
-									@casuals << casual
+							unless @ticking.monday_ticking.line_id.nil?
+								if @lines.include?(Line.find(@ticking.saturday_ticking.line_id))
+									unless @casuals.include?(casual)
+										@casuals << casual
+									end
 								end
 							end
 						end
 						unless @ticking.sunday_ticking.nil?
-							if @lines.include?(Line.find(@ticking.sunday_ticking.line_id))
-								unless @casuals.include?(casual)
-									@casuals << casual
+							unless @ticking.sunday_ticking.line_id.nil?
+								if @lines.include?(Line.find(@ticking.sunday_ticking.line_id))
+									unless @casuals.include?(casual)
+										@casuals << casual
+									end
 								end
 							end
 						end

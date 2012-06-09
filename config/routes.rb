@@ -62,6 +62,10 @@ Tuni::Application.routes.draw do
   match 'workshop/ticking' => 'workshops#chief_ticking', :as => :chief_ticking
   match 'workshop/daily_team_ticking' => 'workshops#daily_team_ticking', :as => :daily_team_ticking
   match 'workshop/report' => 'workshops#rapport', :as => :workshop_report
+  match 'workshop/global_report' => 'workshops#global_reports', :as => :workshop_global_reports
+  match 'workshop/normals_global_report' => 'workshops#normals_global_report', :as => :normals_global_report
+  #match 'workshop/normlas_global_report' => 'workshops#casuals_global_report', :as => :casuals_global_report
+  
   
   match 'team/allot_to_line' => 'teams#allot_to_line', :as => :allot_to_line
   match 'team/casual_allocation_to_line' => 'teams#casual_allocation_to_line', :as => :casual_allocation_to_line

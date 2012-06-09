@@ -529,5 +529,90 @@ class WorkshopsController < ApplicationController
       format.pdf { render(:pdf => "rapport", :footer => { :right => '[page] / [topage]' }, :layout => false) }
     end
   end
+  
+  def global_reports
+  	@workshop = Workshop.find(current_user.status_number)
+  	@sections = @workshop.sections
+  end
+  
+  def normals_global_report
+  	if params[:post][:section_id].empty?
+  		redirect_to :back, :alert => "Veuillez choisir une section."
+  	else
+  		@raw_casuals_table = []
+  		@casuals = []
+  		@week_number = Date.today.cweek
+			@section = Section.find(params[:post][:section_id].to_i)
+			@lines = @section.lines
+			@teams = @section.workshop.teams.where("daily IS NOT TRUE")
+			unless @teams.empty? && @lines.nil?
+				@teams.each do |team|
+					team.casuals.where("casual_type_id = #{CasualType.find_by_type_name("Normal").id}").each do |casual|
+						@raw_casuals_table << casual
+					end
+				end
+				@raw_casuals_table.each do |casual|
+					unless casual.tickings.find_by_week_number(@week_number).nil?
+						@ticking = casual.tickings.find_by_week_number(@week_number)
+						unless @ticking.monday_ticking.nil?
+							if @lines.include?(Line.find(@ticking.monday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
+								end
+							end
+						end
+						unless @ticking.tuesday_ticking.nil?
+							if @lines.include?(Line.find(@ticking.tuesday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
+								end
+							end
+						end
+						unless @ticking.wednesday_ticking.nil?
+							if @lines.include?(Line.find(@ticking.wednesday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
+								end
+							end
+						end
+						unless @ticking.thursday_ticking.nil?
+							if @lines.include?(Line.find(@ticking.thursday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
+								end
+							end
+						end
+						unless @ticking.friday_ticking.nil?
+							if @lines.include?(Line.find(@ticking.friday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
+								end
+							end
+						end
+						unless @ticking.saturday_ticking.nil?
+							if @lines.include?(Line.find(@ticking.saturday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
+								end
+							end
+						end
+						unless @ticking.sunday_ticking.nil?
+							if @lines.include?(Line.find(@ticking.sunday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
+								end
+							end
+						end
+					end
+				end
+			end
+			
+			  	
+			respond_to do |format|
+		    format.html { render(:html => "normals_global_report", :layout => false) }
+		    format.pdf { render(:pdf => "normals_global_report", :footer => { :right => '[page] / [topage]' }, :layout => false) }
+		  end
+  	end
+  end
 
 end

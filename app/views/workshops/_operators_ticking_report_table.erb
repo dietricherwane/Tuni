@@ -267,7 +267,7 @@
 				<td class = "ui-widget-content">
 					<%= @hours = @hours_worked- @partialh15 - @partialh50 - @partialh75 - @partialh100 %>
 					<% @global_normals_hours += @hours %>
-					<% @cash_amount += (@global_normals_hours * CasualType.find_by_type_name("Cariste").hourly_rate) %>
+					<% @cash_amount += (@hours * CasualType.find_by_type_name("Cariste").hourly_rate) %>
 				</td>
 				
 				<td class = "ui-widget-content">

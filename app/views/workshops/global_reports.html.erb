@@ -1,0 +1,16 @@
+<h2 class="top-title">Rapports relatifs aux sections de l'atelier</h2><br />
+<div class="column_large_left">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Choix de la section</div>
+    	<div class="portlet-content"> 
+    		<%= form_tag normals_global_report_path(:pdf) do %>   	
+    			<div id= "space"><%= label_tag "Section" %><br />
+					<%= collection_select(:post, :section_id, @sections, :id, :section_name, options ={:prompt => "-Veuillez choisir une section-"}) %></div>							
+
+					<br />
+  				<%= submit_tag "Rapport", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...', :target => "_blank" %>
+				<% end %>								
+			</div>
+	</div>
+</div>
+

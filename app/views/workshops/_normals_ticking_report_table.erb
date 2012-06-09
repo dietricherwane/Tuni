@@ -12,6 +12,7 @@
 	</td>
 	<td class = "ui-widget-content">
 		<%= casual.firstname+ " "+casual.lastname %>
+		<div style="font-size:60%;"><%= Team.find(casual.team_id).team_name %></div>
 	</td>																				
 <!-- On est lundi ou mardi: Si le temporaire n'a pas encore été pointé cette semaine, on affiche le nombre d'heures de la configuration -->
 			<% if casual.tickings.find_by_week_number(@week_number).nil? %>
@@ -267,7 +268,7 @@
 				<td class = "ui-widget-content">
 					<%= @hours = @hours_worked- @partialh15 - @partialh50 - @partialh75 - @partialh100 %>
 					<% @global_normals_hours += @hours %>	
-					<% @cash_amount += (@global_normals_hours * CasualType.find_by_type_name("Normal").hourly_rate) %>				
+					<% @cash_amount += (@hours * CasualType.find_by_type_name("Normal").hourly_rate) %>				
 				</td>
 				
 				<td class = "ui-widget-content">

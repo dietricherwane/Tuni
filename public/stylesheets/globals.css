@@ -16,11 +16,11 @@ label{
 	width:70px;
 }
 
-#casual_birthdate_2i{
-	width:50px;
+#casual_birthdate_2i, #select_holiday_2i{
+	width:100px;
 }
 
-#casual_birthdate_3i{
+#casual_birthdate_3i, #select_holiday_3i{
 	width:50px;
 }
 
@@ -564,7 +564,7 @@ button.submit.round, input.submit.round, .button.submit.round {
 }
 .list-table th, .mini-.list-table th {
 	color:#DDD;
-	padding:3px;
+	padding:7px;
 	text-align:left; 
 	font-weight:bold;
 	color:#FFF;

@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   
   prepend_before_filter :authenticate_user!, :logout_disabled_user, :set_cache_buster, :layout_used
-  
+  helper_method :holiday?, :hours_worked
   #before_filter :set_cache_buster
   #before_filter :logout_disabled_user
   #before_filter :authenticate_user!
@@ -104,6 +104,50 @@ class ApplicationController < ActionController::Base
     response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+  end  
+  
+  def holiday?(week_number, week_day)
+  	@status = false
+  	@holidays = Holiday.where("week_number = #{week_number}")
+  	if @holidays.empty?
+  		@status = false
+  	else
+  		@holidays.each do |holiday|
+  			if holiday.holiday.wday.eql?(week_day)
+  				@status = true
+  			end
+  		end
+  	end
+  	@status
+  end
+  
+  def hours_worked(casual, week_number)
+  	@counter = 0
+  	@ticking = casual.tickings.find_by_week_number(week_number)
+  	unless @ticking.nil?
+  		unless @ticking.monday_ticking.nil?
+  			@counter += @ticking.monday_ticking.number_of_hours
+  		end
+  		unless @ticking.tuesday_ticking.nil?
+  			@counter += @ticking.tuesday_ticking.number_of_hours
+  		end
+  		unless @ticking.wednesday_ticking.nil?
+  			@counter += @ticking.wednesday_ticking.number_of_hours
+  		end
+  		unless @ticking.thursday_ticking.nil?
+  			@counter += @ticking.thursday_ticking.number_of_hours
+  		end
+  		unless @ticking.friday_ticking.nil?
+  			@counter += @ticking.friday_ticking.number_of_hours
+  		end
+  		unless @ticking.saturday_ticking.nil?
+  			@counter += @ticking.saturday_ticking.number_of_hours
+  		end
+  		unless @ticking.sunday_ticking.nil?
+  			@counter += @ticking.sunday_ticking.number_of_hours
+  		end
+  	end
+  	@counter
   end
   
 end

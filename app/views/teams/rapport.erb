@@ -32,6 +32,14 @@ h2{
 	font-weight:bold;
 }
 
+h3{
+	font-weight:bold;
+	color:#111; 
+	font-size:1.0em; 
+	text-transform:uppercase; 
+	margin-bottom:8px;
+}
+
 /*************************************/
 
 
@@ -93,191 +101,128 @@ body{
 </head>
 <body>
 
-<h2 class="top-title">Fiche de pointage du <%= Date.today.beginning_of_week.strftime("%d") %> au <%= Date.today.end_of_week.strftime("%d %B %Y") %> || <%= @team.workshop.workshop_name %> | <%= @team.team_name %></h2><br />
+<h2 class="top-title">Fiche de pointage du <%= Date.today.beginning_of_week.strftime("%d") %> au <%= Date.today.end_of_week.strftime("%d %B %Y") %><br />
+Atelier: <%= @team.workshop.workshop_name %> || équipe: <%= @team.team_name %>
+</h2><br />
 
+<% 
+	 @global_hours_worked = 0
+	 @global_normals_hours = 0
+	 @global_h15 = 0
+	 @global_h50 = 0
+	 @global_h75 = 0
+	 @global_h100 = 0
+	 @global_pp = 0
+%>
 <table class="list-table">
 	<thead>
-		<tr>				
-			<th width="16%">Nom</th>	
-				<th width="12%">Lundi</th>
-				<th width="12%">Mardi</th>			
-				<th width="12%">Mercredi</th>
-				<th width="12%">Jeudi</th>
-				<th width="12%">Vendredi</th>
-				<th width="12%">Samedi</th>
-				<th width="12%">Dimanche</th>
+		<tr>		
+			<th width="24%">Matricule</th>		
+			<th width="28%">Nom</th>	
+			<th width="4%">
+				<% if holiday?(@week_number, 1) %>
+					<div style=" color:#000; font-weight:bold;">Lun</div>
+				<% else %>
+					Lun
+				<% end %>				
+			</th>
+			<th width="4%">
+				<% if holiday?(@week_number, 2) %>
+					<div style=" color:#000; font-weight:bold;">Mar</div>
+				<% else %>
+					Mar
+				<% end %>				
+			</th>
+			<th width="4%">
+				<% if holiday?(@week_number, 3) %>
+					<div style=" color:#000; font-weight:bold;">Mer</div>
+				<% else %>
+					Mer
+				<% end %>				
+			</th>
+			<th width="4%">
+				<% if holiday?(@week_number, 4) %>
+					<div style=" color:#000; font-weight:bold;">Jeu</div>
+				<% else %>
+					Jeu
+				<% end %>				
+			</th>
+			<th width="4%">
+				<% if holiday?(@week_number, 5) %>
+					<div style=" color:#000; font-weight:bold;">Ven</div>
+				<% else %>
+					Ven
+				<% end %>				
+			</th>
+			<th width="4%">
+				<% if holiday?(@week_number, 6) %>
+					<div style=" color:#000; font-weight:bold;">Sam</div>
+				<% else %>
+					Sam
+				<% end %>				
+			</th>
+			<th width="4%">
+				<% if holiday?(@week_number, 0) %>
+					<div style=" color:#000; font-weight:bold;">Dim</div>
+				<% else %>
+					Dim
+				<% end %>				
+			</th>
+			<th width="5%">NH</th>			
+			<th width="5%">H15%</th>
+			<th width="5%">H50%</th>
+			<th width="5%">H75%</th>
+			<th width="5%">H100%</th>
+			<th width="5%">HN</th>
+			<th width="4%">PP</th>
 		</tr>
 	</thead>
-	<tbody>
+	<tbody>		
 		<% if @casuals.empty? %>
 			<tr>
-				<td colspan = 8 class = "ui-widget-content" >Aucun temporaire à pointer</td>									
+				<td colspan = 16 class = "ui-widget-content" >Aucun temporaire à pointer</td>									
 			</tr>
 		<% else %>
-			<% @casuals.each do |casual| %>				
-				<%= hidden_field_tag casual.id %>
-				<tr class = "odd">
-					<td class = "ui-widget-content">
-						<%= casual.firstname+ " "+casual.lastname %>
-					</td>																				
-<!-- On est lundi ou mardi: Si le temporaire n'a pas encore été pointé cette semaine, on affiche le nombre d'heures de la configuration -->
-							<% if casual.tickings.find_by_week_number(@week_number).nil? %>
-								<td class = "ui-widget-content">
-									0
-								</td>
-								<td class = "ui-widget-content">
-									0
-								</td>
-								<td class = "ui-widget-content">
-									0
-								</td>
-								<td class = "ui-widget-content">
-									0
-								</td>
-								<td class = "ui-widget-content">
-									0
-								</td>
-								<td class = "ui-widget-content">
-									0
-								</td>
-								<td class = "ui-widget-content">
-									0
-								</td>								
-							<% else %>
-	<!-- Le temporaire a été pointé cette semaine: Si le temporaire n'a pas été pointé le lundi, on affiche le nombre d'heures de la configuration -->												
-								<% if casual.tickings.find_by_week_number(@week_number).monday_ticking.nil? %>
-									<td class = "ui-widget-content">
-										0
-									</td>
-								<% else %>								
-	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est différente de celle dans laquelle il est; se contenter d'afficher le nombre d'heures précédemment pointé -->
-									<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.team_id != casual.team_id %>
-										<td class = "ui-widget-content">
-											<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.number_of_hours %>															
-											<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.monday_ticking.team_id).team_name %></div>
-									</td>
-									<% else %>
-	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
-										<td class = "ui-widget-content">
-											<%= casual.tickings.find_by_week_number(@week_number).monday_ticking.number_of_hours %>
-										</td>
-									<% end %>
-								<% end %>
-								
-								<% if casual.tickings.find_by_week_number(@week_number).tuesday_ticking.nil? %>
-									<td class = "ui-widget-content">
-										0
-									</td>
-								<% else %>
-									<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.team_id != casual.team_id %>
-											<td class = "ui-widget-content">
-												<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.number_of_hours %>															
-												<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.tuesday_ticking.team_id).team_name %></div>
-										</td>
-									<% else %>
-	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
-										<td class = "ui-widget-content">
-											<%= casual.tickings.find_by_week_number(@week_number).tuesday_ticking.number_of_hours %>
-										</td>
-									<% end %>
-								<% end %>
-								
-								<% if casual.tickings.find_by_week_number(@week_number).wednesday_ticking.nil? %>
-									<td class = "ui-widget-content">
-										0
-									</td>
-								<% else %>
-									<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.team_id != casual.team_id %>
-											<td class = "ui-widget-content">
-												<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.number_of_hours %>															
-												<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.wednesday_ticking.team_id).team_name %></div>
-										</td>
-									<% else %>
-	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
-										<td class = "ui-widget-content">
-											<%= casual.tickings.find_by_week_number(@week_number).wednesday_ticking.number_of_hours %>
-										</td>
-									<% end %>
-								<% end %>
-								
-								<% if casual.tickings.find_by_week_number(@week_number).thursday_ticking.nil? %>
-									<td class = "ui-widget-content">
-										0
-									</td>
-								<% else %>
-									<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.team_id != casual.team_id %>
-											<td class = "ui-widget-content">
-												<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.number_of_hours %>															
-												<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.thursday_ticking.team_id).team_name %></div>
-										</td>
-									<% else %>
-	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
-										<td class = "ui-widget-content">
-											<%= casual.tickings.find_by_week_number(@week_number).thursday_ticking.number_of_hours %>
-										</td>
-									<% end %>
-								<% end %>
-								
-								<% if casual.tickings.find_by_week_number(@week_number).friday_ticking.nil? %>
-									<td class = "ui-widget-content">
-										0
-									</td>
-								<% else %>
-									<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.team_id != casual.team_id %>
-											<td class = "ui-widget-content">
-												<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.number_of_hours %>															
-												<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.friday_ticking.team_id).team_name %></div>
-										</td>
-									<% else %>
-	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
-										<td class = "ui-widget-content">
-											<%= casual.tickings.find_by_week_number(@week_number).friday_ticking.number_of_hours %>
-										</td>
-									<% end %>
-								<% end %>
-								
-								<% if casual.tickings.find_by_week_number(@week_number).saturday_ticking.nil? %>
-									<td class = "ui-widget-content">
-										0
-									</td>
-								<% else %>
-									<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.team_id != casual.team_id %>
-											<td class = "ui-widget-content">
-												<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.number_of_hours %>															
-												<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.saturday_ticking.team_id).team_name %></div>
-										</td>
-									<% else %>
-	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
-										<td class = "ui-widget-content">
-											<%= casual.tickings.find_by_week_number(@week_number).saturday_ticking.number_of_hours %>
-										</td>
-									<% end %>
-								<% end %>
-								
-								<% if casual.tickings.find_by_week_number(@week_number).sunday_ticking.nil? %>
-									<td class = "ui-widget-content">
-										0
-									</td>
-								<% else %>
-									<% if casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.team_id != casual.team_id %>
-											<td class = "ui-widget-content">
-												<%= casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.number_of_hours %>															
-												<div style="font-size:60%;"><%= Team.find(casual.tickings.where("week_number = #{@configuration.first.week_number}").first.sunday_ticking.team_id).team_name %></div>
-										</td>
-									<% else %>
-	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
-										<td class = "ui-widget-content">
-											<%= casual.tickings.find_by_week_number(@week_number).sunday_ticking.number_of_hours %>
-										</td>
-									<% end %>
-								<% end %>
-								
-							<% end %> 																									
+			
+<!-- Temporaires normaux -->
+			<% unless @normals.empty? %>
+				<tr>
+					<td colspan = 16 class = "ui-widget-content" ><h3>Normaux</h3></td>									
 				</tr>
+				<% @normals.each do |casual| %>				
+					<%= render :partial => "normals_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number, :configuration => @configuration, :global_hours_worked => @global_hours_worked, :global_normals_hours => @global_normals_hours, :global_h15 => @global_h15, :global_h50 => @global_h50, :global_h75 => @global_h75, :global_h100 => @global_h100, :global_pp => @global_pp } %>
+				<% end %>
 			<% end %>
+<!-- Caristes -->	
+			<% unless @operators.empty? %>		
+				<tr>
+					<td colspan = 16 class = "ui-widget-content" ><h3>Caristes</h3></td>									
+				</tr>
+				<% @operators.each do |casual| %>				
+					<%= render :partial => "normals_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number } %>
+				<% end %>
+			<% end %>	
+			<tr>
+				<td colspan = 9 class = "ui-widget-content" ><h3>Totaux</h3></td>							
+				<td class = "ui-widget-content" ><h3><%= @global_hours_worked %></h3></td>			
+				<td class = "ui-widget-content" ><h3><%= @global_h15 %></h3></td>			
+				<td class = "ui-widget-content" ><h3><%= @global_h50 %></h3></td>			
+				<td class = "ui-widget-content" ><h3><%= @global_h75 %></h3></td>			
+				<td class = "ui-widget-content" ><h3><%= @global_h100 %></h3></td>			
+				<td class = "ui-widget-content" ><h3><%= @global_normals_hours %></h3></td>			
+				<td class = "ui-widget-content" ><h3><%= @global_pp %></h3></td>									
+			</tr>	
 		<% end %>
 	</tbody>
 </table>	
-
+<br />
+<h3>Effectif: <%= @casuals.count %><br />
+Nombre total d'heures: <%= @global_hours_worked %><br />
+Heures normales: <%= @global_normals_hours %><br />
+Heures 15%: <%= @global_h15 %><br />
+Heures 50%: <%= @global_h50 %><br />
+Heures 75%: <%= @global_h75 %><br />
+Heures 100%: <%= @global_h100 %><br />
+Prime panier: <%= @global_pp %></h3>
 </body>
 </html>

@@ -351,10 +351,15 @@ class TeamsController < ApplicationController
 		end
   end
   
-  def rapport
+  def rapport  	
   	@team = Team.find(current_user.status_number)
-  	@configuration = ""
-  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NOT NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})").order("casual_type_id DESC")
+		@configuration = ""
+  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE")
+  	#@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NOT NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})")
+  	
+  	@normals = @casuals.where("casual_type_id = #{CasualType.find_by_type_name("Normal").id}")
+  	@operators = @casuals.where("casual_type_id = #{CasualType.find_by_type_name("Cariste").id}")
+  	
   	@weekday = Date.today.wday
   	@week_number = Date.today.cweek
   	unless @team.configurations.where("week_number = #{@week_number}").empty?

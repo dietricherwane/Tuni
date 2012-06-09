@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120604092546) do
+ActiveRecord::Schema.define(:version => 20120606134422) do
 
   create_table "casual_types", :force => true do |t|
     t.string   "type_name"
@@ -77,6 +77,16 @@ ActiveRecord::Schema.define(:version => 20120604092546) do
     t.datetime "updated_at"
   end
 
+  create_table "extra_hours", :force => true do |t|
+    t.integer  "week_number"
+    t.date     "bonus_day"
+    t.boolean  "authorized"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "user_id"
+    t.integer  "team_id"
+  end
+
   create_table "friday_tickings", :force => true do |t|
     t.string   "time_description"
     t.integer  "number_of_hours"
@@ -85,6 +95,14 @@ ActiveRecord::Schema.define(:version => 20120604092546) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "ticking_id"
+  end
+
+  create_table "holidays", :force => true do |t|
+    t.integer  "week_number"
+    t.date     "holiday"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "user_id"
   end
 
   create_table "lines", :force => true do |t|

@@ -26,7 +26,6 @@ $(function(){
 });	
 </script>
 
-
 <h2 class="top-title">Fiche de pointage du <%= Date.today.beginning_of_week.strftime("%d") %> au <%= Date.today.end_of_week.strftime("%d %B %Y") %></h2><br />
 <div class="column_large_left">
 	<div class="portlet" id="widget-1">
@@ -147,7 +146,9 @@ $(function(){
 									<th width="10%">Dimanche</th>
 								<% end %>	
 								<% unless (@configuration.first.rolling_monday.nil? || !(Date.today.wday >= 1 || Date.today.wday == 0)) %>
-									<th width="10%">Lundi</th>
+									<th width="10%">
+										Lundi
+									</th>
 								<% end %>
 								<% unless (@configuration.first.rolling_tuesday.nil? || !(Date.today.wday >= 2 || Date.today.wday == 0)) %>
 									<th width="10%">Mardi</th>

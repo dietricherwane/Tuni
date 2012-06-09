@@ -7,6 +7,7 @@ class CasualsController < ApplicationController
 		@cities = City.all.paginate(:page => params[:page], :per_page => 15)
 		@companies = Company.all.paginate(:page => params[:page], :per_page => 15)
 		@casual_types = CasualType.all.paginate(:page => params[:page], :per_page => 15)
+		@holidays = Holiday.all.paginate(:page => params[:page], :per_page => 15)
 		@tr_color = true
 	end
 
@@ -164,7 +165,7 @@ class CasualsController < ApplicationController
 				end
     else
     	#concerned_model.where("#{@res.sub(/OR$/, '').sub(/OR $/, '') << ")" << @range_sql}")
-    	concerned_model.where("#{@res.sub(/AND$/, '') << ")" << @range_sql}")
+    	concerned_model.where("#{@res.sub(/AND$/, '') << ")" << @range_sql}").order('casuals.created_at DESC', 'casuals.firstname ASC', 'casuals.lastname ASC')
     end
   end
   

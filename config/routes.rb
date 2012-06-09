@@ -73,6 +73,8 @@ Tuni::Application.routes.draw do
   
   match 'pdf_creations/tst' => 'pdf_creations#tst', :as => :tst
   
+  match 'parameters/set_holidays' => 'parameters#set_holidays', :as => :set_holidays
+  
   #resources :companies
   #resources :cities
   #resources :casual_types

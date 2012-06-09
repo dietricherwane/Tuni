@@ -28,8 +28,21 @@
 				<% end %>				
 			</div>
 	</div>
-<!--	
+	
 	<div class="portlet" id="widget-3">
+    <div class="portlet-header">Jours fériés</div>
+    	<div class="portlet-content">    	
+    		<%= form_tag set_holidays_path do %>     		   										 
+					<div id= "space"><%= label_tag 'Jour' %><br />
+					<%= date_select "select", "holiday", :discard_year => true, :use_month_names => ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Décembre"] %></div>
+					
+					<br />
+  				<%= submit_tag "Enregistrer", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>					
+				<% end %>				
+			</div>
+	</div>
+<!--	
+	<div class="portlet" id="widget-4">
     <div class="portlet-header">Type de temporaire</div>
     	<div class="portlet-content">    	
     		<%= form_tag create_casual_type_path do %>     		   										 
@@ -65,6 +78,7 @@
           <li><a href="#tabs-1">Villes</a></li>
           <li><a href="#tabs-2">Compagnies</a></li>
           <li><a href="#tabs-3">Types de temporaires</a></li>
+          <li><a href="#tabs-4">Jours fériés</a></li>
         </ul>
         
         <div id="tabs-1">
@@ -191,5 +205,39 @@
 						<%= will_paginate @casual_types %>
 					</div>
         </div>
+        
+        <div id="tabs-4">
+          <table class="list-table">
+						<thead class = "ui-widget-header ui-corner-all">
+							<tr>
+								<th width="100%">Liste des jours fériés</th>								
+							</tr>
+						</thead>
+						<tbody>
+							<% if @holidays.nil? %>
+								<tr>
+									<td class = "ui-widget-content">Il n'y a aucun jour férié</td>
+								</tr>
+							<% else %>
+								<% @holidays.each do |holiday| %>
+									<% if @tr_color %>
+										<tr class = "odd">
+									<% else %>
+										<tr>
+									<% end %>
+										<td class = "ui-widget-content">
+												<%= holiday.holiday.strftime("%d %B %Y") %>
+										</td>													
+									</tr>
+									<% @tab_color = !@tab_color %>			
+								<% end %>
+							<% end %>
+						</tbody>
+					</table>
+					<div id="pagination">
+						<%= will_paginate @holidays %>
+					</div>
+				</div>
+        
 	</div>
 </div>

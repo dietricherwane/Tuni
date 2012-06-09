@@ -196,7 +196,7 @@ $(document).ready(function() {
 													<li>
 														<div class = "day" style = "font-weight: bold;">Lundi: <%= configuration.rolling_monday.time_description %>&nbsp;
 															<% unless configuration.count_rolling_days(configuration) < 2 %>
-																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_monday, :model_name => RollingMonday, :configuration => configuration, :french_date_name => "Lundi"), :confirm => "Êtes vous sûr de vouloir supprimer le lundi de la configuration?", :class => "direction delete_button" %>
+																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_monday, :model_name => RollingMonday, :configuration => configuration, :french_date_name => "Lundi", :day_to_check => 1), :confirm => "Êtes vous sûr de vouloir supprimer le lundi de la configuration?", :class => "direction delete_button" %>
 															<% end %>
 														</div>
 													</li>
@@ -205,7 +205,7 @@ $(document).ready(function() {
 													<li>
 														<div class = "day" style = "font-weight: bold;">Mardi: <%= configuration.rolling_tuesday.time_description %>&nbsp;
 															<% unless configuration.count_rolling_days(configuration) < 2 %>
-																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_tuesday, :model_name => RollingTuesday, :configuration => configuration, :french_date_name => "Mardi"), :confirm => "Êtes vous sûr de vouloir supprimer le mardi de la configuration?", :class => "direction delete_button" %>
+																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_tuesday, :model_name => RollingTuesday, :configuration => configuration, :french_date_name => "Mardi", :day_to_check => 2), :confirm => "Êtes vous sûr de vouloir supprimer le mardi de la configuration?", :class => "direction delete_button" %>
 															<% end %>
 														</div>
 													</li>
@@ -214,7 +214,7 @@ $(document).ready(function() {
 													<li>
 														<div class = "day" style = "font-weight: bold;">Mercredi: <%= configuration.rolling_wednesday.time_description %>&nbsp;
 															<% unless configuration.count_rolling_days(configuration) < 2 %>
-																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_wednesday, :model_name => RollingWednesday, :configuration => configuration, :french_date_name => "Mercredi"), :confirm => "Êtes vous sûr de vouloir supprimer le mercredi de la configuration?", :class => "direction delete_button" %>
+																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_wednesday, :model_name => RollingWednesday, :configuration => configuration, :french_date_name => "Mercredi", :day_to_check => 3), :confirm => "Êtes vous sûr de vouloir supprimer le mercredi de la configuration?", :class => "direction delete_button" %>
 															<% end %>
 														</div>
 													</li>
@@ -223,7 +223,7 @@ $(document).ready(function() {
 													<li>
 														<div class = "day" style = "font-weight: bold;">Jeudi: <%= configuration.rolling_thursday.time_description %>&nbsp;
 															<% unless configuration.count_rolling_days(configuration) < 2 %>
-																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_thursday, :model_name => RollingThursday, :configuration => configuration, :french_date_name => "Jeudi"), :confirm => "Êtes vous sûr de vouloir supprimer le jeudi de la configuration?", :class => "direction delete_button" %>
+																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_thursday, :model_name => RollingThursday, :configuration => configuration, :french_date_name => "Jeudi", :day_to_check => 4), :confirm => "Êtes vous sûr de vouloir supprimer le jeudi de la configuration?", :class => "direction delete_button" %>
 															<% end %>
 														</div>
 													</li>
@@ -232,7 +232,7 @@ $(document).ready(function() {
 													<li>
 														<div class = "day" style = "font-weight: bold;">Vendredi: <%= configuration.rolling_friday.time_description %>&nbsp;
 															<% unless configuration.count_rolling_days(configuration) < 2 %>
-																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_friday, :model_name => RollingFriday, :configuration => configuration, :french_date_name => "Vendredi"), :confirm => "Êtes vous sûr de vouloir supprimer le vendredi de la configuration?", :class => "direction delete_button" %>
+																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_friday, :model_name => RollingFriday, :configuration => configuration, :french_date_name => "Vendredi", :day_to_check => 5), :confirm => "Êtes vous sûr de vouloir supprimer le vendredi de la configuration?", :class => "direction delete_button" %>
 															<% end %>
 														</div>
 													</li>
@@ -241,7 +241,7 @@ $(document).ready(function() {
 													<li>
 														<div class = "day" style = "font-weight: bold;">Samedi: <%= configuration.rolling_saturday.time_description %>&nbsp;
 															<% unless configuration.count_rolling_days(configuration) < 2 %>
-																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_saturday, :model_name => RollingSaturday, :configuration => configuration, :french_date_name => "Samedi"), :confirm => "Êtes vous sûr de vouloir supprimer le samedi de la configuration?", :class => "direction delete_button" %>
+																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_saturday, :model_name => RollingSaturday, :configuration => configuration, :french_date_name => "Samedi", :day_to_check => 6), :confirm => "Êtes vous sûr de vouloir supprimer le samedi de la configuration?", :class => "direction delete_button" %>
 															<% end %>
 														</div>
 													</li>
@@ -250,7 +250,7 @@ $(document).ready(function() {
 													<li>
 														<div class = "day" style = "font-weight: bold;">Dimanche: <%= configuration.rolling_sunday.time_description %>&nbsp;
 															<% unless configuration.count_rolling_days(configuration) < 2 %>
-																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_sunday, :model_name => RollingSunday, :configuration => configuration, :french_date_name => "Dimanche"), :confirm => "Êtes vous sûr de vouloir supprimer le dimanche de la configuration?", :class => "direction delete_button" %>
+																<%= link_to "", delete_working_day_path(:rolling_day_id => configuration.rolling_sunday, :model_name => RollingSunday, :configuration => configuration, :french_date_name => "Dimanche", :day_to_check => 0), :confirm => "Êtes vous sûr de vouloir supprimer le dimanche de la configuration?", :class => "direction delete_button" %>
 															<% end %>
 														</div>
 													</li>

@@ -279,24 +279,148 @@ class WorkshopsController < ApplicationController
   def delete_line
   	@configuration = Configuration.find(params[:configuration].to_i)
   	@line = Line.find(params[:line].to_i)
-  	@casuals_on_line = Casual.find_by_line_id(@line.id)
-  	if @casuals_on_line.nil?
-			if @configuration.lines.count < 2
-				redirect_to :back, :alert => "#{@configuration.team.team_name}: il doit rester au moins une ligne dans la configuration."
-			else
-				@configuration.lines.delete(@line)
-				redirect_to :back, :notice => "#{@configuration.team.team_name}: la ligne #{@line.line_name} a été supprimée de la configuration."
+  	@casuals_on_line = Casual.where("line_id = #{@line.id} AND team_id = #{@configuration.team.id}")
+  	if @casuals_on_line.empty?
+  		if casual_ticked_on_this_line?(@configuration.team_id, @line)
+  			redirect_to :back, :alert => "Des temporaires ont été pointés sur la ligne #{@line.line_name}"
+  		else
+				if @configuration.lines.count < 2
+					redirect_to :back, :alert => "#{@configuration.team.team_name}: il doit rester au moins une ligne dans la configuration."
+				else
+					@configuration.lines.delete(@line)
+					redirect_to :back, :notice => "#{@configuration.team.team_name}: la ligne #{@line.line_name} a été supprimée de la configuration."
+				end
 			end
 		else
 			redirect_to :back, :alert => "Veuillez d'abord supprimer les temporaires affectés sur la ligne #{@line.line_name}"
 		end
   end
   
+  def casual_ticked_on_this_line?(team_id, line)
+  	@ticked = false
+  	@week_number = Date.today.cweek  	
+		
+# On récupère la liste de tous les temporaires car il peuvent changer d'atelier 			
+		@casuals = Casual.all
+# Si elle n'est pas vide, on la parcourt
+		unless @casuals.empty?  			
+			@casuals.each do |casual|
+# Pour chacun des temporaires, on détermine s'il a un pointage
+				@ticking = casual.tickings.find_by_week_number(@week_number)
+# s'il a un pointage  					
+				unless @ticking.nil?
+# S'il a un pointage du lundi  					
+					unless @ticking.monday_ticking.nil?
+						if (@ticking.monday_ticking.line_id.eql?(line.id) && @ticking.monday_ticking.team_id.eql?(team_id))
+							@ticked = true
+							break
+						end
+					end
+					unless @ticking.tuesday_ticking.nil?
+						if (@ticking.tuesday_ticking.line_id.eql?(line.id) && @ticking.tuesday_ticking.team_id.eql?(team_id))
+							@ticked = true
+							break
+						end
+					end
+					unless @ticking.wednesday_ticking.nil?
+						if (@ticking.wednesday_ticking.line_id.eql?(line.id) && @ticking.wednesday_ticking.team_id.eql?(team_id))
+							@ticked = true
+							break
+						end
+					end
+					unless @ticking.thursday_ticking.nil?
+						if (@ticking.thursday_ticking.line_id.eql?(line.id) && @ticking.thursday_ticking.team_id.eql?(team_id))
+							@ticked = true
+							break
+						end
+					end
+					unless @ticking.friday_ticking.nil?
+						if (@ticking.friday_ticking.line_id.eql?(line.id) && @ticking.friday_ticking.team_id.eql?(team_id))
+							@ticked = true
+							break
+						end
+					end
+					unless @ticking.saturday_ticking.nil?
+						if (@ticking.saturday_ticking.line_id.eql?(line.id) && @ticking.saturday_ticking.team_id.eql?(team_id))
+							@ticked = true
+							break
+						end
+					end
+					unless @ticking.sunday_ticking.nil?
+						if (@ticking.sunday_ticking.line_id.eql?(line.id) && @ticking.sunday_ticking.team_id.eql?(team_id))
+							@ticked = true
+							break
+						end
+					end
+				end
+			end
+		end
+  	@ticked
+  end
+  
   def delete_working_day
   	@rolling_day = params[:model_name].constantize.find_by_id(params[:rolling_day_id].to_i)
   	@configuration = Configuration.find(params[:configuration].to_i)
-  	@rolling_day.delete
-  	redirect_to :back, :notice => "#{@configuration.team.team_name}: le #{params[:french_date_name]} a été supprimé."
+  	if casual_ticked_this_day?(@configuration.team_id, params[:day_to_check].to_i)
+  		redirect_to :back, :alert => "#{@configuration.team.team_name}: Des temporaires ont été pointés ce jour."
+  	else
+  		@rolling_day.delete
+  		redirect_to :back, :notice => "#{@configuration.team.team_name}: le #{params[:french_date_name]} a été supprimé."
+  	end
+  	
+  end
+  
+  def casual_ticked_this_day?(team_id, day_to_check)
+  	@ticked = false
+  	@week_number = Date.today.cweek  	
+
+				@casuals = Casual.all
+# S'il existe des temporaires dans ces équipes				
+				unless @casuals.empty?
+					@casuals.each do |casual|
+						@ticking = casual.tickings.find_by_week_number(@week_number)
+# Si le temporaire a un pointage						
+						unless @ticking.nil?
+# Si c'est le lundi qu'on veut supprimer de la configuration  et qu'il y a un pointage le lundi						
+							if (day_to_check.eql?(1) && !@ticking.monday_ticking.nil?)
+								if @ticking.monday_ticking.team_id.eql?(team_id)
+									@ticked = true
+								end
+							end
+							if (day_to_check.eql?(2) && !@ticking.tuesday_ticking.nil?)
+								if @ticking.tuesday_ticking.team_id.eql?(team_id)
+									@ticked = true
+								end
+							end
+							if (day_to_check.eql?(3) && !@ticking.wednesday_ticking.nil?)
+								if @ticking.wednesday_ticking.team_id.eql?(team_id)
+									@ticked = true
+								end
+							end
+							if (day_to_check.eql?(4) && !@ticking.thursday_ticking.nil?)
+								if @ticking.thursday_ticking.team_id.eql?(team_id)
+									@ticked = true
+								end
+							end
+							if (day_to_check.eql?(5) && !@ticking.friday_ticking.nil?)
+								if @ticking.friday_ticking.team_id.eql?(team_id)
+									@ticked = true
+								end
+							end
+							if (day_to_check.eql?(6) && !@ticking.saturday_ticking.nil?)
+								if @ticking.saturday_ticking.team_id.eql?(team_id)
+									@ticked = true
+								end
+							end
+							if (day_to_check.eql?(0) && !@ticking.sunday_ticking.nil?)
+								if @ticking.sunday_ticking.team_id.eql?(team_id)
+									@ticked = true
+								end
+							end
+						end
+					end
+				end
+  	@ticked
   end
   
   def set_max_number_of_casuals_and_operators
@@ -388,7 +512,12 @@ class WorkshopsController < ApplicationController
   def rapport
   	@team = Team.find(params[:team].to_i)
   	@configuration = ""
-  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})").order("casual_type_id DESC")
+  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE")
+  	#@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NOT NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})")
+  	
+  	@normals = @casuals.where("casual_type_id = #{CasualType.find_by_type_name("Normal").id}")
+  	@operators = @casuals.where("casual_type_id = #{CasualType.find_by_type_name("Cariste").id}")
+  	
   	@weekday = Date.today.wday
   	@week_number = Date.today.cweek
   	unless @team.configurations.where("week_number = #{@week_number}").empty?

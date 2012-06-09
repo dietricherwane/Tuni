@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  week_number: 1
+  bonus_day: 2012-06-06
+  authorized: false
+
+two:
+  week_number: 1
+  bonus_day: 2012-06-06
+  authorized: false

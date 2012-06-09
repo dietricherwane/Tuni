@@ -14,10 +14,12 @@ namespace :on_sunday do
 		unless @teams_configured_this_week.empty?
 			@teams_configured_this_week.each do |team|
 				team.casuals.each do |casual|
+# Si des temporaires de cette équipe n'ont pas de pointage, on leur en crée un				
 					unless casual.tickings.find_by_week_number(@week).nil?
 						casual.tickings.create(:week_number => @week)
 					end
 					@ticking = casual.tickings.find_by_week_number(@week)
+# S'ils n'ont pas de pointage du dimanche, on leur en crée un
 					if @ticking.sunday_ticking.nil?
 						@ticking.create_sunday_ticking(:time_description => team.configurations.find_by_week_number(@week).rolling_sunday.time_description, :number_of_hours => 0, :team_id => casual.team_id, :line_id => casual.line_id)
 					end

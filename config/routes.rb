@@ -57,13 +57,18 @@ Tuni::Application.routes.draw do
   match 'workshop/delete_line' => 'workshops#delete_line', :as => :delete_line
   match 'workshop/delete_working_day' => 'workshops#delete_working_day', :as => :delete_working_day
   match 'workshop/daily_team' => 'workshops#daily_team'
+  match 'workshop/get_correct_time_description' => 'workshops#get_correct_time_description'
   match 'workshop/remove_from_workshop' => 'workshops#remove_from_workshop', :as => :remove_from_workshop
+  match 'workshop/ticking' => 'workshops#chief_ticking', :as => :chief_ticking
+  match 'workshop/daily_team_ticking' => 'workshops#daily_team_ticking', :as => :daily_team_ticking
   match 'team/allot_to_line' => 'teams#allot_to_line', :as => :allot_to_line
   match 'team/casual_allocation_to_line' => 'teams#casual_allocation_to_line', :as => :casual_allocation_to_line
   match 'team/remove_from_line' => 'teams#remove_from_line', :as => :remove_from_line
   match 'team/remove_from_team' => 'teams#remove_from_team', :as => :remove_from_team
   match 'team/ticking' => 'teams#ticking', :as => :ticking
   match 'team/save_ticking' => 'teams#save_ticking', :as => :save_ticking
+  
+  match 'pdf_creations/tst' => 'pdf_creations#tst', :as => :tst
   
   #resources :companies
   #resources :cities

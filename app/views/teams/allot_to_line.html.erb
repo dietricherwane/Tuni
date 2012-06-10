@@ -69,8 +69,10 @@ $(function(){
 											<%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>
 										</td>	
 										<td class = "ui-widget-content">
-											<% if casual.normal_casual?(casual) %>
-												<%= check_box("post", "#{casual.id}") %>
+											<% unless @configuration.empty? %>
+												<% if casual.normal_casual?(casual) %>
+													<%= check_box("post", "#{casual.id}") %>
+												<% end %>
 											<% end %>
 										</td>	
 										<td class = "ui-widget-content">
@@ -86,7 +88,9 @@ $(function(){
 						<%= will_paginate @casuals %>
 					</div>
 					<br />
-  				<%= submit_tag "Affecter", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+					<% unless @configuration.empty? %>
+  					<%= submit_tag "Affecter", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+  				<% end %>
 				<% end %>				
 			</div>
 	</div>

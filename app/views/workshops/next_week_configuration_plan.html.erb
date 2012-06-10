@@ -1,10 +1,12 @@
 <%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
 
 <script type="text/javascript" language="JavaScript">
-$(document).ready(function() {
-		//write a better function for hideAll	
+$(document).ready(function() {		
+		
     $("#post_team_id").change(function() {
     	selected_team = this.options[this.selectedIndex].text;
+    	// récupération du correct volume horaire; journalier pour les équipes journalières et matin aprem nuit pour les non journalières
+    	$(this).get_correct_time_description(selected_team);
   		hidde_lines_for_daily_teams(selected_team, "<%= url_for :action => 'daily_team', :controller => 'workshops' %>");	
     });
     
@@ -23,6 +25,33 @@ $(document).ready(function() {
 					}
 		    }
       });
+    }
+    
+    $.fn.get_correct_time_description = function(selected_team) {            
+      $.ajax({      
+        url: "<%= url_for :action => 'get_correct_time_description', :controller => 'workshops' %>",
+        data: selected_team,
+        dataType: "text",
+        error: function(){ alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter."); },
+        success: function(response, response_status, xhr) {
+        
+          $("#monday_rolling_type").children().remove();
+          $("#tuesday_rolling_type").children().remove();
+          $("#wednesday_rolling_type").children().remove();
+          $("#thursday_rolling_type").children().remove();
+          $("#friday_rolling_type").children().remove();
+          $("#saturday_rolling_type").children().remove();
+          $("#sunday_rolling_type").children().remove();
+          
+          $(response).appendTo("#monday_rolling_type");  
+          $(response).appendTo("#tuesday_rolling_type");
+          $(response).appendTo("#wednesday_rolling_type");
+          $(response).appendTo("#thursday_rolling_type");
+          $(response).appendTo("#friday_rolling_type");
+          $(response).appendTo("#saturday_rolling_type");
+          $(response).appendTo("#sunday_rolling_type");      
+        }
+      }); 
     }
 
 		$(function(){				
@@ -83,25 +112,25 @@ $(document).ready(function() {
 						<tbody>
 							<tr class = "odd">
 								<td class = "ui-widget-content">
-									<%= collection_select(:monday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+									<%= select_tag "monday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 								</td>	
 								<td class = "ui-widget-content">
-									<%= collection_select(:tuesday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+									<%= select_tag "tuesday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 								</td>
 								<td class = "ui-widget-content">
-									<%= collection_select(:wednesday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+									<%= select_tag "wednesday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 								</td>
 								<td class = "ui-widget-content">
-									<%= collection_select(:thursday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+									<%= select_tag "thursday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 								</td>
 								<td class = "ui-widget-content">
-									<%= collection_select(:friday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+									<%= select_tag "friday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 								</td>
 								<td class = "ui-widget-content">
-									<%= collection_select(:saturday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+									<%= select_tag "saturday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 								</td>
 								<td class = "ui-widget-content">
-									<%= collection_select(:sunday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+									<%= select_tag "sunday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 								</td>	
 							</tr>
 						</tbody>

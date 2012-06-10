@@ -1,12 +1,67 @@
 <%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
-<script type="text/javascript">	
-$(function(){	
-	$('#collapser').jqcollapse({
-		 slide: true,
-		 speed: 1000,
-		 easing: 'easeOutCubic'
-	});	
-});	
+<script type="text/javascript" language="JavaScript">
+$(document).ready(function() {		
+		
+    $("#post_team_id").change(function() {
+    	selected_team = this.options[this.selectedIndex].text;
+    	// récupération du correct volume horaire; journalier pour les équipes journalières et matin aprem nuit pour les non journalières
+    	$(this).get_correct_time_description(selected_team);
+  		hidde_lines_for_daily_teams(selected_team, "<%= url_for :action => 'daily_team', :controller => 'workshops' %>");	
+    });
+    
+    function hidde_lines_for_daily_teams(selected_team, url){
+    	$.ajax({      
+        url: url,
+        data: selected_team,
+        dataType: "text",
+        error: function(){  }, //alert("Votre session a expié. Veuillez vous déconnecter et vous reconnecter.");
+        success: function(response, response_status, xhr) {
+       		if (response == "true"){
+						$("#lines").hide("slow");						
+					}
+					else {
+						$("#lines").show("slow");
+					}
+		    }
+      });
+    }
+    
+    $.fn.get_correct_time_description = function(selected_team) {            
+      $.ajax({      
+        url: "<%= url_for :action => 'get_correct_time_description', :controller => 'workshops' %>",
+        data: selected_team,
+        dataType: "text",
+        error: function(){ alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter."); },
+        success: function(response, response_status, xhr) {
+        
+          $("#monday_rolling_type").children().remove();
+          $("#tuesday_rolling_type").children().remove();
+          $("#wednesday_rolling_type").children().remove();
+          $("#thursday_rolling_type").children().remove();
+          $("#friday_rolling_type").children().remove();
+          $("#saturday_rolling_type").children().remove();
+          $("#sunday_rolling_type").children().remove();
+          
+          $(response).appendTo("#monday_rolling_type");  
+          $(response).appendTo("#tuesday_rolling_type");
+          $(response).appendTo("#wednesday_rolling_type");
+          $(response).appendTo("#thursday_rolling_type");
+          $(response).appendTo("#friday_rolling_type");
+          $(response).appendTo("#saturday_rolling_type");
+          $(response).appendTo("#sunday_rolling_type");      
+        }
+      }); 
+    }
+
+		$(function(){				
+			$('#collapser').jqcollapse({
+			   slide: true,
+			   speed: 1000,
+			   easing: 'easeOutCubic'
+			});				
+		});
+		
+});
 </script>
 
 <h2 class="top-title">Configuration équipe-lignes || Plan de production du <%= @beginning_of_next_week.strftime("%d") %> au <%= @end_of_next_week.strftime("%d %B %Y") %></h2><br />
@@ -19,27 +74,29 @@ $(function(){
     			<div id= "space"><%= label_tag "Equipe" %><br />
 					<%= collection_select(:post, :team_id, @configured_teams_table, :id, :team_name, options ={:prompt => "-Veuillez choisir une équipe-"}) %></div>							
 					
-					<ul id="collapser">
-						<% unless @workshop.eql?(nil) %>
-						<% unless @workshop.sections.eql?(nil) %>												
-							<% @workshop.sections.each do |section| %>
-								<li><div class = "direction section" style = "font-weight: bold;"><%= section.section_name %></div>
-									<ul>
-										<% unless section.lines.eql?(nil) %>
-											<% section.lines.each do |line| %>
-												<li>
-													<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %>&nbsp;&nbsp;<%= check_box("post", "#{line.id}") %></div>
-												</li>
+					<div id = "lines">
+						<ul id="collapser">
+							<% unless @workshop.eql?(nil) %>
+							<% unless @workshop.sections.eql?(nil) %>												
+								<% @workshop.sections.each do |section| %>
+									<li><div class = "direction section" style = "font-weight: bold;"><%= section.section_name %></div>
+										<ul>
+											<% unless section.lines.eql?(nil) %>
+												<% section.lines.each do |line| %>
+													<li>
+														<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %>&nbsp;&nbsp;<%= check_box("post", "#{line.id}") %></div>
+													</li>
+												<% end %>
 											<% end %>
-										<% end %>
-									</ul>
-								</li>
-							<% end %>												
-						<% end %>
-						<% end %>		
-					</ul>
-					<br />
-					
+										</ul>
+									</li>
+								<% end %>												
+							<% end %>
+							<% end %>		
+						</ul>
+						<br />
+					</div>
+										
 					<table class="list-table">
 						<thead class = "ui-widget-header ui-corner-all">
 							<tr>					
@@ -70,37 +127,37 @@ $(function(){
 							<tr class = "odd">
 								<% if 1 > Date.today.wday %>
 									<td class = "ui-widget-content">
-										<%= collection_select(:monday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+										<%= select_tag "monday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 									</td>	
 								<% end %>
 								<% if 2 > Date.today.wday %>
 									<td class = "ui-widget-content">
-										<%= collection_select(:tuesday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+										<%= select_tag "tuesday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 									</td>
 								<% end %>
 								<% if 3 > Date.today.wday %>
 									<td class = "ui-widget-content">
-										<%= collection_select(:wednesday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+										<%= select_tag "wednesday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 									</td>
 								<% end %>
 								<% if 4 > Date.today.wday %>
 									<td class = "ui-widget-content">
-										<%= collection_select(:thursday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+										<%= select_tag "thursday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 									</td>
 								<% end %>
 								<% if 5 > Date.today.wday %>
 									<td class = "ui-widget-content">
-										<%= collection_select(:friday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+										<%= select_tag "friday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 									</td>
 								<% end %>
 								<% if 6 > Date.today.wday %>
 									<td class = "ui-widget-content">
-										<%= collection_select(:saturday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+										<%= select_tag "saturday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 									</td>
 								<% end %>
 								<% if 7 > Date.today.wday %>
 									<td class = "ui-widget-content">
-										<%= collection_select(:sunday, :rolling_type_id, @rolling_types, :id, :description, options ={:prompt => "Horaire"}) %>
+										<%= select_tag "sunday_rolling_type", options_for_select(["Horaire"], "Horaire"), :style => "width:100%; font-size: 65%;" %>
 									</td>	
 								<% end %>
 							</tr>

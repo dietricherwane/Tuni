@@ -1,0 +1,31 @@
+<%= javascript_include_tag 'jquery.easing', 'jquery.collapse' %>
+<script type="text/javascript">	
+$(function(){	
+	$('#collapser').jqcollapse({
+		 slide: true,
+		 speed: 1000,
+		 easing: 'easeOutCubic'
+	});	
+});	
+</script>
+
+<h2 class="top-title">Equipes pouvant être pointées du <%= Date.today.beginning_of_week.strftime("%d") %> au <%= Date.today.end_of_week.strftime("%d %B %Y") %></h2><br />
+<div class="column">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Liste des équipes</div>
+    	<div class="portlet-content"> 
+    		<ul id="collapser">
+					<% @teams_table.each do |team| %>
+						<li>
+							<div class = "direction team" style = "font-weight: bold;">
+								<%= link_to team.team_name, daily_team_ticking_path(:team_id => team.id) %>
+							</div>	
+						</li>	
+					<% end %>					
+				</ul>							
+			</div>
+	</div>
+</div>
+
+ breakfast (<%#= link_to 'html', tst_path('tst') %> |
+               <%= link_to 'pdf', tst_path(:pdf) %>)

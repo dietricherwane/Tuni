@@ -169,18 +169,19 @@ class TeamsController < ApplicationController
   
   def remove_from_team
   	@casual = Casual.find(params[:format].to_i)
-  	@casual.update_attribute(:team_id, nil)
+  	@casual.update_attributes(:team_id => nil, :previous_team => current_user.status_number, :removal_week => Date.today.cweek)
   	redirect_to :back, :notice => "#{@casual.firstname} #{@casual.lastname} a été retiré de l'équipe."
   end
   
   def ticking
   	@team = Team.find(current_user.status_number)
   	@configuration = ""
-  	@previous_configuration = @team.configurations.find_by_week_number(Date.today.cweek - 1)
-  	@sunday_ticking_exists = false 
+  	@previous_configuration = ""
+  	@sunday_config_exists = false 
   	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NOT NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})").order("casual_type_id DESC")
   	@weekday = Date.today.wday
-  	@week_number = Date.today.cweek  	
+  	@week_number = Date.today.cweek
+  	@previous_week = Date.today.cweek - 1  	
   	@casuals_ticked_previous_sunday = []
   	
   	@sections_array = []
@@ -196,13 +197,11 @@ class TeamsController < ApplicationController
   	end
   	
   	@sections = @team.workshop.sections
-  	
-  	@casuals.each do |casual|
-  		unless casual.tickings.find_by_week_number(@week_number - 1).nil?
-  			unless casual.tickings.find_by_week_number(@week_number - 1).sunday_ticking.nil?
-  				@sunday_ticking_exists = true
-  				@casuals_ticked_previous_sunday << casual  				
-  			end	
+  	 	
+  	unless @team.configurations.find_by_week_number(@week_number - 1).nil?
+  		unless @team.configurations.find_by_week_number(@week_number - 1).rolling_sunday.nil?
+  			@sunday_config_exists = true
+  			@previous_configuration = @team.configurations.find_by_week_number(@previous_week)  			
   		end
   	end
  	 	
@@ -253,7 +252,11 @@ class TeamsController < ApplicationController
 	  		# pointage du dimanche précédent
 	  		@last_sunday_ticking = @casual.tickings.find_by_week_number(Date.today.cweek - 1)
 	  		unless params[("#{casual_id + "_last_sunday"}").to_sym].nil?
-					@last_sunday_ticking.sunday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_last_sunday").to_sym].to_i)
+	  			if @last_sunday_ticking.sunday_ticking.nil?
+	  				@last_sunday_ticking.create_sunday_ticking(:number_of_hours => params[(casual_id + "_last_sunday").to_sym].to_i, :line_id => @line_id, :team_id => @casual.team.id, :time_description => Casual.find(@casuals_id_table.first).team.configurations.find_by_week_number(@week_number - 1).rolling_sunday.time_description)
+	  			else
+						@last_sunday_ticking.sunday_ticking.update_attributes(:number_of_hours => params[(casual_id + "_last_sunday").to_sym].to_i)
+					end
 				end
 				
 	  		# si le temporaire n'a pas encore été pointé...	  		

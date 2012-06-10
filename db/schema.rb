@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120602221326) do
+ActiveRecord::Schema.define(:version => 20120604092546) do
 
   create_table "casual_types", :force => true do |t|
     t.string   "type_name"
@@ -41,6 +41,8 @@ ActiveRecord::Schema.define(:version => 20120602221326) do
     t.integer  "team_id"
     t.string   "phone_number"
     t.integer  "line_id"
+    t.integer  "previous_team"
+    t.integer  "removal_week"
   end
 
   create_table "cities", :force => true do |t|

@@ -1,0 +1,103 @@
+<% if (!@sunday_config_exists || (@sunday_config_exists && !Date.today.wday.eql?(1))) %>
+	<tr>
+		<td colspan = 8 class = "ui-widget-content" >Vous n'êtes pas programmé pour cette semaine.</td>								
+	</tr>
+<% end %>								
+<% if (@sunday_config_exists && Date.today.wday.eql?(1)) %>
+	<tr class = "odd">
+		<th width="24%">Nom</th>
+		<th width="2%"></th>	
+		<th width="74%">Dimanche</th>									
+	</tr>
+	<% @casuals.each do |casual| %>
+		<%= hidden_field_tag casual.id %>
+		<script type="text/javascript">		
+		$(document).ready(function() {
+			options['innerHtml'] = "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %><br>Type: <%= CasualType.find(casual.casual_type_id).type_name %><br>Date d'entrée: <%= casual.migration_dates.last.entrance_date.strftime("%d-%m-%Y") %>";								
+			$("#casual_<%= casual.id %>").CreateBubblePopup( options );
+		});
+		</script>
+		<tr>											
+			<td class = "ui-widget-content">
+				<%= div_for (casual) do %>
+					<%= casual.firstname+ " " +casual.lastname %>
+				<% end %>
+			</td>
+			<td class = "ui-widget-content">
+				<ul>							
+					<li>																			
+						<%= link_to "R", remove_from_line_path(casual.id), :confirm => "Êtes vous sûr de vouloir retirer ce temporaire de la ligne?", :class => "direction delete_button", :style => "font-weight: bold;" %>																			
+					</li>
+
+				</ul>
+			</td>
+			<td class = "ui-widget-content">
+<!-- Si le temporaire n'a pas changé d'équipe -->											
+			<% if casual.previous_team.nil? %>
+<!-- S'il n'a pas eu de pointage la semaine passée, on lui affiche la combo box -->
+				<% if casual.tickings.find_by_week_number(@previous_week).nil? %>
+					<%= select_tag "#{casual.id}_last_sunday", options_for_select((0..@previous_configuration.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+				<% else %>
+<!-- S'il a eu un pointage la semaine passée, mais pas de pointage le dimanche, on lui affiche la combo box -->												
+					<% if casual.tickings.find_by_week_number(@previous_week).sunday_ticking.nil? %>
+						<%= select_tag "#{casual.id}_last_sunday", options_for_select((0..@previous_configuration.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>
+					<% else %>
+<!-- S'il a eu un pointage le dimanche passé, on lui affiche la combo box avec la valeur du pointage sélectionnée -->														
+						<%= select_tag "#{casual.id}_last_sunday", options_for_select((0..@previous_configuration.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@previous_week).sunday_ticking.number_of_hours), :style => "width:100%" %>
+					<% end %>
+				<% end %>											
+			<% else %>
+<!-- Si le temporaire a changé d'équipe la semaine passée -->											
+				<% if casual.removal_week.eql?(@previous_week) || casual.removal_week.eql?(@week_number)  %>
+<!-- Si la précédente équipe du temporaire n'avait pas de configuration, on affiche 0 -->												
+					<% if Team.find(casual.previous_team).configurations.where("week_number = #{@previous_week}").first.nil? %>
+						0
+						<div style="font-size:60%;">
+							<%= Team.find(casual.tickings.where("week_number = #{@previous_week}").first.sunday_ticking.team_id).team_name %>
+						</div>
+					<% else %>
+<!-- Si la précédente équipe du temporaire n'avait pas de configuration pour le dimanche on affiche 0 -->														
+						<% if Team.find(casual.previous_team).configurations.where("week_number = #{@previous_week}").first.rolling_sunday.nil? %>
+							0	
+							<div style="font-size:60%;">
+								<%= Team.find(casual.tickings.where("week_number = #{@previous_week}").first.sunday_ticking.team_id).team_name %>
+							</div>																							
+						<% else %>
+<!-- Si la précédente équipe du temporaire avait une configuration pour le dimanche mais que le temporaire n'a pas eu de pointage pendant la semaine, on affiche 0 avec le nom de l'équipe dont il vient -->													
+							<% if casual.tickings.find_by_week_number(@previous_week).nil? %>
+								0
+								<div style="font-size:60%;">
+									<%= Team.find(casual.tickings.where("week_number = #{@previous_week}").first.sunday_ticking.team_id).team_name %>
+								</div>
+							<% else %>
+<!-- Si la précédente équipe du temporaire avait une configuration pour le dimanche et qu'il a recu des pointages mais pas le dimanche, on affiche 0 avec le nom de l'équipe dont il vient -->														
+								<% if casual.tickings.find_by_week_number(@previous_week).sunday_ticking.nil? %>
+									0
+								<div style="font-size:60%;">
+									<%= Team.find(casual.tickings.where("week_number = #{@previous_week}").first.sunday_ticking.team_id).team_name %>
+								</div>
+<!-- S'il a eu un pointage le dimanche passé avec sa précédente équipe, on affiche la valeur du pointage et le nom de sa précédente équipe -->															
+								<% else %>	
+<!-- Si l'équipe dans laquelle te temporaire a été pointé est celle dans laquelle il est, afficher la combo box avec la valeur de l'ancien pointage sélectionnée -->																																	
+									<% if casual.team_id.eql?(casual.tickings.find_by_week_number(@previous_week).sunday_ticking.team_id) %>
+										<%= select_tag "#{casual.id}_last_sunday", options_for_select((0..@previous_configuration.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@previous_week).sunday_ticking.number_of_hours), :style => "width:100%" %>
+									<% else %>
+<!-- Si l'équipe dans laquelle te temporaire a été pointé n'est pas celle dans laquelle il est, afficher la valeur de l'ancien pointage avec le nom de l'équipe dans laquelle il a été pointé -->																	
+										<%= casual.tickings.find_by_week_number(@previous_week).sunday_ticking.number_of_hours %>
+										<div style="font-size:60%;">
+											<%= Team.find(casual.tickings.where("week_number = #{@previous_week}").first.sunday_ticking.team_id).team_name %>																																		
+										</div>
+									<% end %>
+								<% end %>
+							<% end %>
+						<% end %>
+					<% end %>
+<!-- Si le temporaire a changé d'équipe avant semaine passée, on lui affiche la configuration de la semaine passée de son équipe actuelle -->												
+				<% else %>
+					<%= select_tag "#{casual.id}_last_sunday", options_for_select((0..@previous_configuration.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>												
+				<% end %>
+			<% end %>											
+			</td>
+		</tr>
+	<% end %>
+<% end %>

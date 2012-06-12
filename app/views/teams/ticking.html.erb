@@ -614,7 +614,10 @@ $(function(){
 					</table>
 					<br />
 					<% if (!@configuration.empty? || (@sunday_config_exists && Date.today.wday.eql?(1))) %>
-  					<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+  					<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>  
+  					<div style="float:right;">
+  						<%= link_to 'Rapport', team_report_path(:pdf), :class => 'submit button large ui-corner-all', :target => "_blank" %>
+  					</div>
   				<% end %>
 				<% end %>						
 			</div>

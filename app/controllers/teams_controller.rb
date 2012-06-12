@@ -108,41 +108,43 @@ class TeamsController < ApplicationController
 # s'il y a des temporaires sur la ligne...		 			
 		 			unless @teams_table.empty?
 			 			@teams_table.each do |team|
-		 					@configuration = team.configurations.where("week_number = #{@week_number}").first
-		 					unless @configuration.rolling_monday.nil?
-		 						if @configuration.rolling_monday.time_description.eql?(@newcomer_monday_time)
-		 							@counter_monday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-		 						end
-		 					end
-		 					unless @configuration.rolling_tuesday.nil?
-		 						if @configuration.rolling_tuesday.time_description.eql?(@newcomer_tuesday_time)
-		 							@counter_tuesday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-		 						end
-		 					end
-		 					unless @configuration.rolling_wednesday.nil?
-		 						if @configuration.rolling_wednesday.time_description.eql?(@newcomer_wednesday_time)
-		 							@counter_wednesday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-		 						end
-		 					end
-		 					unless @configuration.rolling_thursday.nil?
-		 						if @configuration.rolling_thursday.time_description.eql?(@newcomer_thursday_time)
-		 							@counter_thursday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-		 						end
-		 					end
-		 					unless @configuration.rolling_friday.nil?
-		 						if @configuration.rolling_friday.time_description.eql?(@newcomer_friday_time)
-		 							@counter_friday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-		 						end
-		 					end
-		 					unless @configuration.rolling_saturday.nil?
-		 						if @configuration.rolling_saturday.time_description.eql?(@newcomer_saturday_time)
-		 							@counter_saturday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-		 						end
-		 					end
-		 					unless @configuration.rolling_sunday.nil?
-		 						if @configuration.rolling_sunday.time_description.eql?(@newcomer_sunday_time)
-		 							@counter_sunday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
-		 						end
+		 					@configuration = team.configurations.find_by_week_number(@week_number)
+		 					unless @configuration.nil?
+		 						unless @configuration.rolling_monday.nil?
+			 						if @configuration.rolling_monday.time_description.eql?(@newcomer_monday_time)
+			 							@counter_monday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+			 						end
+			 					end
+			 					unless @configuration.rolling_tuesday.nil?
+			 						if @configuration.rolling_tuesday.time_description.eql?(@newcomer_tuesday_time)
+			 							@counter_tuesday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+			 						end
+			 					end
+			 					unless @configuration.rolling_wednesday.nil?
+			 						if @configuration.rolling_wednesday.time_description.eql?(@newcomer_wednesday_time)
+			 							@counter_wednesday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+			 						end
+			 					end
+			 					unless @configuration.rolling_thursday.nil?
+			 						if @configuration.rolling_thursday.time_description.eql?(@newcomer_thursday_time)
+			 							@counter_thursday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+			 						end
+			 					end
+			 					unless @configuration.rolling_friday.nil?
+			 						if @configuration.rolling_friday.time_description.eql?(@newcomer_friday_time)
+			 							@counter_friday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+			 						end
+			 					end
+			 					unless @configuration.rolling_saturday.nil?
+			 						if @configuration.rolling_saturday.time_description.eql?(@newcomer_saturday_time)
+			 							@counter_saturday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+			 						end
+			 					end
+			 					unless @configuration.rolling_sunday.nil?
+			 						if @configuration.rolling_sunday.time_description.eql?(@newcomer_sunday_time)
+			 							@counter_sunday += team.casuals.where("line_id = #{@line.id} AND expired IS NOT TRUE").count
+			 						end
+			 					end
 		 					end
 		 					#@message << "#{team.team_name} || #{@counter_monday} #{@counter_tuesday} #{@counter_wednesday} #{@counter_thursday} #{@counter_friday} #{@counter_saturday} #{@counter_sunday} #{@newcomer_tuesday_time} || "
 		 				end		 				
@@ -226,7 +228,6 @@ class TeamsController < ApplicationController
   end
   
   def save_ticking
-  	@message = ""
   	@casuals_id_table = []
   	@raw_hash = {}
 # nettoyage du hash
@@ -346,8 +347,24 @@ class TeamsController < ApplicationController
 					end
 				end		
 	  	end	
-			redirect_to :back, :notice => "Le pointage a été fait. #{@message}"
+			redirect_to :back, :notice => "Le pointage a été fait."
 		end
   end
-
+  
+  def rapport
+  	@team = Team.find(current_user.status_number)
+  	@configuration = ""
+  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NOT NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})").order("casual_type_id DESC")
+  	@weekday = Date.today.wday
+  	@week_number = Date.today.cweek
+  	unless @team.configurations.where("week_number = #{@week_number}").empty?
+  		@configuration = @team.configurations.where("week_number = #{@week_number}")
+  	end
+  	
+		respond_to do |format|
+      format.html { render(:html => "rapport", :layout => false) }
+      format.pdf { render(:pdf => "rapport", :footer => { :right => '[page] / [topage]' }, :layout => false) }
+    end
+  end
+  
 end

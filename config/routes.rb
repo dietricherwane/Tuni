@@ -61,12 +61,15 @@ Tuni::Application.routes.draw do
   match 'workshop/remove_from_workshop' => 'workshops#remove_from_workshop', :as => :remove_from_workshop
   match 'workshop/ticking' => 'workshops#chief_ticking', :as => :chief_ticking
   match 'workshop/daily_team_ticking' => 'workshops#daily_team_ticking', :as => :daily_team_ticking
+  match 'workshop/report' => 'workshops#rapport', :as => :workshop_report
+  
   match 'team/allot_to_line' => 'teams#allot_to_line', :as => :allot_to_line
   match 'team/casual_allocation_to_line' => 'teams#casual_allocation_to_line', :as => :casual_allocation_to_line
   match 'team/remove_from_line' => 'teams#remove_from_line', :as => :remove_from_line
   match 'team/remove_from_team' => 'teams#remove_from_team', :as => :remove_from_team
   match 'team/ticking' => 'teams#ticking', :as => :ticking
   match 'team/save_ticking' => 'teams#save_ticking', :as => :save_ticking
+  match 'team/report' => 'teams#rapport', :as => :team_report
   
   match 'pdf_creations/tst' => 'pdf_creations#tst', :as => :tst
   

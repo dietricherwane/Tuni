@@ -325,12 +325,13 @@ class WorkshopsController < ApplicationController
   def chief_ticking
 		@teams_table = []
 		@week_number = Date.today.cweek		
-		
-  	Workshop.find(current_user.status_number).teams.where("daily IS TRUE").each do |team|
-  		unless team.configurations.find_by_week_number(@week_number).nil?
-  			@teams_table << team
-  		end
-  	end
+		unless Workshop.find(current_user.status_number).teams.where("daily IS TRUE").empty?
+			Workshop.find(current_user.status_number).teams.where("daily IS TRUE").each do |team|
+				unless team.configurations.find_by_week_number(@week_number).nil?
+					@teams_table << team
+				end
+			end
+		end
   end
   
   def daily_team_ticking
@@ -338,7 +339,7 @@ class WorkshopsController < ApplicationController
   	@configuration = ""
   	@previous_configuration = ""
   	@sunday_config_exists = false 
-  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NOT NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})").order("casual_type_id DESC")
+  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})").order("casual_type_id DESC")
   	@weekday = Date.today.wday
   	@week_number = Date.today.cweek
   	@previous_week = Date.today.cweek - 1  	
@@ -382,6 +383,22 @@ class WorkshopsController < ApplicationController
   	end
   	
   	@sections = @team.workshop.sections
+  end
+  
+  def rapport
+  	@team = Team.find(params[:team].to_i)
+  	@configuration = ""
+  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})").order("casual_type_id DESC")
+  	@weekday = Date.today.wday
+  	@week_number = Date.today.cweek
+  	unless @team.configurations.where("week_number = #{@week_number}").empty?
+  		@configuration = @team.configurations.where("week_number = #{@week_number}")
+  	end
+  	
+		respond_to do |format|
+      format.html { render(:html => "rapport", :layout => false) }
+      format.pdf { render(:pdf => "rapport", :footer => { :right => '[page] / [topage]' }, :layout => false) }
+    end
   end
 
 end

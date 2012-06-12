@@ -61,8 +61,13 @@ $(function(){
 													<%= casual.firstname+ " " +casual.lastname %>
 												<% end %>
 											</td>
-											<td class = "ui-widget-content">																			
-												<%= link_to "R", remove_from_team_path(casual.id), :confirm => "Êtes vous sûr de vouloir supprimer ce temporaire de l'équipe?", :class => "direction delete_button", :style => "font-weight: bold;" %>																		
+											<td class = "ui-widget-content">
+												<ul>							
+													<li>																			
+														<%= link_to "R", remove_from_line_path(casual.id), :confirm => "Êtes vous sûr de vouloir retirer ce temporaire de la ligne?", :class => "direction delete_button", :style => "font-weight: bold;" %>																			
+													</li>
+
+												</ul>
 											</td>
 											<td class = "ui-widget-content">
 <!-- Si le temporaire n'a pas changé d'équipe -->											
@@ -184,8 +189,14 @@ $(function(){
 												<%= casual.firstname+ " "+casual.lastname %>
 											<% end %>
 										</td>
-										<td class = "ui-widget-content">																	
-											<%= link_to "R", remove_from_team_path(casual.id), :confirm => "Êtes vous sûr de vouloir supprimer ce temporaire de l'équipe?", :class => "direction delete_button", :style => "font-weight: bold;" %>
+										<td class = "ui-widget-content">
+											<% if casual.normal_casual?(casual) %>
+												<ul>							
+													<li>																			
+														<%= link_to "R", remove_from_line_path(casual.id), :confirm => "Êtes vous sûr de vouloir retirer ce temporaire de la ligne?", :class => "direction delete_button", :style => "font-weight: bold;" %>																			
+													</li>
+												</ul>
+											<% end %>
 										</td>
 										
 										
@@ -604,6 +615,9 @@ $(function(){
 					<br />
 					<% if (!@configuration.empty? || (@sunday_config_exists && Date.today.wday.eql?(1))) %>
   					<%= submit_tag "Valider", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+  					<div style="float:right;">
+  						<%= link_to 'Rapport', workshop_report_path(:pdf, :team => @team), :class => 'submit button large ui-corner-all', :target => "_blank" %>
+  					</div>
   				<% end %>
 				<% end %>						
 			</div>

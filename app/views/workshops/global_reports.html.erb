@@ -3,14 +3,23 @@
 	<div class="portlet" id="widget-1">
     <div class="portlet-header">Choix de la section</div>
     	<div class="portlet-content"> 
-    		<%= form_tag section_global_report_path(:pdf) do %>   	
-    			<div id= "space"><%= label_tag "Section" %><br />
+    		<%= form_tag section_global_report_path(:pdf) do %>  
+    		   		   		   		
+    			<div><%= label_tag "Section" %><br />
 					<%= collection_select(:post, :section_id, @sections, :id, :section_name, options ={:prompt => "Journaliers"}) %></div>							
-
 					<br />
+					
+				  <label>Normaux</label> <%= check_box("normals", "validated") %> 
+					<label>Caristes</label> <%= check_box("operators", "validated") %>
+					
+					<br /><br />
+					<%= label_tag 'Semaine du:' %><br />
+					<%= date_select "select", "holiday", :start_year => 2012, :end_year => Date.today.year, :use_month_names => ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Décembre"], :style => "width: 80px;" %>
+
+					<br /> <br />
   				<%= submit_tag "Rapport", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...', :target => "_blank" %>
 				<% end %>								
-			</div>
 	</div>
+</div>
 </div>
 

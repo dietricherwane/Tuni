@@ -536,13 +536,27 @@ class WorkshopsController < ApplicationController
   end
   
   def section_global_report
-  	@week_number = Date.today.cweek
+  	@week_number = Date.new(params[:select][:"holiday(1i)"].to_i, params[:select][:"holiday(2i)"].to_i, params[:select][:"holiday(3i)"].to_i).cweek
+  	#@week_number = Date.today.cweek
   	@lines_id_table = [] 	
   	@teams = []
+  	@other_teams_table = []
+  	@workshop_teams = Workshop.find_by_id(current_user.status_number).teams
+  	
+  	if (params[:normals][:validated].eql?("0") && params[:operators][:validated].eql?("0"))
+  		@normals = true
+  		@operators = true
+  	else
+			params[:normals][:validated].eql?("1") ? @normals = true : @normals = false
+			params[:operators][:validated].eql?("1") ? @operators = true : @operators = false
+		end
+  	
 # On récupère toutes les équipes de l'atelier
 		if params[:post][:section_id].empty?
 			@raw_teams = Workshop.find_by_id(current_user.status_number).teams.where("daily IS TRUE")
+			@daily = true
 		else
+			@daily = false
 			@section = Section.find_by_id(params[:post][:section_id])
   		@raw_teams = @section.workshop.teams.where("daily IS NOT TRUE")
   		
@@ -553,15 +567,174 @@ class WorkshopsController < ApplicationController
 			end
 		end
 		
-  	unless @raw_teams.empty?
+		@other_teams_request = ""
+		
+  	unless @raw_teams.empty?  		  		
   		@raw_teams.each do |team|
+# Sélection des équipes étant dans des ateliers différents de celui dans lequel on est
+  			@other_teams_request << "team_name != '#{team.team_name}' AND "  		
 # On stocke dans un tableau les équipes ayant une configuration pour la semaine en cours
   			unless team.configurations.find_by_week_number(@week_number).nil?
   				@teams << team
   			end
-  		end
+  		end  		
+  		
   	end
   	
+  	@other_teams_request.sub!(/ AND $/, "")
+  	
+  	if @other_teams_request.empty?
+  			@other_teams = Team.all
+  	else
+  		@other_teams = Team.where("#{@other_teams_request}")
+  	end
+  	@tickings = []  	  	
+  	unless @other_teams.empty?
+  		@other_teams.each do |team|
+  			team.casuals.each do |casual|
+  				@ticking = casual.tickings.find_by_week_number(@week_number)
+  				unless @ticking.nil?
+  					@monday_ticking = @ticking.monday_ticking
+  					@tuesday_ticking = @ticking.tuesday_ticking
+  					@wednesday_ticking = @ticking.wednesday_ticking
+  					@thursday_ticking = @ticking.thursday_ticking
+  					@friday_ticking = @ticking.friday_ticking
+  					@saturday_ticking = @ticking.saturday_ticking
+  					@sunday_ticking = @ticking.sunday_ticking
+  					
+  					  					
+  					unless @monday_ticking.nil?
+  						if normal?(casual)
+# Normal, on s'assure que la ligne dans laquelle il a été pointé appartient à la section sélectionnée ou que l'équipe dans laquelle il a été pointé appartient à l'atelier dans lequel on est si c'était un journalier			
+								if @monday_ticking.line_id.nil?								 	
+									if @raw_teams.include?(Team.find_by_id(@monday_ticking.team_id))
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								else
+									if @lines_id_table.include?(@monday_ticking.line_id)
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								end									
+  						else
+# Cariste, on s'assure que l'équipe dans laquelle il a été pointé appartient à l'atelier dans lequel on est
+  							if @raw_teams.include?(Team.find_by_id(@monday_ticking.team_id))
+  								@other_teams_table << team unless @other_teams_table.include?(team)
+  							end
+  						end
+  					end
+  					
+  					unless @tuesday_ticking.nil?
+  						if normal?(casual)
+  							if @tuesday_ticking.line_id.nil?
+									if @raw_teams.include?(Team.find_by_id(@tuesday_ticking.team_id))
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								else
+									if @lines_id_table.include?(@tuesday_ticking.line_id)
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								end
+  						else
+  							if @raw_teams.include?(Team.find_by_id(@tuesday_ticking.team_id))
+  								@other_teams_table << team unless @other_teams_table.include?(team)
+  							end
+  						end
+  					end
+  					
+  					unless @wednesday_ticking.nil?
+  						if normal?(casual)
+  							if @wednesday_ticking.line_id.nil?
+									if @raw_teams.include?(Team.find_by_id(@wednesday_ticking.team_id))
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								else
+									if @lines_id_table.include?(@wednesday_ticking.line_id)
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								end
+  						else
+  							if @raw_teams.include?(Team.find_by_id(@wednesday_ticking.team_id))
+  								@other_teams_table << team unless @other_teams_table.include?(team)
+  							end
+  						end
+  					end
+  					
+  					unless @thursday_ticking.nil?
+  						if normal?(casual)
+  							if @thursday_ticking.line_id.nil?
+									if @raw_teams.include?(Team.find_by_id(@thursday_ticking.team_id))
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								else
+									if @lines_id_table.include?(@thursday_ticking.line_id)
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								end
+  						else
+  							if @raw_teams.include?(Team.find_by_id(@thursday_ticking.team_id))
+  								@other_teams_table << team unless @other_teams_table.include?(team)
+  							end
+  						end
+  					end
+  					
+  					unless @friday_ticking.nil?
+  						if normal?(casual)
+  							if @friday_ticking.line_id.nil?
+									if @raw_teams.include?(Team.find_by_id(@friday_ticking.team_id))
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								else
+									if @lines_id_table.include?(@friday_ticking.line_id)
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								end
+  						else
+  							if @raw_teams.include?(Team.find_by_id(@friday_ticking.team_id))
+  								@other_teams_table << team unless @other_teams_table.include?(team)
+  							end
+  						end
+  					end
+  					
+  					unless @saturday_ticking.nil?
+  						if normal?(casual)
+  							if @saturday_ticking.line_id.nil?
+									if @raw_teams.include?(Team.find_by_id(@saturday_ticking.team_id))
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								else
+									if @lines_id_table.include?(@saturday_ticking.line_id)
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								end
+  						else
+  							if @raw_teams.include?(Team.find_by_id(@saturday_ticking.team_id))
+  								@other_teams_table << team unless @other_teams_table.include?(team)
+  							end
+  						end
+  					end
+  					
+  					unless @sunday_ticking.nil?
+  						if normal?(casual)
+  							if @sunday_ticking.line_id.nil?
+									if @raw_teams.include?(Team.find_by_id(@sunday_ticking.team_id))
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								else
+									if @lines_id_table.include?(@sunday_ticking.line_id)
+										@other_teams_table << team unless @other_teams_table.include?(team)
+									end
+								end
+  						else
+  							if @raw_teams.include?(Team.find_by_id(@sunday_ticking.team_id))
+  								@other_teams_table << team unless @other_teams_table.include?(team)
+  							end
+  						end
+  					end
+  					
+  				end
+  			end
+  		end
+  	end
   
   	respond_to do |format|
       format.html { render(:html => "section_global_report", :layout => false) }

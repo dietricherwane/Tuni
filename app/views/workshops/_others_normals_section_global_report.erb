@@ -67,7 +67,7 @@
 					</td>
 				<% else %>								
 	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est différente de celle dans laquelle il est; se contenter d'afficher le nombre d'heures précédemment pointé -->
-					<% if @lines_id_table.include?(@monday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>					
+					<% if @lines_id_table.include?(@monday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @monday_ticking.line_id.nil? %>					
 						<% if @monday_ticking.team_id != casual.team_id %>
 							<td class = "ui-widget-content">
 								<%= @monday_ticking.number_of_hours %>																						
@@ -97,7 +97,7 @@
 					<% end %>
 <!-- Bonus horaires-->		
 <!-- Si le lundi est férié ... -->	
-					<% if @lines_id_table.include?(@monday_tickingline_id)|| Team.find_by_id(casual.team.id).daily %>		
+					<% if @lines_id_table.include?(@monday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @monday_ticking.line_id.nil? %>		
 						<% if holiday?(@week_number, 1) %>
 	<!-- Si le temporaire doit travailler les matins, après-midi ou en demi journée, il a droit à 75% de bonus -->																	
 							<% @partialh100 += @monday_ticking.number_of_hours %>
@@ -116,7 +116,7 @@
 						0
 					</td>
 				<% else %>
-					<% if @lines_id_table.include?(@tuesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+					<% if @lines_id_table.include?(@tuesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @tuesday_ticking.line_id.nil? %>
 						<% if @tuesday_ticking.team_id != casual.team_id %>
 								<td class = "ui-widget-content">
 									<%= @tuesday_ticking.number_of_hours %>															
@@ -145,7 +145,7 @@
 					<% end %>
 <!-- Bonus horaires-->		
 <!-- Si le mardi est férié ... -->	
-					<% if @lines_id_table.include?(@tuesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>		
+					<% if @lines_id_table.include?(@tuesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @tuesday_ticking.line_id.nil? %>		
 						<% if holiday?(@week_number, 2) %>
 	<!-- Si le temporaire doit travailler les matins, après-midi ou en demi journée, il a droit à 75% de bonus -->																
 							<% @partialh100 += @tuesday_ticking.number_of_hours %>
@@ -164,7 +164,7 @@
 						0
 					</td>
 				<% else %>
-					<% if @lines_id_table.include?(@wednesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+					<% if @lines_id_table.include?(@wednesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @wednesday_ticking.line_id.nil? %>
 						<% if @wednesday_ticking.team_id != casual.team_id %>
 								<td class = "ui-widget-content">
 									<%= @wednesday_ticking.number_of_hours %>															
@@ -193,7 +193,7 @@
 					<% end %>
 <!-- Bonus horaires-->		
 <!-- Si le mercredi est férié ... -->
-					<% if @lines_id_table.include?(@wednesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>			
+					<% if @lines_id_table.include?(@wednesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @wednesday_ticking.line_id.nil? %>			
 						<% if holiday?(@week_number, 3) %>
 	<!-- Si le temporaire doit travailler les matins, après-midi ou en demi journée, il a droit à 75% de bonus -->																	
 							<% @partialh100 += @wednesday_ticking.number_of_hours %>
@@ -212,7 +212,7 @@
 						0
 					</td>
 				<% else %>
-					<% if @lines_id_table.include?(@thursday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+					<% if @lines_id_table.include?(@thursday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @thursday_ticking.line_id.nil? %>
 						<% if @thursday_ticking.team_id != casual.team_id %>
 								<td class = "ui-widget-content">
 									<%= @thursday_ticking.number_of_hours %>															
@@ -241,7 +241,7 @@
 					<% end %>
 <!-- Bonus horaires-->		
 <!-- Si le jeudi est férié ... -->	
-					<% if @lines_id_table.include?(@thursday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>		
+					<% if @lines_id_table.include?(@thursday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @thursday_ticking.line_id.nil? %>		
 						<% if holiday?(@week_number, 4) %>						
 							<% @partialh100 += @thursday_ticking.number_of_hours %>
 						<% else %>
@@ -259,7 +259,7 @@
 						0
 					</td>
 				<% else %>
-					<% if @lines_id_table.include?(@friday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+					<% if @lines_id_table.include?(@friday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @friday_ticking.line_id.nil? %>
 						<% if @friday_ticking.team_id != casual.team_id %>
 								<td class = "ui-widget-content">
 									<%= @friday_ticking.number_of_hours %>															
@@ -288,7 +288,7 @@
 					<% end %>
 <!-- Bonus horaires-->		
 <!-- Si le vendredi est férié ... -->		
-					<% if @lines_id_table.include?(@friday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>	
+					<% if @lines_id_table.include?(@friday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @friday_ticking.line_id.nil? %>	
 						<% if holiday?(@week_number, 5) %>						
 							<% @partialh100 += @friday_ticking.number_of_hours %>
 						<% else %>
@@ -306,7 +306,7 @@
 						0
 					</td>
 				<% else %>
-					<% if @lines_id_table.include?(@saturday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+					<% if @lines_id_table.include?(@saturday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @saturday_ticking.line_id.nil? %>
 						<% if @saturday_ticking.team_id != casual.team_id %>
 								<td class = "ui-widget-content">
 									<%= @saturday_ticking.number_of_hours %>															
@@ -335,7 +335,7 @@
 					<% end %>
 <!-- Bonus horaires-->		
 <!-- Si le samedi est férié ... -->
-					<% if @lines_id_table.include?(@saturday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>			
+					<% if @lines_id_table.include?(@saturday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @saturday_ticking.line_id.nil? %>			
 						<% if holiday?(@week_number, 6) %>					
 							<% @partialh100 += @saturday_ticking.number_of_hours %>
 						<% else %>
@@ -353,7 +353,7 @@
 						0
 					</td>
 				<% else %>
-					<% if @lines_id_table.include?(@sunday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+					<% if @lines_id_table.include?(@sunday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @sunday_ticking.line_id.nil? %>
 						<% if @sunday_ticking.team_id != casual.team_id %>
 								<td class = "ui-widget-content">
 									<%= @sunday_ticking.number_of_hours %>															
@@ -382,7 +382,7 @@
 					<% end %>
 <!-- Bonus horaires-->		
 <!-- Si le dimanche est férié ... -->	
-					<% if @lines_id_table.include?(@sunday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>	
+					<% if @lines_id_table.include?(@sunday_ticking.line_id) || Team.find_by_id(casual.team.id).daily || @sunday_ticking.line_id.nil? %>	
 						<% if holiday?(@week_number, 0) %>						
 							<% @partialh100 += @sunday_ticking.number_of_hours %>
 						<% else %>
@@ -395,7 +395,7 @@
 				
 				<td class = "ui-widget-content">
 					<%= @hours_worked %>
-					<% @global_hours_worked += @hours_worked %>
+					<% @others_global_hours_worked += @hours_worked %>
 				</td>		
 				
 				<td class = "ui-widget-content">
@@ -404,15 +404,15 @@
 					<% if ((@hours > 40) && (@hours < 47)) %>
 						<%= @hours - 40 %>
 						<% @partialh15 += @hours - 40 %>
-						<% @global_h15 += @partialh15 %>
-						<% @cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.15) * @partialh15) %>
+						<% @others_global_h15 += @partialh15 %>
+						<% @others_cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.15) * @partialh15) %>
 					<% else %>
 <!-- Si le nombre d'heures travaillées est supérieur à 46 -->	
 						<% if @hours > 46 %>
 							6
 							<% @partialh15 += 6 %>
-							<% @global_h15 += 6 %>
-							<% @cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.15) * @partialh15) %>
+							<% @others_global_h15 += 6 %>
+							<% @others_cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.15) * @partialh15) %>
 							<%# @hours = @hours - 46 %>
 <!-- Si le nombre d'heures travaillées est inférieur ou égal à 40 -->
 						<% else %>
@@ -426,8 +426,8 @@
 					<% if @hours > 46 %>
 						<%= @hours - 46 %>
 						<% @partialh50 += @hours - 46 %>
-						<% @global_h50 += @partialh50 %>
-						<% @cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.5) * @partialh50) %>
+						<% @others_global_h50 += @partialh50 %>
+						<% @others_cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.5) * @partialh50) %>
 <!-- Si le nombre d'heures travaillées est inférieur ou égal à 40 -->
 					<% else %>
 						0
@@ -436,28 +436,28 @@
 				
 				<td class = "ui-widget-content">
 					<%= @partialh75 %>
-					<% @global_h75 += @partialh75 %>
-					<% @cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.75) * @partialh75) %>
+					<% @others_global_h75 += @partialh75 %>
+					<% @others_cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.75) * @partialh75) %>
 				</td>
 				
 				<td class = "ui-widget-content">
 					<%= @partialh100 %>
-					<% @global_h100 += @partialh100 %>
-					<% @cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 1) * @partialh100) %>
+					<% @others_global_h100 += @partialh100 %>
+					<% @others_cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 1) * @partialh100) %>
 				</td>
 				
 				<td class = "ui-widget-content">
 					<%= @hours = @hours_worked- @partialh15 - @partialh50 - @partialh75 - @partialh100 %>
-					<% @global_normals_hours += @hours %>	
-					<% @cash_amount += (@hours * CasualType.find_by_type_name("Normal").hourly_rate) %>				
+					<% @others_global_normals_hours += @hours %>	
+					<% @others_cash_amount += (@hours * CasualType.find_by_type_name("Normal").hourly_rate) %>				
 				</td>		
 				
 				<td class = "ui-widget-content">
 					<%= @partialpp %>	
-					<% @global_pp += @partialpp %>		
-					<% @cash_amount += (@partialpp * CasualType.find_by_type_name("Normal").prime) %>
+					<% @others_global_pp += @partialpp %>		
+					<% @others_cash_amount += (@partialpp * CasualType.find_by_type_name("Normal").prime) %>
 				</td>			
 				
-				<% @number_of_normals += 1 %>
+				<% @others_number_of_normals += 1 %>
 			<% end %> 																									
 </tr>

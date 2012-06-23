@@ -230,7 +230,7 @@ $(function(){
 								</script>										
 								<li>
 									<%= div_for (casual) do %>
-										<%= casual.firstname+ " " +casual.lastname %> 
+										<%= casual.firstname+ " " +casual.lastname %> <%= link_to "R", remove_from_team_path(casual.id), :confirm => "Êtes vous sûr de vouloir retirer ce temporaire de l'équipe?", :class => "direction delete_button", :style => "font-weight: bold;" %>	
 									<% end %>
 								</li>
 						<% end %>

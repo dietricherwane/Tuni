@@ -131,7 +131,7 @@ $(function(){
 													<% end %>
 <!-- Si le temporaire a changé d'équipe avant semaine passée, on lui affiche la configuration de la semaine passée de son équipe actuelle -->												
 												<% else %>
-													<%= select_tag "#{casual.id}_last_sunday", options_for_select((0..@previous_configuration.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}), :style => "width:100%" %>												
+													<%= select_tag "#{casual.id}_last_sunday", options_for_select((0..@previous_configuration.rolling_sunday.number_of_hours).to_a.map{|s| ["#{s}", s]}, casual.tickings.find_by_week_number(@previous_week).sunday_ticking.number_of_hours), :style => "width:100%" %>										
 												<% end %>
 											<% end %>											
 											</td>

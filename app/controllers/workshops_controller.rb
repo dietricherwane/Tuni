@@ -536,7 +536,8 @@ class WorkshopsController < ApplicationController
   end
   
   def section_global_report
-  	@week_number = Date.new(params[:select][:"holiday(1i)"].to_i, params[:select][:"holiday(2i)"].to_i, params[:select][:"holiday(3i)"].to_i).cweek
+  	@date = Date.new(params[:select][:"holiday(1i)"].to_i, params[:select][:"holiday(2i)"].to_i, params[:select][:"holiday(3i)"].to_i)
+  	@week_number = @date.cweek
   	#@week_number = Date.today.cweek
   	@lines_id_table = [] 	
   	@teams = []

@@ -120,7 +120,7 @@ body{
 <!-------------------------------- Pour les temporaires des équipes de l'atelier actuel ------------>
 <% if @normals %>
 	<div class="page">
-	<h2 class="top-title">Fiche de pointage des normaux du <%= Date.today.beginning_of_week.strftime("%d") %> au <%= Date.today.end_of_week.strftime("%d %B %Y") %><br />
+	<h2 class="top-title">Fiche de pointage des normaux du <%= @date.beginning_of_week.strftime("%d") %> au <%= @date.end_of_week.strftime("%d %B %Y") %><br />
 	<%= @section.nil? ? "Atelier: #{Workshop.find_by_id(current_user.status_number).workshop_name}" : "Section: #{@section.section_name}" %>
 	</h2><br />
 
@@ -303,7 +303,7 @@ body{
 
 <% if @operators %>
 	<div class="page">
-	<h2 class="top-title">Fiche de pointage des caristes du <%= Date.today.beginning_of_week.strftime("%d") %> au <%= Date.today.end_of_week.strftime("%d %B %Y") %><br />
+	<h2 class="top-title">Fiche de pointage des caristes du <%= @date.beginning_of_week.strftime("%d") %> au <%= @date.end_of_week.strftime("%d %B %Y") %><br />
 	<%= @section.nil? ? "Atelier: #{Workshop.find_by_id(current_user.status_number).workshop_name}" : "Section: #{@section.section_name}" %>
 	</h2><br />
 

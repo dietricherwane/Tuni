@@ -1,7 +1,7 @@
-namespace :workshop do
+namespace :teams do
 
-	desc "Testing whenever gem"
-	task :remove_casuals => :environment do
+	desc "Remove casuals which doesn't have configuration plan from lines"
+	task :remove_casuals_from_lines => :environment do
 		Status.create(:status_name => "Whenever")
 	end
 	

@@ -177,10 +177,34 @@ $(document).ready(function() {
     	<div class="portlet-content">    								
 				<ul id="collapser">
 					<% unless @configured_teams_table.empty? %>
-						<% @configured_teams_table.each do |configured_team| %>
-							<li><div class = "direction team" style = "font-weight: bold;"><%= configured_team.team_name %></div>							
+						<% @configured_teams_table.each do |team| %>
+							<% if team.daily %>		
+								<script type="text/javascript">
+									$(document).ready(function(){
+										$("#team_<%= team.id %>").CreateBubblePopup({
+											position : 'top',
+											align	 : 'center',
+											tail : {hidden: true
+											},									
+											innerHtml: "Equipe journalière.",
+											innerHtmlStyle: {
+												color:'#FFFFFF', 
+												'text-align':'left',
+												padding:'2px',
+												'font-size':'13px'
+											},																		
+											themeName: 	'all-black',
+											themePath: 	'../../images/jquerybubblepopup-theme'								 
+										});
+									});
+								</script>			
+							<% end %>	
+							<li>
+								<%= div_for (team) do %>
+									<div class = "direction team" style = "font-weight: bold;"><%= team.team_name %></div>							
+								<% end %>
 								<ul>
-									<% Configuration.where("week_number = #{Date.today.cweek} AND team_id = #{configured_team.id}").each do |configuration| %>
+									<% Configuration.where("week_number = #{Date.today.cweek} AND team_id = #{team.id}").each do |configuration| %>
 										<% configuration.lines.each do |line| %>
 											<li>
 												<div class = "direction line" style = "font-weight: bold;"><%= line.line_name %> &nbsp;

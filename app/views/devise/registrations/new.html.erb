@@ -78,9 +78,8 @@ $(document).ready(function() {
         url: "<%= url_for :action => 'search_ajax', :controller => 'users' %>",
 	      type: "GET",
         data: {query: v_search, status: v_status},
-        error: function(){ 
-        	alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
-          //$("#loader").hide();
+        error: function(xhr, textStatus, errorThrown){  
+        	alert("Une erreur s'est produite: " + errorThrown);
         },
         success: function(response, response_status, xhr) {
           $("#result").html(response);
@@ -94,7 +93,9 @@ $(document).ready(function() {
         url: url,
         data: selected_value,
         dataType: "text",
-        error: function(){  }, //alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
+        error: function(xhr, textStatus, errorThrown){  
+        	alert("Une erreur s'est produite: " + errorThrown);
+        }, //alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
         success: function(response, response_status, xhr) {
           $(target_tag).children().remove();
           $(response).appendTo(target_tag);        
@@ -148,9 +149,8 @@ $(document).ready(function() {
         url: "<%= url_for :action => 'search_ajax', :controller => 'users' %>",
 	      type: "GET",
         data: {query: v_search, status: v_status},
-        error: function(){ 
-        	alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
-          //$("#loader").hide();
+        error: function(xhr, textStatus, errorThrown){  
+        	alert("Une erreur s'est produite: " + errorThrown);
         },
         success: function(response, response_status, xhr) {
           $("#result").html(response);

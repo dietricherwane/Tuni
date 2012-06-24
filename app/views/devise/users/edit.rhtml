@@ -67,7 +67,9 @@ $(document).ready(function() {
         url: url,
         data: selected_value,
         dataType: "text",
-        error: function(){ alert("error"); },
+        error: function(xhr, textStatus, errorThrown){  
+        	alert("Une erreur s'est produite: " + errorThrown);
+        },
         success: function(response, response_status, xhr) {
           $(target_tag).children().remove();
           $(response).appendTo(target_tag);        

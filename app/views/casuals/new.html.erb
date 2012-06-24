@@ -25,8 +25,8 @@ $(document).ready(function() {
         url: "<%= url_for :action => 'search_ajax', :controller => 'casuals' %>",
 	      type: "GET",
         data: {query: v_search, status: v_status},
-        error: function(){ 
-        	alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
+        error: function(xhr, textStatus, errorThrown){  
+        	alert("Une erreur s'est produite: " + errorThrown);
         },
         success: function(response, response_status, xhr) {
           $("#result").html(response);       
@@ -41,8 +41,8 @@ $(document).ready(function() {
         url: "<%= url_for :action => 'search_ajax', :controller => 'casuals' %>",
 	      type: "GET",
         data: {query: v_search, status: v_status},
-        error: function(){ 
-        	alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter.");
+        error: function(xhr, textStatus, errorThrown){  
+        	alert("Une erreur s'est produite: " + errorThrown);
         },
         success: function(response, response_status, xhr) {
           $("#result").html(response);     
@@ -55,7 +55,9 @@ $(document).ready(function() {
         url: url,
         data: selected_value,
         dataType: "text",
-        error: function(){ alert("Votre session a expiré. Veuillez vous déconnecter et vous reconnecter."); },
+        error: function(xhr, textStatus, errorThrown){  
+        	alert("Une erreur s'est produite: " + errorThrown);
+        },
         success: function(response, response_status, xhr) {
           $(target_tag).children().remove();
           $(response).appendTo(target_tag);        

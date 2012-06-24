@@ -2,7 +2,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   
-  prepend_before_filter :authenticate_user!, :logout_disabled_user, :set_cache_buster, :layout_used
+  before_filter :authenticate_user!, :logout_disabled_user, :set_cache_buster, :layout_used
   helper_method :holiday?, :hours_worked
   #before_filter :set_cache_buster
   #before_filter :logout_disabled_user
@@ -88,16 +88,16 @@ class ApplicationController < ActionController::Base
 		@user_status
   end  
   
-  def capitalization(raw_name)
-  	@name_capitalized = ''
-  	raw_name.split.each do |name|
-  		@name_capitalized << "#{name.capitalize} "
+  def capitalization(raw_string)
+  	@string_capitalized = ''
+  	raw_string.split.each do |name|
+  		@string_capitalized << "#{name.capitalize} "
   	end
-  	@name_capitalized.strip
+  	@string_capitalized.strip
   end
   
-  def is_not_a_number?(s)
-  	s.to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil ? true : false 
+  def is_not_a_number?(n)
+  	n.to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil ? true : false 
 	end
 	
 	def set_cache_buster
@@ -121,30 +121,44 @@ class ApplicationController < ActionController::Base
   	@status
   end
   
-  def hours_worked(casual, week_number)
+  def hours_worked(casual, week_number, lines_id_table)
   	@counter = 0
   	@ticking = casual.tickings.find_by_week_number(week_number)
   	unless @ticking.nil?
   		unless @ticking.monday_ticking.nil?
-  			@counter += @ticking.monday_ticking.number_of_hours
+  			if lines_id_table.include?(@ticking.monday_ticking.line_id) || Team.find_by_id(casual.team.id).daily
+  				@counter += @ticking.monday_ticking.number_of_hours
+  			end
   		end
   		unless @ticking.tuesday_ticking.nil?
-  			@counter += @ticking.tuesday_ticking.number_of_hours
+  			if lines_id_table.include?(@ticking.tuesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily
+  				@counter += @ticking.tuesday_ticking.number_of_hours
+  			end
   		end
   		unless @ticking.wednesday_ticking.nil?
-  			@counter += @ticking.wednesday_ticking.number_of_hours
+  			if lines_id_table.include?(@ticking.wednesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily
+  				@counter += @ticking.wednesday_ticking.number_of_hours
+  			end
   		end
   		unless @ticking.thursday_ticking.nil?
-  			@counter += @ticking.thursday_ticking.number_of_hours
+  			if lines_id_table.include?(@ticking.thursday_ticking.line_id) || Team.find_by_id(casual.team.id).daily
+  				@counter += @ticking.thursday_ticking.number_of_hours
+  			end
   		end
   		unless @ticking.friday_ticking.nil?
-  			@counter += @ticking.friday_ticking.number_of_hours
+  			if lines_id_table.include?(@ticking.friday_ticking.line_id) || Team.find_by_id(casual.team.id).daily
+  				@counter += @ticking.friday_ticking.number_of_hours
+  			end
   		end
   		unless @ticking.saturday_ticking.nil?
-  			@counter += @ticking.saturday_ticking.number_of_hours
+  			if lines_id_table.include?(@ticking.saturday_ticking.line_id) || Team.find_by_id(casual.team.id).daily
+  				@counter += @ticking.saturday_ticking.number_of_hours
+  			end
   		end
   		unless @ticking.sunday_ticking.nil?
-  			@counter += @ticking.sunday_ticking.number_of_hours
+  			if lines_id_table.include?(@ticking.sunday_ticking.line_id) || Team.find_by_id(casual.team.id).daily
+  				@counter += @ticking.sunday_ticking.number_of_hours
+  			end
   		end
   	end
   	@counter

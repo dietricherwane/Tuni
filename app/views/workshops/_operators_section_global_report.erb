@@ -1,0 +1,459 @@
+<%= hidden_field_tag casual.id %>
+<% 
+	@op_partialh15 = 0 
+	@op_partialh50 = 0
+	@op_partialh75 = 0
+	@op_partialh100 = 0
+	@op_partialpp = 0
+	@op_hours = @op_hours_worked = hours_worked(casual, @week_number, @lines_id_table)
+%>
+<tr class = "odd">
+	<td class = "ui-widget-content">
+		<%= casual.identifier %>
+	</td>
+	<td class = "ui-widget-content">
+		<%= casual.firstname+ " "+casual.lastname %>
+	</td>																				
+<!-- On est lundi ou mardi: Si le temporaire n'a pas encore été pointé cette semaine, on affiche le nombre d'heures de la configuration -->
+			<% if casual.tickings.find_by_week_number(@week_number).nil? %>
+				<td class = "ui-widget-content">
+					0
+				</td>
+				<td class = "ui-widget-content">
+					0
+				</td>
+				<td class = "ui-widget-content">
+					0
+				</td>
+				<td class = "ui-widget-content">
+					0
+				</td>
+				<td class = "ui-widget-content">
+					0
+				</td>
+				<td class = "ui-widget-content">
+					0
+				</td>
+				<td class = "ui-widget-content">
+					0
+				</td>		
+				<td class = "ui-widget-content">
+					0
+				</td>			
+				<td class = "ui-widget-content">
+					0
+				</td>
+				<td class = "ui-widget-content">
+					0
+				</td>
+				<td class = "ui-widget-content">
+					0
+				</td>		
+				<td class = "ui-widget-content">
+					0
+				</td>		
+				<td class = "ui-widget-content">
+					0
+				</td>		
+				<td class = "ui-widget-content">
+					0
+				</td>	
+			<% else %>
+<!-- Le temporaire a été pointé cette semaine: Si le temporaire n'a pas été pointé le lundi, on affiche le nombre d'heures de la configuration -->	
+				<% @monday_ticking = casual.tickings.find_by_week_number(@week_number).monday_ticking %>										
+				<% if @monday_ticking.nil? %>
+					<td class = "ui-widget-content">
+						0
+					</td>
+				<% else %>								
+	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est différente de celle dans laquelle il est; se contenter d'afficher le nombre d'heures précédemment pointé -->
+					<% if @lines_id_table.include?(@monday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>					
+						<% if @monday_ticking.team_id != casual.team_id %>
+							<td class = "ui-widget-content">
+								<%= @monday_ticking.number_of_hours %>																						
+								<div style="font-size:60%;"><%= Team.find_by_id(@monday_ticking.team_id).team_name %></div>
+	<!-- Si le temporaire a été pointé de nuit, il a droit à une prime panier -->
+								<% 
+									if Team.find_by_id(@monday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_monday.time_description.eql?("Nuit") 
+										@op_partialpp += 1
+									end							
+								%>
+							</td>
+						<% else %>
+	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
+							<td class = "ui-widget-content">
+								<%= @monday_ticking.number_of_hours %>
+								<% 
+									if Team.find_by_id(@monday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_monday.time_description.eql?("Nuit") 
+										@op_partialpp += 1
+									end							
+								%>
+							</td>
+						<% end %>
+					<% else %>
+						<td class = "ui-widget-content">
+							0
+						</td>
+					<% end %>
+<!-- Bonus horaires-->		
+<!-- Si le lundi est férié ... -->	
+					<% if @lines_id_table.include?(@monday_tickingline_id)|| Team.find_by_id(casual.team.id).daily %>		
+						<% if holiday?(@week_number, 1) %>
+	<!-- Si le temporaire doit travailler les matins, après-midi ou en demi journée, il a droit à 75% de bonus -->																	
+							<% @op_partialh100 += @monday_ticking.number_of_hours %>
+						<% else %>
+							<% if @monday_ticking.number_of_hours > Team.find(@monday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_monday.number_of_hours %>
+								<% @op_partialh75 += Team.find(@monday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_monday.number_of_hours - @monday_ticking.number_of_hours %>
+							<% end %>						
+						<% end %>
+					<% end %>
+				<% end %>
+	
+				
+				<% @tuesday_ticking = casual.tickings.find_by_week_number(@week_number).tuesday_ticking %>
+				<% if @tuesday_ticking.nil? %>
+					<td class = "ui-widget-content">
+						0
+					</td>
+				<% else %>
+					<% if @lines_id_table.include?(@tuesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+						<% if @tuesday_ticking.team_id != casual.team_id %>
+								<td class = "ui-widget-content">
+									<%= @tuesday_ticking.number_of_hours %>															
+									<div style="font-size:60%;"><%= Team.find(@tuesday_ticking.team_id).team_name %></div>
+									<% 
+										if Team.find_by_id(@tuesday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_tuesday.time_description.eql?("Nuit") 
+											@op_partialpp += 1
+										end							
+									%>
+							</td>
+						<% else %>
+	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
+							<td class = "ui-widget-content">
+								<%= @tuesday_ticking.number_of_hours %>
+								<% 
+									if Team.find_by_id(@tuesday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_tuesday.time_description.eql?("Nuit") 
+										@op_partialpp += 1
+									end							
+								%>
+							</td>
+						<% end %>
+					<% else %>
+						<td class = "ui-widget-content">
+							0
+						</td>
+					<% end %>
+<!-- Bonus horaires-->		
+<!-- Si le mardi est férié ... -->	
+					<% if @lines_id_table.include?(@tuesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>		
+						<% if holiday?(@week_number, 2) %>
+	<!-- Si le temporaire doit travailler les matins, après-midi ou en demi journée, il a droit à 75% de bonus -->																
+							<% @op_partialh100 += @tuesday_ticking.number_of_hours %>
+						<% else %>
+							<% if @tuesday_ticking.number_of_hours > Team.find(@tuesday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_tuesday.number_of_hours %>
+								<% @op_partialh75 += Team.find(@tuesday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_tuesday.number_of_hours - @tuesday_ticking.number_of_hours %>
+							<% end %>						
+						<% end %>
+					<% end %>
+				<% end %>
+				
+				
+				<% @wednesday_ticking = casual.tickings.find_by_week_number(@week_number).wednesday_ticking %>
+				<% if @wednesday_ticking.nil? %>
+					<td class = "ui-widget-content">
+						0
+					</td>
+				<% else %>
+					<% if @lines_id_table.include?(@wednesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+						<% if @wednesday_ticking.team_id != casual.team_id %>
+								<td class = "ui-widget-content">
+									<%= @wednesday_ticking.number_of_hours %>															
+									<div style="font-size:60%;"><%= Team.find(@wednesday_ticking.team_id).team_name %></div>
+									<% 
+										if Team.find_by_id(@wednesday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_wednesday.time_description.eql?("Nuit") 
+											@op_partialpp += 1
+										end							
+									%>
+							</td>
+						<% else %>
+	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
+							<td class = "ui-widget-content">
+								<%= @wednesday_ticking.number_of_hours %>
+								<% 
+									if Team.find_by_id(@wednesday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_wednesday.time_description.eql?("Nuit") 
+										@op_partialpp += 1
+									end							
+								%>
+							</td>
+						<% end %>
+					<% else %>
+						<td class = "ui-widget-content">
+							0
+						</td>
+					<% end %>
+<!-- Bonus horaires-->		
+<!-- Si le mercredi est férié ... -->
+					<% if @lines_id_table.include?(@wednesday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>			
+						<% if holiday?(@week_number, 3) %>
+	<!-- Si le temporaire doit travailler les matins, après-midi ou en demi journée, il a droit à 75% de bonus -->																	
+							<% @op_partialh100 += @wednesday_ticking.number_of_hours %>
+						<% else %>
+							<% if @wednesday_ticking.number_of_hours > Team.find(@wednesday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_wednesday.number_of_hours %>
+								<% @op_partialh75 += Team.find(@wednesday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_wednesday.number_of_hours - @wednesday_ticking.number_of_hours %>
+							<% end %>						
+						<% end %>
+					<% end %>
+				<% end %>
+				
+				
+				<% @thursday_ticking = casual.tickings.find_by_week_number(@week_number).thursday_ticking %>
+				<% if @thursday_ticking.nil? %>
+					<td class = "ui-widget-content">
+						0
+					</td>
+				<% else %>
+					<% if @lines_id_table.include?(@thursday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+						<% if @thursday_ticking.team_id != casual.team_id %>
+								<td class = "ui-widget-content">
+									<%= @thursday_ticking.number_of_hours %>															
+									<div style="font-size:60%;"><%= Team.find(@thursday_ticking.team_id).team_name %></div>
+									<% 
+										if Team.find_by_id(@thursday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_thursday.time_description.eql?("Nuit") 
+											@op_partialpp += 1
+										end							
+									%>
+							</td>
+						<% else %>
+	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
+							<td class = "ui-widget-content">
+								<%= @thursday_ticking.number_of_hours %>
+								<% 
+									if Team.find_by_id(@thursday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_thursday.time_description.eql?("Nuit") 
+										@op_partialpp += 1
+									end							
+								%>
+							</td>
+						<% end %>
+					<% else %>
+						<td class = "ui-widget-content">
+							0
+						</td>
+					<% end %>
+<!-- Bonus horaires-->		
+<!-- Si le jeudi est férié ... -->	
+					<% if @lines_id_table.include?(@thursday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>		
+						<% if holiday?(@week_number, 4) %>						
+							<% @op_partialh100 += @thursday_ticking.number_of_hours %>
+						<% else %>
+							<% if @thursday_ticking.number_of_hours > Team.find(@thursday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_thursday.number_of_hours %>
+								<% @op_partialh75 += Team.find(@thursday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_thursday.number_of_hours - @thursday_ticking.number_of_hours %>
+							<% end %>						
+						<% end %>	
+					<% end %>				
+				<% end %>
+				
+				
+				<% @friday_ticking = casual.tickings.find_by_week_number(@week_number).friday_ticking %>
+				<% if @friday_ticking.nil? %>
+					<td class = "ui-widget-content">
+						0
+					</td>
+				<% else %>
+					<% if @lines_id_table.include?(@friday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+						<% if @friday_ticking.team_id != casual.team_id %>
+								<td class = "ui-widget-content">
+									<%= @friday_ticking.number_of_hours %>															
+								<div style="font-size:60%;"><%= Team.find(@friday_ticking.team_id).team_name %></div>
+								<% 
+									if Team.find_by_id(@friday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_friday.time_description.eql?("Nuit") 
+										@op_partialpp += 1
+									end							
+								%>	
+							</td>
+						<% else %>
+	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
+							<td class = "ui-widget-content">
+								<%= @friday_ticking.number_of_hours %>
+								<% 
+									if Team.find_by_id(@friday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_friday.time_description.eql?("Nuit") 
+										@op_partialpp += 1
+									end							
+								%>
+							</td>
+						<% end %>
+					<% else %>
+						<td class = "ui-widget-content">
+							0
+						</td>
+					<% end %>
+<!-- Bonus horaires-->		
+<!-- Si le vendredi est férié ... -->		
+					<% if @lines_id_table.include?(@friday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>	
+						<% if holiday?(@week_number, 5) %>						
+							<% @op_partialh100 += @friday_ticking.number_of_hours %>
+						<% else %>
+							<% if @friday_ticking.number_of_hours > Team.find(@friday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_friday.number_of_hours %>
+								<% @op_partialh75 += Team.find(@friday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_friday.number_of_hours - @friday_ticking.number_of_hours %>
+							<% end %>						
+						<% end %>
+					<% end %>
+				<% end %>
+				
+				
+				<% @saturday_ticking = casual.tickings.find_by_week_number(@week_number).saturday_ticking %>
+				<% if @saturday_ticking.nil? %>
+					<td class = "ui-widget-content">
+						0
+					</td>
+				<% else %>
+					<% if @lines_id_table.include?(@saturday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+						<% if @saturday_ticking.team_id != casual.team_id %>
+								<td class = "ui-widget-content">
+									<%= @saturday_ticking.number_of_hours %>															
+									<div style="font-size:60%;"><%= Team.find(@saturday_ticking.team_id).team_name %></div>
+									<% 
+										if Team.find_by_id(@saturday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_saturday.time_description.eql?("Nuit") 
+											@op_partialpp += 1
+										end							
+									%>
+							</td>
+						<% else %>
+	<!-- Le temporaire a été pointé le samedi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
+							<td class = "ui-widget-content">
+								<%= @saturday_ticking.number_of_hours %>
+								<% 
+									if Team.find_by_id(@saturday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_saturday.time_description.eql?("Nuit") 
+										@op_partialpp += 1
+									end							
+								%>
+							</td>
+						<% end %>
+					<% else %>
+						<td class = "ui-widget-content">
+							0
+						</td>
+					<% end %>
+<!-- Bonus horaires-->		
+<!-- Si le samedi est férié ... -->
+					<% if @lines_id_table.include?(@saturday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>			
+						<% if holiday?(@week_number, 6) %>					
+							<% @op_partialh100 += @saturday_ticking.number_of_hours %>
+						<% else %>
+							<% if @saturday_ticking.number_of_hours > Team.find(@saturday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_saturday.number_of_hours %>
+								<% @op_partialh75 += Team.find(@saturday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_saturday.number_of_hours - @saturday_ticking.number_of_hours %>
+							<% end %>						
+						<% end %>
+					<% end %>
+				<% end %>
+				
+				
+				<% @sunday_ticking = casual.tickings.find_by_week_number(@week_number).sunday_ticking %>
+				<% if @sunday_ticking.nil? %>
+					<td class = "ui-widget-content">
+						0
+					</td>
+				<% else %>
+					<% if @lines_id_table.include?(@sunday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>
+						<% if @sunday_ticking.team_id != casual.team_id %>
+								<td class = "ui-widget-content">
+									<%= @sunday_ticking.number_of_hours %>															
+									<div style="font-size:60%;"><%= Team.find(@sunday_ticking.team_id).team_name %></div>
+									<% 
+										if Team.find_by_id(@sunday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_sunday.time_description.eql?("Nuit") 
+											@op_partialpp += 1
+										end							
+									%>
+							</td>
+						<% else %>
+	<!-- Le temporaire a été pointé le lundi: Si l'équipe dans laquelle il a été pointé est la meme que celle dans laquelle il est; afficher une combo box de sélection des heures -->														
+							<td class = "ui-widget-content">
+								<%= @sunday_ticking.number_of_hours %>
+								<% 
+									if Team.find_by_id(@sunday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_sunday.time_description.eql?("Nuit") 
+										@op_partialpp += 1
+									end							
+								%>
+							</td>
+						<% end %>
+					<% else %>
+						<td class = "ui-widget-content">
+							0
+						</td>
+					<% end %>
+<!-- Bonus horaires-->		
+<!-- Si le dimanche est férié ... -->	
+					<% if @lines_id_table.include?(@sunday_ticking.line_id) || Team.find_by_id(casual.team.id).daily %>	
+						<% if holiday?(@week_number, 0) %>						
+							<% @op_partialh100 += @sunday_ticking.number_of_hours %>
+						<% else %>
+							<% if @sunday_ticking.number_of_hours > Team.find(@sunday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_sunday.number_of_hours %>
+								<% @op_partialh75 += Team.find(@sunday_ticking.team_id).configurations.find_by_week_number(@week_number).rolling_sunday.number_of_hours - @sunday_ticking.number_of_hours %>
+							<% end %>						
+						<% end %>
+					<% end %>
+				<% end %>
+				
+				<td class = "ui-widget-content">
+					<%= @op_hours_worked %>
+					<% @op_global_hours_worked += @op_hours_worked %>
+				</td>		
+				
+				<td class = "ui-widget-content">
+<!-- Si le nombre d'heures travaillées est inférieur à 47 et supérieur à 40: 15% -->	
+					<% @op_hours = @op_hours - @op_partialh75 - @op_partialh100 %>					
+					<% if ((@op_hours > 40) && (@op_hours < 47)) %>
+						<%= @op_hours - 40 %>
+						<% @op_partialh15 += @op_hours - 40 %>
+						<% @global_h15 += @op_partialh15 %>
+					<% else %>
+<!-- Si le nombre d'heures travaillées est supérieur à 46 -->	
+						<% if @op_hours > 46 %>
+							6
+							<% @op_partialh15 += 6 %>
+							<% @global_h15 += 6 %>
+							<%# @op_hours = @op_hours - 46 %>
+<!-- Si le nombre d'heures travaillées est inférieur ou égal à 40 -->
+						<% else %>
+							0
+						<% end %>
+					<% end %>
+				</td>
+				
+				<td class = "ui-widget-content">
+<!-- Si le nombre d'heures travaillées est supérieur à 46: 50% -->	
+					<% if @op_hours > 46 %>
+						<%= @op_hours - 46 %>
+						<% @op_partialh50 += @op_hours - 46 %>
+						<% @op_global_h50 += @op_partialh50 %>
+<!-- Si le nombre d'heures travaillées est inférieur ou égal à 40 -->
+					<% else %>
+						0
+					<% end %>
+				</td>										
+				
+				<td class = "ui-widget-content">
+					<%= @op_partialh75 %>
+					<% @op_global_h75 += @op_partialh75 %>
+					<% @op_cash_amount += (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.75) * @op_partialh75) %>
+				</td>
+				
+				<td class = "ui-widget-content">
+					<%= @op_partialh100 %>
+					<% @op_global_h100 += @op_partialh100 %>
+					<% @op_cash_amount += (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 1) * @op_partialh100) %>
+				</td>
+				
+				<td class = "ui-widget-content">
+					<%= @op_hours = @op_hours_worked- @op_partialh15 - @op_partialh50 - @op_partialh75 - @op_partialh100 %>
+					<% @op_global_normals_hours += @op_hours %>	
+					<% @op_cash_amount += (@op_hours * CasualType.find_by_type_name("Cariste").hourly_rate) %>				
+				</td>		
+				
+				<td class = "ui-widget-content">
+					<%= @op_partialpp %>	
+					<% @op_global_pp += @op_partialpp %>		
+					<% @op_cash_amount += (@op_partialpp * CasualType.find_by_type_name("Cariste").prime) %>
+				</td>			
+				
+			<% end %> 																									
+</tr>

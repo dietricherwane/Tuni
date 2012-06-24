@@ -65,7 +65,12 @@ class Devise::PasswordsController < ApplicationController
 
       #respond_with resource, :location => after_sign_in_path_for(resource)
 # voir si un utilisateur du meme profil et qui est activé n'existe pas. On ajout id != #{current_user.id} pour ne pas qu'il se compte lui meme
-      @user_duplicated = User.where("id != #{current_user.id} AND status_id = #{resource.status_id} AND status_number = #{resource.status_number} AND confirmation_token IS NULL AND enabled IS NOT FALSE")
+      if resource.status_number.nil?
+				@user_duplicated = User.where("id != #{current_user.id} AND status_id = #{resource.status_id} AND confirmation_token IS NULL AND enabled IS NOT FALSE")
+			else
+				@user_duplicated = User.where("id != #{current_user.id} AND status_id = #{resource.status_id} AND status_number = #{resource.status_number} AND confirmation_token IS NULL AND enabled IS NOT FALSE")
+			end
+      
 			if @user_duplicated.first.nil?
 				redirect_to root_path
 			else

@@ -6,7 +6,8 @@ class TeamsController < ApplicationController
   def allot_to_line
   	@team = Team.find_by_id(current_user.status_number)
   	@configuration = Configuration.where("week_number = #{Date.today.cweek} AND team_id = #{@team.id}")
-  	@casuals = Casual.where("team_id = #{@team.id}AND line_id IS NULL").paginate(:page => params[:page], :per_page => 15)
+  	@casuals_without_lines = Casual.where("team_id = #{@team.id} AND line_id IS NULL AND expired IS NOT TRUE").paginate(:page => params[:casuals_without_lines], :per_page => 15)
+  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE").order("casual_type_id DESC, firstname ASC, lastname ASC").paginate(:page => params[:casuals], :per_page => 10)
   	@sections_array = []
   	@line_ids = ""
   	unless @configuration.first.nil?

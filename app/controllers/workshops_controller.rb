@@ -238,13 +238,13 @@ class WorkshopsController < ApplicationController
 				end
 			end
   		
-  		@configuration.create_rolling_monday(:time_description => RollingType.find_by_description(@monday_plan).description, :number_of_hours => RollingType.find_by_description(@tuesday_plan).number_of_hours) unless @monday_plan.eql?("Horaire")
+  		@configuration.create_rolling_monday(:time_description => RollingType.find_by_description(@monday_plan).description, :number_of_hours => RollingType.find_by_description(@monday_plan).number_of_hours) unless @monday_plan.eql?("Horaire")
   		@configuration.create_rolling_tuesday(:time_description => RollingType.find_by_description(@tuesday_plan).description, :number_of_hours => RollingType.find_by_description(@tuesday_plan).number_of_hours) unless @tuesday_plan.eql?("Horaire")
-  		@configuration.create_rolling_wednesday(:time_description => RollingType.find_by_description(@wednesday_plan).description, :number_of_hours => RollingType.find_by_description(@tuesday_plan).number_of_hours) unless @wednesday_plan.eql?("Horaire")
-  		@configuration.create_rolling_thursday(:time_description => RollingType.find_by_description(@thursday_plan).description, :number_of_hours => RollingType.find_by_description(@tuesday_plan).number_of_hours) unless @thursday_plan.eql?("Horaire")
-  		@configuration.create_rolling_friday(:time_description => RollingType.find_by_description(@friday_plan).description, :number_of_hours => RollingType.find_by_description(@tuesday_plan).number_of_hours) unless @friday_plan.eql?("Horaire")
-  		@configuration.create_rolling_saturday(:time_description => RollingType.find_by_description(@saturday_plan).description, :number_of_hours => RollingType.find_by_description(@tuesday_plan).number_of_hours) unless @saturday_plan.eql?("Horaire")
-  		@configuration.create_rolling_sunday(:time_description => RollingType.find_by_description(@sunday_plan).description, :number_of_hours => RollingType.find_by_description(@tuesday_plan).number_of_hours) unless @sunday_plan.eql?("Horaire")
+  		@configuration.create_rolling_wednesday(:time_description => RollingType.find_by_description(@wednesday_plan).description, :number_of_hours => RollingType.find_by_description(@wednesday_plan).number_of_hours) unless @wednesday_plan.eql?("Horaire")
+  		@configuration.create_rolling_thursday(:time_description => RollingType.find_by_description(@thursday_plan).description, :number_of_hours => RollingType.find_by_description(@thursday_plan).number_of_hours) unless @thursday_plan.eql?("Horaire")
+  		@configuration.create_rolling_friday(:time_description => RollingType.find_by_description(@friday_plan).description, :number_of_hours => RollingType.find_by_description(@friday_plan).number_of_hours) unless @friday_plan.eql?("Horaire")
+  		@configuration.create_rolling_saturday(:time_description => RollingType.find_by_description(@saturday_plan).description, :number_of_hours => RollingType.find_by_description(@saturday_plan).number_of_hours) unless @saturday_plan.eql?("Horaire")
+  		@configuration.create_rolling_sunday(:time_description => RollingType.find_by_description(@sunday_plan).description, :number_of_hours => RollingType.find_by_description(@sunday_plan).number_of_hours) unless @sunday_plan.eql?("Horaire")
   		redirect_to :back, :notice => "#{Team.find_by_id(@team_id.to_i).team_name}: la configuration équipe-lignes et le plan de production ont été faits."
   	end
   end
@@ -510,7 +510,7 @@ class WorkshopsController < ApplicationController
   end
   
   def rapport
-  	@team = Team.find(params[:team].to_i)
+  	@team = Team.find_by_id(params[:team])
   	@configuration = ""
   	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE")
   	#@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NOT NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})")
@@ -535,6 +535,40 @@ class WorkshopsController < ApplicationController
   	@sections = @workshop.sections
   end
   
+  def section_global_report
+  	@week_number = Date.today.cweek
+  	@lines_id_table = [] 	
+  	@teams = []
+# On récupère toutes les équipes de l'atelier
+		if params[:post][:section_id].empty?
+			@raw_teams = Workshop.find_by_id(current_user.status_number).teams.where("daily IS TRUE")
+		else
+			@section = Section.find_by_id(params[:post][:section_id])
+  		@raw_teams = @section.workshop.teams.where("daily IS NOT TRUE")
+  		
+  		unless @section.lines.empty?
+				@section.lines.each do |line|
+					@lines_id_table << line.id
+				end
+			end
+		end
+		
+  	unless @raw_teams.empty?
+  		@raw_teams.each do |team|
+# On stocke dans un tableau les équipes ayant une configuration pour la semaine en cours
+  			unless team.configurations.find_by_week_number(@week_number).nil?
+  				@teams << team
+  			end
+  		end
+  	end
+  	
+  
+  	respond_to do |format|
+      format.html { render(:html => "section_global_report", :layout => false) }
+      format.pdf { render(:pdf => "section_global_report", :footer => { :right => '[page] / [topage]' }, :layout => false) }
+    end
+  end
+  
   def normals_global_report
   	if params[:post][:section_id].empty?
   		redirect_to :back, :alert => "Veuillez choisir une section."
@@ -555,65 +589,51 @@ class WorkshopsController < ApplicationController
 					unless casual.tickings.find_by_week_number(@week_number).nil?
 						@ticking = casual.tickings.find_by_week_number(@week_number)
 						unless @ticking.monday_ticking.nil?
-							unless @ticking.monday_ticking.line_id.nil?
-								if @lines.include?(Line.find(@ticking.monday_ticking.line_id))
-									unless @casuals.include?(casual)
-										@casuals << casual
-									end
+							if @lines.include?(Line.find(@ticking.monday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
 								end
 							end
 						end
 						unless @ticking.tuesday_ticking.nil?
-							unless @ticking.tuesday_ticking.line_id.nil?
-								if @lines.include?(Line.find(@ticking.tuesday_ticking.line_id))
-									unless @casuals.include?(casual)
-										@casuals << casual
-									end
+							if @lines.include?(Line.find(@ticking.tuesday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
 								end
 							end
 						end
 						unless @ticking.wednesday_ticking.nil?
-							unless @ticking.wednesday_ticking.line_id.nil?
-								if @lines.include?(Line.find(@ticking.wednesday_ticking.line_id))
-									unless @casuals.include?(casual)
-										@casuals << casual
-									end
+							if @lines.include?(Line.find(@ticking.wednesday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
 								end
 							end
 						end
 						unless @ticking.thursday_ticking.nil?
-							unless @ticking.thursday_ticking.line_id.nil?
-								if @lines.include?(Line.find(@ticking.thursday_ticking.line_id))
-									unless @casuals.include?(casual)
-										@casuals << casual
-									end
+							if @lines.include?(Line.find(@ticking.thursday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
 								end
 							end
 						end
 						unless @ticking.friday_ticking.nil?
-							unless @ticking.friday_ticking.line_id.nil?
-								if @lines.include?(Line.find(@ticking.friday_ticking.line_id))
-									unless @casuals.include?(casual)
-										@casuals << casual
-									end
+							if @lines.include?(Line.find(@ticking.friday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
 								end
 							end
 						end
 						unless @ticking.saturday_ticking.nil?
-							unless @ticking.monday_ticking.line_id.nil?
-								if @lines.include?(Line.find(@ticking.saturday_ticking.line_id))
-									unless @casuals.include?(casual)
-										@casuals << casual
-									end
+							if @lines.include?(Line.find(@ticking.saturday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
 								end
 							end
 						end
 						unless @ticking.sunday_ticking.nil?
-							unless @ticking.sunday_ticking.line_id.nil?
-								if @lines.include?(Line.find(@ticking.sunday_ticking.line_id))
-									unless @casuals.include?(casual)
-										@casuals << casual
-									end
+							if @lines.include?(Line.find(@ticking.sunday_ticking.line_id))
+								unless @casuals.include?(casual)
+									@casuals << casual
 								end
 							end
 						end

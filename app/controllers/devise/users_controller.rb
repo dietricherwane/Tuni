@@ -2,7 +2,7 @@
 class Devise::UsersController < Devise::RegistrationsController
 	prepend_before_filter :authenticate_user!
 	before_filter :duke
-	#layout :layout_used
+	layout :layout_used
 
 	def search_ajax
 		@params = params[:query].strip.split
@@ -106,7 +106,12 @@ class Devise::UsersController < Devise::RegistrationsController
       
   def enable_user 
   	@user = User.find_by_id(params[:format])
-  	@user_duplicated = User.where("status_id = #{@user.status_id} AND status_number = #{@user.status_number} AND confirmation_token IS NULL AND enabled IS NOT FALSE")
+  	@user_duplicated = ""
+  	if @user.status_number.nil?
+			@user_duplicated = User.where("status_id = #{@user.status_id} AND status_id != #{Status.find_by_name("Administrateur").id} AND confirmation_token IS NULL AND enabled IS NOT FALSE")
+		else
+			@user_duplicated = User.where("status_id = #{@user.status_id} AND status_id != #{Status.find_by_name("Administrateur").id} AND status_number = #{@user.status_number} AND confirmation_token IS NULL AND enabled IS NOT FALSE")
+		end
   	if @user_duplicated.empty?
   		@user.update_attribute(:enabled, true)
   		redirect_to dashboard_path, :notice => "Le compte de #{@user.firstname} #{@user.lastname} a été activé"

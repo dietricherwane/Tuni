@@ -247,7 +247,9 @@ $(document).ready(function() {
         url: url,
         data: selected_value,
         dataType: "text",
-        error: function(){ alert("Votre session a expié. Veuillez vous déconnecter et vous reconnecter."); }, //alert("Votre session a expié. Veuillez vous déconnecter et vous reconnecter.");
+       error: function(xhr, textStatus, errorThrown){  
+        	alert("Une erreur s'est produite: " + errorThrown);
+        }, //alert("Votre session a expié. Veuillez vous déconnecter et vous reconnecter.");
         success: function(response, response_status, xhr) {
           $(target_tag).children().remove();
           $(response).appendTo(target_tag);        

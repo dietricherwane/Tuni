@@ -183,20 +183,19 @@ Atelier: <%= @team.workshop.workshop_name %> || équipe: <%= @team.team_name %>
 			<th width="5%">H75%</th>
 			<th width="5%">H100%</th>
 			<th width="5%">HN</th>
-			<th width="4%">PP</th>
 		</tr>
 	</thead>
 	<tbody>		
 		<% if @casuals.empty? %>
 			<tr>
-				<td colspan = 14 class = "ui-widget-content" >Aucun temporaire à pointer</td>									
+				<td colspan = 13 class = "ui-widget-content" >Aucun temporaire à pointer</td>									
 			</tr>
 		<% else %>
 			
 <!-- Temporaires normaux -->
 			<% unless @normals.empty? %>
 				<tr>
-					<td colspan = 14 class = "ui-widget-content" ><h3>Normaux</h3></td>									
+					<td colspan = 13 class = "ui-widget-content" ><h3>Normaux</h3></td>									
 				</tr>
 				<% @normals.each do |casual| %>				
 					<%= render :partial => "normals_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number, :configuration => @configuration, :global_hours_worked => @global_hours_worked, :global_normals_hours => @global_normals_hours, :global_h15 => @global_h15, :global_h50 => @global_h50, :global_h75 => @global_h75, :global_h100 => @global_h100, :global_pp => @global_pp, :cash_amount => @cash_amount } %>
@@ -205,7 +204,7 @@ Atelier: <%= @team.workshop.workshop_name %> || équipe: <%= @team.team_name %>
 <!-- Caristes -->	
 			<% unless @operators.empty? %>		
 				<tr>
-					<td colspan = 14 class = "ui-widget-content" ><h3>Caristes</h3></td>									
+					<td colspan = 13 class = "ui-widget-content" ><h3>Caristes</h3></td>									
 				</tr>
 				<% @operators.each do |casual| %>				
 					<%= render :partial => "operators_ticking_report_table", :locals => { :casual => casual, :week_number => @week_number, :configuration => @configuration, :global_hours_worked => @global_hours_worked, :global_normals_hours => @global_normals_hours, :global_h15 => @global_h15, :global_h50 => @global_h50, :global_h75 => @global_h75, :global_h100 => @global_h100, :global_pp => @global_pp, :cash_amount => @cash_amount } %>
@@ -216,8 +215,7 @@ Atelier: <%= @team.workshop.workshop_name %> || équipe: <%= @team.team_name %>
 				<td class = "ui-widget-content" ><h3><%= @global_hours_worked %></h3></td>					
 				<td class = "ui-widget-content" ><h3><%= @global_h75 %></h3></td>			
 				<td class = "ui-widget-content" ><h3><%= @global_h100 %></h3></td>			
-				<td class = "ui-widget-content" ><h3><%= @global_normals_hours %></h3></td>			
-				<td class = "ui-widget-content" ><h3><%= @global_pp %></h3></td>									
+				<td class = "ui-widget-content" ><h3><%= @global_normals_hours %></h3></td>											
 			</tr>	
 		<% end %>
 	</tbody>
@@ -228,7 +226,6 @@ Nombre total d'heures: <%= @global_hours_worked %><br />
 Heures normales: <%= @global_normals_hours %><br />
 Heures 75%: <%= @global_h75 %><br />
 Heures 100%: <%= @global_h100 %><br />
-Prime panier: <%= @global_pp %><br />
 Montant total: <%= @cash_amount %></h3>
 
 <h2 class="short-title">

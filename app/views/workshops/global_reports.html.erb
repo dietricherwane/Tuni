@@ -3,9 +3,9 @@
 	<div class="portlet" id="widget-1">
     <div class="portlet-header">Choix de la section</div>
     	<div class="portlet-content"> 
-    		<%= form_tag normals_global_report_path(:pdf) do %>   	
+    		<%= form_tag section_global_report_path(:pdf) do %>   	
     			<div id= "space"><%= label_tag "Section" %><br />
-					<%= collection_select(:post, :section_id, @sections, :id, :section_name, options ={:prompt => "-Veuillez choisir une section-"}) %></div>							
+					<%= collection_select(:post, :section_id, @sections, :id, :section_name, options ={:prompt => "Journaliers"}) %></div>							
 
 					<br />
   				<%= submit_tag "Rapport", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...', :target => "_blank" %>

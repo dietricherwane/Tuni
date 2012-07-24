@@ -1,3 +1,48 @@
+<script type="text/javascript">		
+	$(document).ready(function() {
+		$("#week_number").change(function() {
+			selected_year = $(this).getSelectValue('select_holiday_1i');
+			selected_week = this.options[this.selectedIndex].text;
+			if (selected_week == ""){
+				$("#week").html("Semaine:");
+			}
+			else
+			{
+				getWeek(selected_week, selected_year);
+			}
+		});
+		
+		$("#select_holiday_1i").change(function() {
+			selected_year = $(this).getSelectValue('select_holiday_1i');
+			selected_week = $(this).getSelectValue('week_number');
+			if (selected_week == ""){
+			}
+			else{
+				getWeek(selected_week, selected_year);
+			}
+		});
+		
+		$.fn.getSelectValue = function(selectId) {
+     	var selectElmt = document.getElementById(selectId);
+			return selectElmt.options[selectElmt.selectedIndex].text;
+    }
+    
+    function getWeek(weekday, weekyear) {
+      $.ajax({   
+				url: "<%= url_for :action => 'getweek', :controller => 'workshops' %>",
+				type: "GET",
+				data: {weekday: weekday, weekyear: weekyear},
+				error: function(xhr, textStatus, errorThrown){  
+					alert("Une erreur s'est produite: " + errorThrown);
+				},
+				success: function(response, response_status, xhr) {
+				  $("#week").html(response);      
+				}
+			});
+    } 
+	});
+</script>
+
 <h2 class="top-title">Rapports relatifs aux sections de l'atelier</h2><br />
 <div class="column_large_left">
 	<div class="portlet" id="widget-1">
@@ -6,15 +51,18 @@
     		<%= form_tag section_global_report_path(:pdf) do %>  
     		   		   		   		
     			<div><%= label_tag "Section" %><br />
-					<%= collection_select(:post, :section_id, @sections, :id, :section_name, options ={:prompt => "Journaliers"}) %></div>							
+					<%= collection_select(:post, :section_id, @sections, :id, :section_name) %></div>							
 					<br />
 					
 				  <label>Normaux</label> <%= check_box("normals", "validated") %> 
 					<label>Caristes</label> <%= check_box("operators", "validated") %>
 					
 					<br /><br />
-					<%= label_tag 'Semaine du:' %><br />
-					<%= date_select "select", "holiday", :start_year => 2012, :end_year => Date.today.year, :use_month_names => ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Décembre"], :style => "width: 80px;" %>
+					
+					<div style = "font-weight: bold;" id = "week">Semaine:</div>
+					
+					<%= select_tag "week_number", options_for_select(1..52), :include_blank => true, :style => "width:10%" %>			
+					<%= date_select "select", "holiday", :start_year => 2010, :end_year => Date.today.year, :discard_month => true, :style => "width:10%" %>					
 
 					<br /> <br />
   				<%= submit_tag "Rapport", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...', :target => "_blank" %>

@@ -192,7 +192,7 @@ class Devise::UsersController < Devise::RegistrationsController
   	@element = ""
   	
   	if ((@dae.eql?("-Veuillez choisir un élément-")) || (@dae.eql?("Direction") && @value.empty?) || (@dae.eql?("Atelier") && (@direction.eql?("-Veuillez choisir une direction-") || @value.empty?)) || (@dae.eql?("Section") && (@direction.eql?("-Veuillez choisir une direction-") || @workshop.eql?("-Veuillez choisir un atelier-") || @value.empty?)) || (@dae.eql?("Ligne") && (@direction.eql?("-Veuillez choisir une direction-") || @workshop.eql?("-Veuillez choisir un atelier-") || @section.eql?("-Veuillez choisir une section-") || @value.empty?)) || (@dae.eql?("Equipe") && (@direction.eql?("-Veuillez choisir une direction-") || @workshop.eql?("-Veuillez choisir un atelier-") || @value.empty?)))
-  		redirect_to dae_path, :alert => "Veuillez correctement choisir l'élément à créer."
+  		redirect_to dae_path, :alert => "Veuillez correctement choisir l'élément à créer et entrer sa valeur."
   	else
   		case @dae
 				when "Direction"
@@ -225,9 +225,19 @@ class Devise::UsersController < Devise::RegistrationsController
 					end
 				when "Equipe"
 					if Team.where("workshop_id = #{Workshop.find_by_workshop_name(@workshop).id} AND team_name = '#{capitalization(@value)}'").empty?
-						params[:daily][:answer].eql?("no") ? @daily = false : @daily = true
-						Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value), :max_number_of_casuals => 30, :number_of_operators => 2, :daily => @daily)
-						dae_path_on_success("L'équipe:", capitalization(@value))
+						params[:daily_status].eql?("Non") ? @daily = false : @daily = true
+						if @daily
+							@section = Section.find_by_section_name(params[:daily_team_section_name])
+							if @section.nil?
+								dae_path_on_failure("Veuillez choisir une équipe dans laquelle les temporaires seront affectés par défaut.")
+							else
+								Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value), :max_number_of_casuals => 30, :number_of_operators => 2, :daily => @daily, :default_section => @section.id)
+								dae_path_on_success("L'équipe:", capitalization(@value))
+							end
+						else
+							Workshop.find_by_workshop_name(@workshop).teams.create(:team_name => capitalization(@value), :max_number_of_casuals => 30, :number_of_operators => 2, :daily => @daily)
+							dae_path_on_success("L'équipe:", capitalization(@value))
+						end
 					else
 						dae_path_on_failure("Une équipe du même nom existe déjà dans l'atelier.")
 					end

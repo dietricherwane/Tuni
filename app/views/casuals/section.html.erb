@@ -1,0 +1,16 @@
+<h2 class="top-title">Changement de la section de: <%= "#{@casual.firstname} #{@casual.lastname}" %> || Section actuelle: <%= @section_name %></h2><br />
+<div class="column">
+	<div class="portlet" id="widget-1">
+    <div class="portlet-header">Sections</div>
+    	<div class="portlet-content"> 
+    		<% form_tag change_casual_section_path do %>
+		  		<%= hidden_field_tag "casual_id", @casual.id %>
+		  		<div id= "space"><%= label_tag "Section" %><br />
+						<%= collection_select(:post, :section_id, @sections, :id, :section_name, options ={:prompt => "-Veuillez choisir une section-"}) %>						
+					</div>
+					<br />
+					<%= submit_tag "Affecter", :class => 'submit button large ui-corner-all', :disable_with => 'Patientez...' %>
+				<% end %>
+			</div>
+	</div>
+</div>

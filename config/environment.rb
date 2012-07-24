@@ -6,5 +6,5 @@ require "#{::Rails.root.to_s}/app/overrides/date"
 # Initialize the rails application
 Tuni::Application.initialize!
 
-WillPaginate::ViewHelpers.pagination_options[:previous_label] = 'Précédente'
-WillPaginate::ViewHelpers.pagination_options[:next_label] = 'Suivante'
+#WillPaginate::ViewHelpers.pagination_options[:previous_label] = 'Précédente'
+#WillPaginate::ViewHelpers.pagination_options[:next_label] = 'Suivante'

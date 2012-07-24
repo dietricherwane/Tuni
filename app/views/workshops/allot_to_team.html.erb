@@ -93,7 +93,7 @@ $(function(){
 														align	 : 'center',
 														tail : {hidden: true
 														},									
-														innerHtml: "Equipe journalière.",
+														innerHtml: "Equipe journalière.<br />Section par défaut: <%= Section.find_by_id(team.default_section).section_name %>",
 														innerHtmlStyle: {
 															color:'#FFFFFF', 
 															'text-align':'left',
@@ -121,7 +121,7 @@ $(function(){
 														align	 : 'center',
 														tail : {hidden: true
 														},									
-														innerHtml: "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %><br>Compagnie: <%= Company.find_by_id(casual.company_id).company_name %><br>Type: <%= CasualType.find_by_id(casual.casual_type_id).type_name %>",
+														innerHtml: "Matricule: <%= casual.identifier %><br>Numéro de mobile: <%= casual.phone_number %><br>Compagnie: <%= Company.find_by_id(casual.company_id).company_name %><br>Type: <%= CasualType.find_by_id(casual.casual_type_id).type_name %><br /> <%= team.daily ? "Section: #{Section.find_by_id(casual.section_id).section_name}" : "" %>",
 														innerHtmlStyle: {
 															color:'#FFFFFF', 
 															'text-align':'left',
@@ -135,7 +135,11 @@ $(function(){
 												</script>										
 														<li>
 															<% div_for (casual) do %>
-																<%= casual.firstname+ " " +casual.lastname %>
+																<% if team.daily %>
+																	<%= link_to "#{casual.firstname} #{casual.lastname}", casual_section_path(casual.id), :style => "font-weight: bold;" %>
+																<% else %>
+																	<%= casual.firstname+ " " +casual.lastname %>
+																<% end %>
 															<% end %>
 														</li>													
 												<% end %>

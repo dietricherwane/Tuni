@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title>BreakFast by Free Css Templates</title>
+<title></title>
 <meta name="keywords" content="" />
 <meta name="description" content="" />
 <style type="text/css" media="screen">
@@ -49,6 +49,31 @@ body{
 }
 
 /*************************************/
+.title{
+		color:#111; 
+		font-size:1.2em; 
+		text-transform:uppercase; 
+		
+		font-weight:bold;
+
+		text-align:center;
+	}
+	
+.little-title{
+		color:#111; 
+		font-size:1.0em; 
+		text-transform:uppercase; 
+		padding:10px 10px 2px 10px;
+		font-weight:bold;
+		text-align:center;
+	}
+
+.title-text{
+		color:#111; 
+		font-size:0.8em; 
+		font-weight:bold;
+		text-align:center;
+	}
 		
   .top-title{
 		color:#111; 
@@ -94,7 +119,7 @@ body{
 }
 
 .list-table td {
-	padding:10px; 
+	padding:6px; 
 	color:#111;
 	border:solid 1px #595959;
 }
@@ -116,16 +141,16 @@ body{
 
 </head>
 <body>
-<%=  %>
+
 <!-------------------------------- Pour les temporaires des équipes de l'atelier actuel ------------>
 <% if @normals %>
 	<div class="page">
-	<h2 class="top-title">Fiche de pointage des normaux du <%= @date.beginning_of_week.strftime("%d") %> au <%= @date.end_of_week.strftime("%d %B %Y") %><br />
-	<%= @section.nil? ? "Atelier: #{Workshop.find_by_id(current_user.status_number).workshop_name}" : "Section: #{@section.section_name}" %>
-	</h2><br />
+	<div class="title">Relevé des heures travaillées des mot du <%= @date.beginning_of_week.strftime("%d %B %Y") %> au <%= @date.end_of_week.strftime("%d %B %Y") %><br /> Atelier: <%= @section.workshop.workshop_name %><br /> Section: <%= @section.section_name %> </div>
+	<div class="title-text">Effectif: <%= @number_of_normals %> | Taux horaire: <%= @normals_hourly_rate %> | Prime panier: <%= @normals_prime %> | Coût: <%= @cash_amount %></div>
+	<div class="title-text">Heures T : <%= @global_hours_worked %>  |  Heures N : <%= @global_normals_hours %>  |  Heures 15% : <%= @global_h15 %>  |  Heures 50% : <%= @global_h50 %>  |  Heures 75% : <%= @global_h75 %>  |  Heures 100% : <%= @global_h100 %>  |  Primes Panier : <%= @global_pp %></div>
+	<br />
 
-	<% 
-		 	
+	<% 		 	
 		 @global_hours_worked = 0
 		 @global_normals_hours = 0
 		 @global_h15 = 0
@@ -209,26 +234,26 @@ body{
 	<!-- Temporaires normaux -->
 				<% @teams.each do |team| %>
 	<!-- On détermine les temporaires normaux de l'équipe -->
-					<tr>
-						<td colspan = 16 class = "ui-widget-content" ><h3><%= team.team_name %> - Normaux</h3></td>
-					</tr>
 					<% 
 						@normals_casuals = team.casuals.where("casual_type_id = #{CasualType.find_by_type_name("Normal").id}") 
 					%>
-					<% if @normals_casuals.empty? %>	
-						<tr>				
-							<td colspan = 16 class = "ui-widget-content" >Aucun pointage à afficher</td>	
-						</tr>													
+					<% if @normals_casuals.empty? %>
+													
 					<% else %>
+						<tr>
+							<td colspan = 16 class = "ui-widget-content" ><h3><%= team.team_name %> - Normaux</h3></td>
+						</tr>
 						<% @normals_casuals.each do |casual| %>
 	<!-- si le temporaire n'a pas de pointage pour cette semaine -->
 							<tr>
-								<%= render :partial => "normals_section_global_report", :locals => { :casual => casual, :week_number => @week_number, :global_hours_worked => @global_hours_worked, :global_normals_hours => @global_normals_hours, :global_h15 => @global_h15, :global_h50 => @global_h50, :global_h75 => @global_h75, :global_h100 => @global_h100, :global_pp => @global_pp, :cash_amount => @cash_amount, :lines_id_table => @lines_id_table, :number_of_normals => @number_of_normals } %>
+								<% unless casual.tickings.find_by_week_number(@week_number).nil? %>
+									<%= render :partial => "normals_section_global_report", :locals => { :casual => casual, :week_number => @week_number, :global_hours_worked => @global_hours_worked, :global_normals_hours => @global_normals_hours, :global_h15 => @global_h15, :global_h50 => @global_h50, :global_h75 => @global_h75, :global_h100 => @global_h100, :global_pp => @global_pp, :cash_amount => @cash_amount, :lines_id_table => @lines_id_table, :number_of_normals => @number_of_normals, :section => @section } %>
+								<% end %>
 							</tr>
 						<% end %>
 					<% end %>
 				<% end %>
-			
+		
 				<tr>
 					<td colspan = 9 class = "ui-widget-content" ><h3>Totaux</h3></td>							
 					<td class = "ui-widget-content" ><h3><%= @global_hours_worked %></h3></td>	
@@ -242,70 +267,25 @@ body{
 			<% end %>
 		</tbody>
 	</table>	
-  </div>
-
-	<div class="page">
-	<table border= 1 bordercolor="#666666" style="width:98%; text-align:left; border-collapse:collapse;">
-		<tr>
-			<td style="width:35%; font-weight:bold; padding:7px;">Effectif</td> 
-			<td style="padding:7px;"><%= @number_of_normals %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Nombre total d'heures</td>
-			<td style="padding:7px;"><%= @global_hours_worked %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures normales</td>
-			<td style="padding:7px;"><%= @global_normals_hours %></td>
-			<td style="padding:7px;"><%= (@global_normals_hours * CasualType.find_by_type_name("Normal").hourly_rate) %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures 15%</td>
-			<td style="padding:7px;"><%= @global_h15 %></td>
-			<td style="padding:7px;"><%= (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.15) * @global_h15) %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures 50%</td> 
-			<td style="padding:7px;"><%= @global_h50 %></td>
-			<td style="padding:7px;"><%= (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.50) * @global_h50) %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures 75%</td> 
-			<td style="padding:7px;"><%= @global_h75 %></td>
-			<td style="padding:7px;"><%= (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.75) * @global_h75) %></td> 
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures 100%</td> 
-			<td style="padding:7px;"><%= @global_h100 %></td>
-			<td style="padding:7px;"><%= (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 1) * @global_h100) %></td> 
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Prime panier</td>
-			<td style="padding:7px;"><%= @global_pp %></td>
-			<td style="padding:7px;"><%= (@global_pp * CasualType.find_by_type_name("Normal").prime) %></td> 
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">MONTANT TOTAL</td> 
-			<td style="font-weight:bold; padding:7px;" colspan = 2><%= @cash_amount %></td>
-		</tr>
-	</table>
-
+	<br />
+	<div class="title-text">Heures T : <%= @cash_amount %>  |  Heures N : <%= (@global_normals_hours * CasualType.find_by_type_name("Normal").hourly_rate) %>  |  Heures 15% : <%= (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.15) * @global_h15) %>  |  Heures 50% : <%= (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.50) * @global_h50) %>  |  Heures 75% : <%= (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.75) * @global_h75) %>  |  Heures 100% : <%= @global_h100 %>  |  Primes Panier : <%= (@global_pp * CasualType.find_by_type_name("Normal").prime) %></div>
 	<br /> <br />
 	<h2 class="short-title">
 		<div style="font-weight:bold; float: left;">Visa chef de production</div>
 		<div style="font-weight:bold; float: right;">Visa direction des ressources humaines</div>
-		<div align = "center" style="font-weight:bold;">Visa directeur <%= Workshop.find(current_user.status_number).workshop_name %></div>	
+		<div align = "center" style="font-weight:bold;">Visa directeur <%= Workshop.find_by_id(@section.workshop.id).workshop_name %></div>	
 	</h2>
-	</div>
+  </div>	
 <% end %>
 
 <!-- Affichage des normaux au dessus et des caristes en dessous -->
 
 <% if @operators %>
 	<div class="page">
-	<h2 class="top-title">Fiche de pointage des caristes du <%= @date.beginning_of_week.strftime("%d") %> au <%= @date.end_of_week.strftime("%d %B %Y") %><br />
-	<%= @section.nil? ? "Atelier: #{Workshop.find_by_id(current_user.status_number).workshop_name}" : "Section: #{@section.section_name}" %>
-	</h2><br />
+	<div class="title">Relevé des heures travaillées des caristes du <%= @date.beginning_of_week.strftime("%d %B %Y") %> au <%= @date.end_of_week.strftime("%d %B %Y") %><br /> Atelier: <%= @section.workshop.workshop_name %><br /> Section: <%= @section.section_name %> </div>
+	<div class="title-text">Effectif: <%= @number_of_operators %> | Taux horaire: <%= @operators_hourly_rate %> | Prime panier: <%= @operators_prime %> | Coût: <%= @op_cash_amount %></div>
+	<div class="title-text">Heures T : <%= @op_global_hours_worked %>  |  Heures N : <%= @op_global_normals_hours %>  |  Heures 15% : <%= @op_global_h15 %>  |  Heures 50% : <%= @op_global_h50 %>  |  Heures 75% : <%= @op_global_h75 %>  |  Heures 100% : <%= @op_global_h100 %>  |  Primes Panier : <%= @op_global_pp %></div>
+	<br />
 
 	<% 
 		 	
@@ -392,21 +372,19 @@ body{
 	<!-- Temporaires normaux -->
 				<% @teams.each do |team| %>
 	<!-- On détermine les temporaires normaux de l'équipe -->
-					<tr>
-						<td colspan = 16 class = "ui-widget-content" ><h3><%= team.team_name %> - Caristes</h3></td>
-					</tr>
 					<% 
 						@operators_casuals = team.casuals.where("casual_type_id = #{CasualType.find_by_type_name("Cariste").id}") 
 					%>
-					<% if @operators_casuals.empty? %>	
-						<tr>				
-							<td colspan = 16 class = "ui-widget-content" >Aucun pointage à afficher</td>	
-						</tr>													
+					<% if @operators_casuals.empty? %>
+												
 					<% else %>
+						<tr>
+							<td colspan = 16 class = "ui-widget-content" ><h3><%= team.team_name %> - Caristes</h3></td>
+						</tr>
 						<% @operators_casuals.each do |casual| %>
 	<!-- si le temporaire n'a pas de pointage pour cette semaine -->
 							<tr>
-								<%= render :partial => "operators_section_global_report", :locals => { :casual => casual, :week_number => @week_number, :op_global_hours_worked => @op_global_hours_worked, :op_global_normals_hours => @op_global_normals_hours, :op_global_h15 => @op_global_h15, :op_global_h50 => @op_global_h50, :op_global_h75 => @op_global_h75, :op_global_h100 => @op_global_h100, :op_global_pp => @op_global_pp, :op_cash_amount => @op_cash_amount, :lines_id_table => @lines_id_table, :number_of_operators => @number_of_operators } %>
+								<%= render :partial => "operators_section_global_report", :locals => { :casual => casual, :week_number => @week_number, :op_global_hours_worked => @op_global_hours_worked, :op_global_normals_hours => @op_global_normals_hours, :op_global_h15 => @op_global_h15, :op_global_h50 => @op_global_h50, :op_global_h75 => @op_global_h75, :op_global_h100 => @op_global_h100, :op_global_pp => @op_global_pp, :op_cash_amount => @op_cash_amount, :lines_id_table => @lines_id_table, :number_of_operators => @number_of_operators, :section => @section } %>
 							</tr>
 						<% end %>
 					<% end %>
@@ -425,61 +403,15 @@ body{
 			<% end %>
 		</tbody>
 	</table>	
-	</div>
-
-	<div class="page">
-	<table border= 1 bordercolor="#666666" style="width:98%; text-align:left; border-collapse:collapse;">
-		<tr>
-			<td style="width:35%; font-weight:bold; padding:7px;">Effectif</td> 
-			<td style="padding:7px;"><%= @number_of_operators %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Nombre total d'heures</td>
-			<td style="padding:7px;"><%= @op_global_hours_worked %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures normales</td>
-			<td style="padding:7px;"><%= @op_global_normals_hours %></td>
-			<td style="padding:7px;"><%= (@op_global_normals_hours * CasualType.find_by_type_name("Cariste").hourly_rate) %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures 15%</td>
-			<td style="padding:7px;"><%= @op_global_h15 %></td>
-			<td style="padding:7px;"><%= (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.15) * @op_global_h15) %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures 50%</td> 
-			<td style="padding:7px;"><%= @op_global_h50 %></td>
-			<td style="padding:7px;"><%= (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.50) * @op_global_h50) %></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures 75%</td> 
-			<td style="padding:7px;"><%= @op_global_h75 %></td>
-			<td style="padding:7px;"><%= (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.75) * @op_global_h75) %></td> 
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Heures 100%</td> 
-			<td style="padding:7px;"><%= @op_global_h100 %></td>
-			<td style="padding:7px;"><%= (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 1) * @op_global_h100) %></td> 
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">Prime panier</td>
-			<td style="padding:7px;"><%= @op_global_pp %></td>
-			<td style="padding:7px;"><%= (@op_global_pp * CasualType.find_by_type_name("Cariste").prime) %></td> 
-		</tr>
-		<tr>
-			<td style="font-weight:bold; padding:7px;">MONTANT TOTAL</td> 
-			<td style="font-weight:bold; padding:7px;" colspan = 2><%= @op_cash_amount %></td>
-		</tr>
-	</table>
-	
+	<br />
+	<div class="title-text">Heures T : <%= @op_cash_amount %>  |  Heures N : <%= (@op_global_normals_hours * CasualType.find_by_type_name("Cariste").hourly_rate) %>  |  Heures 15% : <%= (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.15) * @op_global_h15) %>  |  Heures 50% : <%= (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.50) * @op_global_h50) %>  |  Heures 75% : <%= (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.75) * @op_global_h75) %>  |  Heures 100% : <%= @op_global_h100 %>  |  Primes Panier : <%= (@op_global_pp * CasualType.find_by_type_name("Cariste").prime) %></div>
 	<br /> <br />
 	<h2 class="short-title">
 		<div style="font-weight:bold; float: left;">Visa chef de production</div>
 		<div style="font-weight:bold; float: right;">Visa direction des ressources humaines</div>
-		<div align = "center" style="font-weight:bold;">Visa directeur <%= Workshop.find(current_user.status_number).workshop_name %></div>	
+		<div align = "center" style="font-weight:bold;">Visa directeur <%= Workshop.find_by_id(@section.workshop.id).workshop_name %></div>	
 	</h2>
-	</div>
+  </div>	
 <% end %>
 <!-------------------------------- Pour les temporaires des équipes de l'atelier actuel ------------>
 

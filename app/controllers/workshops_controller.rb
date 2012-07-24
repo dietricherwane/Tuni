@@ -35,13 +35,16 @@ class WorkshopsController < ApplicationController
 				 				if Casual.where("team_id = #{@team_id} AND casual_type_id = #{CasualType.find_by_type_name("Normal").id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count == @team.max_number_of_casuals
 				 					@message = "Le nombre maximal de temporaires normaux de cette équipe a déjà été atteint."
 				 				else
-				 					@casual.update_attribute(:team_id, @team.id)
+				 					@team.daily? ? @section_id = @team.default_section : @section_id = nil 
+				 					@casual.update_attributes(:team_id => @team.id, :section_id => @section_id)
 				 					@message = "Les temporaires ont été affectés dans l'équipe #{@team.team_name}."
 				 				end
 				 			else
 				 				if Casual.where("team_id = #{@team_id} AND casual_type_id = #{CasualType.find_by_type_name("Cariste").id} AND expired IS NOT TRUE AND retired_from_ticking IS NOT TRUE").count == @team.number_of_operators
 				 					@message = "Le nombre maximal de caristes de cette équipe a déjà été atteint."
 				 				else
+				 					@team.daily? ? @section_id = @team.default_section : @section_id = nil 
+				 					@casual.update_attributes(:team_id => @team.id, :section_id => @section_id)
 				 					@casual.update_attribute(:team_id, @team.id)
 				 					@message = "Les temporaires ont été affectés dans l'équipe #{@team.team_name}."
 				 				end
@@ -218,7 +221,7 @@ class WorkshopsController < ApplicationController
 		HTML
   	@team = Team.find_by_id(@team_id.to_i) 	
 # if no team has been checked || no line has been checked while the team is not daily; daily teams must not be checked || no hourly rate has been checked
-  	if (@team_id.empty? || (@line_checked.eql?(false) && !@team.daily) || (@monday_plan.empty? && @tuesday_plan.empty? && @wednesday_plan.empty? && @thursday_plan.empty? && @friday_plan.empty? && @saturday_plan.empty? && @sunday_plan.empty?))
+  	if (@team_id.empty? || (@line_checked.eql?(false) && !@team.daily) || (@monday_plan.eql?("Horaire") && @tuesday_plan.eql?("Horaire") && @wednesday_plan.eql?("Horaire") && @thursday_plan.eql?("Horaire") && @friday_plan.eql?("Horaire") && @saturday_plan.eql?("Horaire") && @sunday_plan.eql?("Horaire")))
   		redirect_to :back, :alert => @alert.html_safe
   	else 		
   		@week_number = Date.today.cweek + 1
@@ -480,8 +483,6 @@ class WorkshopsController < ApplicationController
   		end
   		@line_ids.sub!(/\,$/, '')
   	end
-  	
-  	@sections = @team.workshop.sections
   	 	
   	unless @team.configurations.find_by_week_number(@week_number - 1).nil?
   		unless @team.configurations.find_by_week_number(@week_number - 1).rolling_sunday.nil?
@@ -490,9 +491,7 @@ class WorkshopsController < ApplicationController
   		end
   	end
  	 	
-  	unless @team.configurations.where("week_number = #{@week_number}").empty?
-  		@configuration = @team.configurations.where("week_number = #{@week_number}")
-  	end
+  	@configuration = @team.configurations.where("week_number = #{@week_number}")
   	
   	@sections_array = []
   	@line_ids = ""
@@ -509,40 +508,25 @@ class WorkshopsController < ApplicationController
   	@sections = @team.workshop.sections
   end
   
-  def rapport
-  	@team = Team.find_by_id(params[:team])
-  	@configuration = ""
-  	@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE")
-  	#@casuals = Casual.where("team_id = #{@team.id} AND expired IS NOT TRUE AND (line_id IS NOT NULL OR casual_type_id = #{CasualType.find_by_type_name("Cariste").id})")
-  	
-  	@normals = @casuals.where("casual_type_id = #{CasualType.find_by_type_name("Normal").id}")
-  	@operators = @casuals.where("casual_type_id = #{CasualType.find_by_type_name("Cariste").id}")
-  	
-  	@weekday = Date.today.wday
-  	@week_number = Date.today.cweek
-  	unless @team.configurations.where("week_number = #{@week_number}").empty?
-  		@configuration = @team.configurations.where("week_number = #{@week_number}")
-  	end
-  	
-		respond_to do |format|
-      format.html { render(:html => "rapport", :layout => false) }
-      format.pdf { render(:pdf => "rapport", :footer => { :right => '[page] / [topage]' }, :layout => false) }
-    end
-  end
-  
   def global_reports
-  	@workshop = Workshop.find(current_user.status_number)
-  	@sections = @workshop.sections
+  	@sections = Workshop.find(current_user.status_number).sections
   end
   
   def section_global_report
-  	@date = Date.new(params[:select][:"holiday(1i)"].to_i, params[:select][:"holiday(2i)"].to_i, params[:select][:"holiday(3i)"].to_i)
+  	if params[:week_number].empty? 
+  		params[:week_number] = Date.today.cweek
+  	end
+  	@normals_hourly_rate = CasualType.find_by_type_name("Normal").hourly_rate
+  	@normals_prime = CasualType.find_by_type_name("Normal").prime
+  	@operators_hourly_rate = CasualType.find_by_type_name("Cariste").hourly_rate
+  	@operators_prime = CasualType.find_by_type_name("Cariste").prime
+  	@date = Date.commercial(params[:select][:"holiday(1i)"].to_i, params[:week_number].to_i, 1)
   	@week_number = @date.cweek
-  	#@week_number = Date.today.cweek
   	@lines_id_table = [] 	
   	@teams = []
   	@other_teams_table = []
   	@workshop_teams = Workshop.find_by_id(current_user.status_number).teams
+  	
   	
   	if (params[:normals][:validated].eql?("0") && params[:operators][:validated].eql?("0"))
   		@normals = true
@@ -550,36 +534,265 @@ class WorkshopsController < ApplicationController
   	else
 			params[:normals][:validated].eql?("1") ? @normals = true : @normals = false
 			params[:operators][:validated].eql?("1") ? @operators = true : @operators = false
-		end
-  	
-# On récupère toutes les équipes de l'atelier
-		if params[:post][:section_id].empty?
-			@raw_teams = Workshop.find_by_id(current_user.status_number).teams.where("daily IS TRUE")
-			@daily = true
-		else
-			@daily = false
+		end			
+			
 			@section = Section.find_by_id(params[:post][:section_id])
-  		@raw_teams = @section.workshop.teams.where("daily IS NOT TRUE")
+			@section_obj = Section.find_by_id(params[:post][:section_id])
+  		@raw_teams = @section_obj.workshop.teams
+
+# Equipes dont les temporaires ont eu des pointages au cours de la semaine  		
+  		@teams = @section.workshop.teams.map{ |t|
+  			@casuals = t.casuals
+  			unless @casuals.empty?
+  				@casuals_ticked = @casuals.map{ |c|
+  					unless c.tickings.where("week_number = #{@week_number}").empty?
+  						c
+  					end
+  				}.compact
+  				unless @casuals_ticked.empty?
+  					t
+  				end
+  			end
+  		}.compact
   		
-  		unless @section.lines.empty?
-				@section.lines.each do |line|
+  		@h75_table = []
+
+  		if @normals
+  			@global_hours_worked = 0
+				@global_normals_hours = 0
+				@global_h15 = 0
+				@global_h50 = 0
+				@global_h75 = 0
+				@global_h100 = 0
+				@global_pp = 0
+				@cash_amount = 0
+				@number_of_normals = 0
+				
+  			@teams.each do |team|
+  				@normals_casuals = team.casuals.where("casual_type_id = #{CasualType.find_by_type_name("Normal").id}")
+  				unless @normals_casuals.empty?
+  					@normals_casuals.each do |casual|
+  						@ticking = casual.tickings.find_by_week_number(@week_number)							
+							unless @ticking.nil?
+							
+								@partialh15 = 0 
+								@partialh50 = 0
+								@partialh75 = 0
+								@partialh100 = 0
+								@partialpp = 0
+								@hours = @hours_worked = hours_worked(casual, @week_number, @section.id)
+							
+								@res = workshop_chief_ticking("monday", @week_number, casual, @section.id, 1) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]	
+								
+								@res = workshop_chief_ticking("tuesday", @week_number, casual, @section.id, 2) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("wednesday", @week_number, casual, @section.id, 3) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("thursday", @week_number, casual, @section.id, 4) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("friday", @week_number, casual, @section.id, 5) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("saturday", @week_number, casual, @section.id, 6) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("sunday", @week_number, casual, @section.id, 0) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@h75_table << @partialh75
+								@global_hours_worked += @hours_worked
+								
+# Si le nombre d'heures travaillées est inférieur à 47 et supérieur à 40: 15% -->	
+								@hours = @hours - @partialh75 - @partialh100
+								unless casual.team.daily				
+									if ((@hours > 40) && (@hours < 47))
+										@partialh15 += @hours - 40
+										@global_h15 += @partialh15
+										@cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.15) * @partialh15)
+									else
+# Si le nombre d'heures travaillées est supérieur à 46 -->	
+										if @hours > 46
+											@partialh15 += 6
+											@global_h15 += 6
+											@cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.15) * @partialh15)
+# Si le nombre d'heures travaillées est inférieur ou égal à 40 -->
+										end
+									end
+
+# Si le nombre d'heures travaillées est supérieur à 46: 50% -->										
+									if @hours > 46
+										@partialh50 += @hours - 46
+										@global_h50 += @partialh50
+										@cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.5) * @partialh50)
+	# Si le nombre d'heures travaillées est inférieur ou égal à 40 -->
+									end
+								end
+								
+								
+								
+								@global_h75 += @partialh75
+								@cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 0.75) * @partialh75)
+								
+								@global_h100 += @partialh100
+								@cash_amount += (CasualType.find_by_type_name("Normal").hourly_rate * (1 + 1) * @partialh100)
+								
+								@hours = @hours_worked - @partialh15 - @partialh50 - @partialh75 - @partialh100
+								@global_normals_hours += @hours
+								@cash_amount += (@hours * CasualType.find_by_type_name("Normal").hourly_rate)
+								
+								@global_pp += @partialpp	
+								@cash_amount += (@partialpp * CasualType.find_by_type_name("Normal").prime)
+								
+								@number_of_normals += 1	
+								
+							end
+  					end
+  				end
+  			end
+  		end
+  		
+  		if @operators
+  			@op_global_hours_worked = 0
+			  @op_global_normals_hours = 0
+			  @op_global_h15 = 0
+			  @op_global_h50 = 0
+			  @op_global_h75 = 0
+			  @op_global_h100 = 0
+			  @op_global_pp = 0
+			  @op_cash_amount = 0
+			  @number_of_operators = 0
+				
+  			@teams.each do |team|
+  				@operators = team.casuals.where("casual_type_id = #{CasualType.find_by_type_name("Cariste").id}")
+  				unless @operators.empty?
+  					@operators.each do |casual|
+  						@ticking = casual.tickings.find_by_week_number(@week_number)							
+							unless @ticking.nil?
+							
+								@partialh15 = 0 
+								@partialh50 = 0
+								@partialh75 = 0
+								@partialh100 = 0
+								@partialpp = 0
+								@hours = @hours_worked = hours_worked(casual, @week_number, @section.id)
+							
+								@res = workshop_chief_ticking("monday", @week_number, casual, @section.id, 1) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]	
+								
+								@res = workshop_chief_ticking("tuesday", @week_number, casual, @section.id, 2) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("wednesday", @week_number, casual, @section.id, 3) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("thursday", @week_number, casual, @section.id, 4) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("friday", @week_number, casual, @section.id, 5) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("saturday", @week_number, casual, @section.id, 6) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@res = workshop_chief_ticking("sunday", @week_number, casual, @section.id, 0) 
+								@partialpp += @res["partialpp"]
+								@partialh75 += @res["partialh75"]
+								@partialh100 += @res["partialh100"]
+								
+								@op_global_hours_worked += @hours_worked
+								
+# Si le nombre d'heures travaillées est inférieur à 47 et supérieur à 40: 15% -->	
+								@hours = @hours - @partialh75 - @partialh100
+								unless casual.team.daily				
+									if ((@hours > 40) && (@hours < 47))
+										@partialh15 += @hours - 40
+										@op_global_h15 += @partialh15
+										@op_cash_amount += (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.15) * @partialh15)
+									else
+# Si le nombre d'heures travaillées est supérieur à 46 -->	
+										if @hours > 46
+											@partialh15 += 6
+											@op_global_h15 += 6
+											@op_cash_amount += (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.15) * @partialh15)
+# Si le nombre d'heures travaillées est inférieur ou égal à 40 -->
+										end
+									end
+
+# Si le nombre d'heures travaillées est supérieur à 46: 50% -->										
+									if @hours > 46
+										@partialh50 += @hours - 46
+										@op_global_h50 += @partialh50
+										@op_cash_amount += (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.5) * @partialh50)
+	# Si le nombre d'heures travaillées est inférieur ou égal à 40 -->
+									end
+								end
+								
+								
+								
+								@op_global_h75 += @partialh75
+								@op_cash_amount += (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 0.75) * @partialh75)
+								
+								@op_global_h100 += @partialh100
+								@op_cash_amount += (CasualType.find_by_type_name("Cariste").hourly_rate * (1 + 1) * @partialh100)
+								
+								@hours = @hours_worked - @partialh15 - @partialh50 - @partialh75 - @partialh100
+								@op_global_normals_hours += @hours
+								@op_cash_amount += (@hours * CasualType.find_by_type_name("Cariste").hourly_rate)
+								
+								@op_global_pp += @partialpp	
+								@op_cash_amount += (@partialpp * CasualType.find_by_type_name("Cariste").prime)
+								
+								@number_of_operators += 1	
+								
+							end
+  					end
+  				end
+  			end
+  		end
+  		
+  		unless @section_obj.lines.empty?
+				@section_obj.lines.each do |line|
 					@lines_id_table << line.id
 				end
 			end
-		end
 		
 		@other_teams_request = ""
 		
-  	unless @raw_teams.empty?  		  		
-  		@raw_teams.each do |team|
+  	unless @teams.empty?  		  		
+  		@teams.each do |team|
 # Sélection des équipes étant dans des ateliers différents de celui dans lequel on est
   			@other_teams_request << "team_name != '#{team.team_name}' AND "  		
-# On stocke dans un tableau les équipes ayant une configuration pour la semaine en cours
-  			unless team.configurations.find_by_week_number(@week_number).nil?
-  				@teams << team
-  			end
-  		end  		
-  		
+  		end  		  		
   	end
   	
   	@other_teams_request.sub!(/ AND $/, "")
@@ -589,7 +802,9 @@ class WorkshopsController < ApplicationController
   	else
   		@other_teams = Team.where("#{@other_teams_request}")
   	end
-  	@tickings = []  	  	
+  	
+  	@tickings = []  
+  		  	
   	unless @other_teams.empty?
   		@other_teams.each do |team|
   			team.casuals.each do |casual|
@@ -813,14 +1028,22 @@ class WorkshopsController < ApplicationController
 						end
 					end
 				end
-			end
-			
+			end			
 			  	
 			respond_to do |format|
 		    format.html { render(:html => "normals_global_report", :layout => false) }
 		    format.pdf { render(:pdf => "normals_global_report", :footer => { :right => '[page] / [topage]' }, :layout => false) }
 		  end
   	end
+  end
+  
+  def getweek
+  	@week = params[:weekday].to_i
+  	@year = params[:weekyear].to_i
+  	@start_at = Date.commercial(@year, @week, 1)
+  	@end_at = Date.commercial(@year, @week, 7)
+  	
+  	render :text => "Semaine du #{@start_at.strftime("%d %B %Y")} au #{@end_at.strftime("%d %B %Y")}"
   end
 
 end

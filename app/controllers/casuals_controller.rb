@@ -211,5 +211,18 @@ class CasualsController < ApplicationController
 			end
   	end
   end
+  
+  def section
+  	@casual = Casual.find_by_id(params[:format])
+  	@section_name = Section.find_by_id(@casual.section_id).section_name
+  	@sections = @casual.team.workshop.sections
+  end
+  
+  def change_section
+  	@casual = Casual.find_by_id(params[:casual_id])
+  	@section = Section.find_by_id(params[:post][:section_id])
+  	@casual.update_attribute(:section_id, @section.id)
+  	redirect_to allot_casual_to_team_path, :notice => "#{@casual.firstname} #{@casual.lastname} a été affecté à la section #{@section.section_name}"
+  end
 	
 end

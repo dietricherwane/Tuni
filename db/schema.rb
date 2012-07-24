@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120606134422) do
+ActiveRecord::Schema.define(:version => 20120720124849) do
 
   create_table "casual_types", :force => true do |t|
     t.string   "type_name"
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(:version => 20120606134422) do
     t.integer  "line_id"
     t.integer  "previous_team"
     t.integer  "removal_week"
+    t.integer  "section_id"
   end
 
   create_table "cities", :force => true do |t|
@@ -95,6 +96,7 @@ ActiveRecord::Schema.define(:version => 20120606134422) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "ticking_id"
+    t.integer  "section_id"
   end
 
   create_table "holidays", :force => true do |t|
@@ -130,6 +132,7 @@ ActiveRecord::Schema.define(:version => 20120606134422) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "ticking_id"
+    t.integer  "section_id"
   end
 
   create_table "rolling_fridays", :force => true do |t|
@@ -205,6 +208,7 @@ ActiveRecord::Schema.define(:version => 20120606134422) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "ticking_id"
+    t.integer  "section_id"
   end
 
   create_table "sections", :force => true do |t|
@@ -228,6 +232,7 @@ ActiveRecord::Schema.define(:version => 20120606134422) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "ticking_id"
+    t.integer  "section_id"
   end
 
   create_table "teams", :force => true do |t|
@@ -239,6 +244,7 @@ ActiveRecord::Schema.define(:version => 20120606134422) do
     t.boolean  "disabled"
     t.boolean  "daily"
     t.integer  "number_of_operators"
+    t.integer  "default_section"
   end
 
   create_table "thursday_tickings", :force => true do |t|
@@ -249,6 +255,7 @@ ActiveRecord::Schema.define(:version => 20120606134422) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "ticking_id"
+    t.integer  "section_id"
   end
 
   create_table "tickings", :force => true do |t|
@@ -266,6 +273,7 @@ ActiveRecord::Schema.define(:version => 20120606134422) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "ticking_id"
+    t.integer  "section_id"
   end
 
   create_table "users", :force => true do |t|
@@ -308,6 +316,7 @@ ActiveRecord::Schema.define(:version => 20120606134422) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "ticking_id"
+    t.integer  "section_id"
   end
 
   create_table "workshops", :force => true do |t|

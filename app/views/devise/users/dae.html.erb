@@ -12,6 +12,8 @@ $(document).ready(function() {
     	switch(selected_dae){
     		case "-Veuillez choisir un élément-":
     			$("#daily").hide("slow");
+    			$("#daily_team_section").hide("slow");
+    			resetDailyTeamAnswer();
 					$("#valeur").hide("slow"); 
 					$("#team").hide("slow");
 					$("#line").hide("slow");
@@ -20,7 +22,15 @@ $(document).ready(function() {
 					$("#direction").hide("slow");
   				break;
 				case "Direction":
-					showDirection("slow");
+					$("#daily").hide("slow");
+    			$("#daily_team_section").hide("slow");
+    			resetDailyTeamAnswer();
+					$("#valeur").show("slow"); 
+					$("#team").hide("slow");
+					$("#line").hide("slow");
+					$("#section").hide("slow");
+					$("#workshop").hide("slow");
+					$("#direction").hide("slow");
   				break;
 				case "Atelier":					
   				$(this).populateDirection(selected_dae);
@@ -54,6 +64,8 @@ $(document).ready(function() {
 					showValueField("slow");
 					if (selected_direction == "-Veuillez choisir une direction-"){
 						$("#daily").hide("slow");
+						$("#daily_team_section").hide("slow");
+						resetDailyTeamAnswer();
 						$("#valeur").hide("slow"); 
 						$("#team").hide("slow");
 						$("#line").hide("slow");
@@ -215,6 +227,23 @@ $(document).ready(function() {
 		  	$("#no_numbers").show("slow");    		    		
 		  }
     });
+    
+    $("#daily_status").change(function() {
+    	selected_value = this.options[this.selectedIndex].text;
+    	if (selected_value == "Oui"){
+    		selected_workshop = $(this).getSelectValue('workshop_name'); 
+    		$(this).getComboBoxValues(selected_workshop, "#daily_team_section_name", "<%= url_for :action => 'get_sections', :controller => 'registrations' %>");
+				$("#daily_team_section").show("slow");
+    	}
+    	else {
+    		$("#daily_team_section").hide("slow");
+    	}
+    });
+    
+    function resetDailyTeamAnswer(){ 
+  		target = document.getElementById('daily_status');
+      target.value = "Non";
+		}
            
     function pleaseSelectDirectionNo(selected_direction){
     	if (selected_direction == "-Veuillez choisir une direction-"){
@@ -232,7 +261,9 @@ $(document).ready(function() {
 		function pleaseSelectSectionNo(selected_section){
     	if (selected_section == "-Veuillez choisir une section-" || selected_section == "-Veuillez choisir un atelier-"){
     		$("#daily").hide("slow");
-    		$("#valeur").hide("slow");
+    		$("#daily_team_section").hide("slow");
+				resetDailyTeamAnswer();
+    		$("#valeur").hide("slow");    		
 				$("#team").hide("slow");
 			}
 			else {
@@ -269,6 +300,8 @@ $(document).ready(function() {
     function pleaseSelectDirection(selected_direction){
     	if (selected_direction == "-Veuillez choisir une direction-"){
     		$("#daily").hide("slow");
+    		$("#daily_team_section").hide("slow");
+				resetDailyTeamAnswer();
     		$("#valeur").hide("slow"); 
     		$("#team").hide("slow");
     		$("#line").hide("slow");
@@ -284,6 +317,8 @@ $(document).ready(function() {
     function pleaseSelectWorkshop(selected_workshop){
     	if (selected_workshop == "-Veuillez choisir un atelier-"){
     		$("#daily").hide("slow");
+    		$("#daily_team_section").hide("slow");
+				resetDailyTeamAnswer();
     		$("#valeur").hide("slow");
 				$("#team").hide("slow");
 				$("#line").hide("slow");
@@ -297,6 +332,8 @@ $(document).ready(function() {
     function pleaseSelectSection(selected_section){
     	if (selected_section == "-Veuillez choisir une section-" || selected_section == "-Veuillez choisir un atelier-"){
     		$("#daily").hide("slow");
+    		$("#daily_team_section").hide("slow");
+				resetDailyTeamAnswer();
     		$("#valeur").hide("slow");
 				$("#team").hide("slow");
 			}
@@ -309,6 +346,8 @@ $(document).ready(function() {
     function pleaseSelectLine(selected_line){
     	if (selected_line == "-Veuillez choisir une section-" || selected_line == "-Veuillez choisir un atelier-"){
     		$("#daily").hide("slow");
+    		$("#daily_team_section").hide("slow");
+				resetDailyTeamAnswer();
     		$("#valeur").hide("slow");
 				$("#team").hide("slow");
 			}
@@ -332,10 +371,14 @@ $(document).ready(function() {
     	$("#no_section").hide(slow);
     	$("#no_line").hide(slow);
     	$("#no_numbers").hide(slow);
+    	$("#daily_team_section").hide("slow");
+			resetDailyTeamAnswer();
 		} 
 			
 		function showDirection(slow){
 			$("#daily").hide(slow);
+			$("#daily_team_section").hide("slow");
+			resetDailyTeamAnswer();
 			$("#valeur").hide(slow); 
   		$("#team").hide(slow);
   		$("#line").hide(slow);
@@ -346,6 +389,8 @@ $(document).ready(function() {
 		
 		function showSection(slow){
 			$("#daily").hide(slow);
+			$("#daily_team_section").hide("slow");
+			resetDailyTeamAnswer();
 			$("#valeur").hide(slow); 
   		$("#team").hide(slow);
   		$("#line").hide(slow);
@@ -358,6 +403,8 @@ $(document).ready(function() {
 		
 		function showWorkshop(slow){
 			$("#daily").hide(slow);
+			$("#daily_team_section").hide("slow");
+			resetDailyTeamAnswer();
 			$("#valeur").hide(slow);  
   		$("#team").hide(slow);
   		$("#line").hide(slow);
@@ -365,16 +412,14 @@ $(document).ready(function() {
     	$("#workshop").show(slow);
     	$("#direction").show(slow);  		
 		}
-		
-				
+						
 		$(function(){				
 			$('#collapser').jqcollapse({
 			   slide: true,
 			   speed: 1000,
 			   easing: 'easeOutCubic'
 			});				
-		});
-		
+		});		
 });
 </script>
 
@@ -443,7 +488,12 @@ $(document).ready(function() {
 					
 					<div id = "daily">
 						<%= label_tag "Equipe journalière?" %><br />
-						<%= select( "daily", "answer", { "Non" => "no", "Oui" => "yes"}) %>
+						<%= select_tag "daily_status", options_for_select(["Non", "Oui"], "Non") %>
+					</div>
+					
+					<div id= "daily_team_section">
+						<%= label_tag 'Section Par défaut' %><br />
+						<%= select_tag "daily_team_section_name", options_for_select(["-Veuillez choisir une section-"], "-Veuillez choisir une section-") %>
 					</div>
 									 
 					<div id = "valeur"><div id = "space">
@@ -556,7 +606,7 @@ $(document).ready(function() {
 																		<% if team.daily %>		
 																		<script type="text/javascript">	
 																			$(document).ready(function() {	
-																				options['innerHtml'] = "Equipe journalière.";								
+																				options['innerHtml'] = "Equipe journalière.<br />Section par défaut: <%= Section.find_by_id(team.default_section).section_name %>";								
 																				$("#team_<%= team.id %>").CreateBubblePopup( options );
 																			});
 																		</script>		

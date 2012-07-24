@@ -44,6 +44,8 @@ Tuni::Application.routes.draw do
   match 'casuals/search' => 'casuals#search_ajax'
   match 'casual/allot_to_team' => 'workshops#allot_to_team', :as => :allot_casual_to_team
   match 'casual/allot_to_workshop' => 'casuals#allot_to_workshop', :as => :allot_to_workshop
+  match 'casual/section' => 'casuals#section', :as => :casual_section
+  match 'casual/change_section' => 'casuals#change_section', :as => :change_casual_section
   
   match 'allocation' => 'workshops#casual_allocation', :as => :casual_allocation
   match 'workshop/parameters' => 'workshops#parameters', :as => :workshop_parameters
@@ -65,6 +67,7 @@ Tuni::Application.routes.draw do
   match 'workshop/global_report' => 'workshops#global_reports', :as => :workshop_global_reports
   match 'workshop/normals_global_report' => 'workshops#normals_global_report', :as => :normals_global_report
   match 'workshop/section_global_report' => 'workshops#section_global_report', :as => :section_global_report
+  match 'workshop/getweek' => 'workshops#getweek'
   #match 'workshop/normlas_global_report' => 'workshops#casuals_global_report', :as => :casuals_global_report
   
   
